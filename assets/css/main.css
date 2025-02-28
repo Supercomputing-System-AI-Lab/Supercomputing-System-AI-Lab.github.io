@@ -62,6 +62,13 @@ header nav p.title {
 	color: black;
 	font-weight: bold;
 }
+header nav p.subtitle {
+	display: block;
+	color: black;
+	font-weight: bold;
+	margin-top: 10px; /* Adds some space above the subtitle */
+}
+
 @media (max-width: 450px) {
 	header nav {
 		padding: 0 0.5rem;
