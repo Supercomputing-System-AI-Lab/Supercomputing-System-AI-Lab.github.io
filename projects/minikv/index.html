@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="MiniKV: Pushing the Limits of 2-Bit KV Cache via Compression and System Co-Design for Efficient Long Context Inferences.">
+  <meta name="keywords" content="MiniKV, KV Cache, Sparse, Quantization">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MiniKV: Pushing the Limits of 2-Bit KV Cache via Compression and System Co-Design for Efficient Long Context Inferences</title>
+
+  <link href="https://202fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <style>
+    /* Custom style to increase the max width of is-max-desktop */
+    .is-max-desktop {
+      max-width: 1020px; /* Adjust this value as needed */
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://minjiazhang.github.io">
+        <span class="icon">
+            <i class="fas fa-home"></i>
+        </span>
+        </a>
+  
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://minjiazhang.github.io/">
+              Publications
+            </a>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title" style="font-size: 45px;">MiniKV: Pushing the Limits of 2-Bit KV Cache via Compression and System Co-Design for Efficient Long Context Inferences</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://github.com/akshatsh49/">Akshat Sharma</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://foreverpiano.github.io/">Hangliang Ding</a><sup>2</sup>,</span>
+            <span class="author-block"></span>
+              <a href="https://jpli02.github.io/">Jianping Li</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://github.com/neeldani">Neel Dani</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://minjiazhang.github.io/">Minjia Zhang</a><sup>1</sup>,</span>
+          </div>
+ 
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="margin-right: 10px;"><sup>1</sup>University of Illinois Urbana-Champaign</span>
+            <span class="author-block" style="margin-right: 10px;"><sup>2</sup>Tsinghua University</span> 
+          </div>
+
+          <!-- <div class="is-size-5">
+            <sup>1</sup> <a href="https://illinois.edu/"><img style="width:15%; padding-right: 15px;"
+                    src="static/logo/uiuc.png"> </a>
+            <sup>2</sup> <a href="https://www.microsoft.com/en-us/research/"><img style="width:20%; padding-right: 15px;"
+                    src="static/logo/microsoft.jpg"> </a>
+            <sup>3</sup> <a href="https://stasosphere.com/machine-learning/"><img style="width:12%; padding-right: 15px;"
+                    src="static/logo/s-logo.png"> </a>
+        </div> -->
+        
+        <!-- Links.TODO -->
+        <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link.-->
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://arxiv.org/pdf/2411.18077"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://arxiv.org/abs/2411.18077"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://github.com/Supercomputing-System-AI-Lab/MiniKV"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+<!--               <span class="link-block" style="margin-right: 20px;">
+                <a href="https://www.deepspeed.ai/tutorials/universal-checkpointing/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-toggle-on"></i>
+                  </span>
+                  <span>Tutorial</span>
+                  </a>
+              </span> -->
+<!--               <span class="link-block" style="margin-right: 20px;">
+                <a href="https://github.com/microsoft/DeepSpeed/blob/master/blogs/deepspeed-ucp/README.md"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-blog"></i>
+                  </span>
+                  <span>Blog</span>
+                  </a>
+              </span> -->
+            </div>
+        </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -50px;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
+          <ul>
+            <li style="margin-top: 10px;">🎉 2025-5 MiniKV is accepted by ACL 2025 (Findings).</li>
+<!--             <li style="margin-top: 10px;">2024-09-09 Universal Checkpointing is adopted by <a href="https://www.berkeley.edu">University of California, Berkeley</a> for <a href="https://arxiv.org/pdf/2409.02231" style="color: darkred;">SmileyLlama (8B)</a> model fine-tuning.</li>
+            <li style="margin-top: 10px;">2024-08-30 Universal Checkpointing is adopted by <a href="https://www.microsoft.com/en-us">Microsoft</a> for <a href="https://huggingface.co/microsoft/Phi-3.5-MoE-instruct" style="color: darkred;">Phi-3.5-MoE (42B) </a> model pre-training. </li>
+            <li style="margin-top: 10px;">2023-06-27 Universal Checkpointing is adopted by <a href="https://bigscience.huggingface.co">BigScience</a> for <a href="https://arxiv.org/abs/2211.05100" style="color: darkred;">BLOOM (176B)</a> model pre-training.</li> -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/ucp.jpg"
+      class="interpolation-image"
+      alt="UCP main results image."/>
+      <h2 class="subtitle">
+        UCP boosts large-scale training efficiency: 
+        <ul>
+          <li>🚀 Flexible change of parallelism (PP, SP, TP, ZeRO-DP) or GPU count mid-stream </li>
+          <li>🚀 Improve resilience by scaling down to healthy nodes</li>
+          <li>🚀 Increase throughput by scaling up to elastic nodes</li>
+        </ul>
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Abstract</h2>
+        <div class="content has-text-justified" style="margin-top: -10pt;">
+          <p>
+            State-of-the-art 2-bit KV cache quantization techniques achieve excellent results in accelerating LLM inference while retaining accuracy on long context tasks. However, further pushing the compression ratio fails to deliver performance gains. In this work, we revisit these approaches by considering, additionally, adaptive KV methods that retain LLM accuracy with only a subset of KV states. This leads us to propose a method based on 2-bit KV cache quantization with adaptive KV policies. In addition, we take an algorithm and system co-design approach by developing hardware-friendly kernels to accelerate LLM inference while making MiniKV compatible with existing memory-efficient attention techniques such as FlashAttention, effectively translating algorithmic improvements into system performance gains. Experiments on a wide range of long context tasks show that MiniKV effectively achieves $>$80\% KV cache compression while retaining accuracy, outperforming state-of-the-art methods while achieving excellent latency, throughput, and memory consumption improvements in long context inference.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Method</h2>
+          <ul>
+          <li style="margin-top: 10px;"> An overview of MiniKV. Tensors colored red/blue indicate 16-bit/2-bit representation, and shaded tokens are evicted during inference. During the prefill phase, we employ pyramid KV with rectified token selection policy across layers to identify a sparse set of important tokens. For all the important tokens, we employ sub-channel Key quantization and per-token Value quantization to minimize the quantization errors while maintaining a compact KV cache data layout without introducing any irregular operations. To address the incompatibility issue between score-based KV pair selection policies and memory-efficient system optimizations such as FlashAttention, we develop a two-pass Triton-based selective flash-attention kernel to output both the representation XO and the cumulative attention map Acumul, while still keeping the memory consumption of the attention calculation linear with respect to the sequence length. During decoding, we use a fused unpacking and multiplication kernel to compute both the attention map between the new Query token tQ and the quantized Keys, as well as the product between the attention map and the quantized Values.</li>  
+            <div class="content" style="margin-top: 10px; text-align: center;">
+              <img src="./static/images/approach.jpg"
+              class="interpolation-image"
+              alt="MiniKV overview." style="width: 90%;"/>
+            </div>
+          <li style="margin-top: 30px;"> Two-pass kernel parallelism: In the first pass, we choose different row blocks running in parallel to compute the weighted sum of value tensors. At the same time, each row updates its max and sum and saves it to LSE. Then it switches to processing column blocks in parallel during the second pass. For each column, it recomputes QKT and normalizes it with the corresponding LSE value. From top to bottom, each column accumulates the sum and writes the result to A_cumul  </li>
+            <div class="content" style="margin-top: 10px; text-align: center;">
+              <img src="./static/images/pass.png"
+              class="interpolation-image"
+              alt="MiniKV Kernel." style="width: 90%;"/>
+            </div>
+        <!-- </ul> -->
+          <!-- <img src="./static/images/ucp.png" -->
+          <!-- class="interpolation-image" -->
+          <!-- alt="UCP method."/> -->
+        <!-- </div> -->
+        <!-- <p> -->
+          <!-- UCP supports flexible checkpoint transformation along any training parallelism techniques (e.g., ZeRO-DP, TP, PP, SP). It enables elastic resource management, allowing easy scaling up and down of training and fine-tuning with varying hardware resources. UCP includes a convenient language-integrated programming interface that allows users to describe various parallelism patterns and provides transformation operations to easily transform distributed checkpoints into UCP. UCP also provides cross-framework support, enabling resuming training of checkpoints from other popular training frameworks, such as HuggingFace transformer accelerate and PyTorch lightning with DeepSpeed as a backend. -->
+        <!-- </p> -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3">Evaluation</h2>
+        </div>
+        <p>
+          Performance evaluation of MiniKV on various models in a range of benchmarks in LongBench. Rows marked in brown have a similar KV cache size, while KIVI and the full model use a larger KV cache. 
+          For LLaMA2-7B-chat, MiniKV-Pyramid achieves an average accuracy of 34.65, obtaining 98.5% of the full model accuracy 35.19. MiniKV is also able to maintain accuracy on LLaMA2-13B-chat and Mistral-7B, indicating that our approach generalizes well across datasets and model classes. While the full model and KIVI perform marginally better than MiniKV, they have much larger KV cache memory consumption. The synergistic composition of 2-bit quantized KV and layer-wise adaptive KV delivers these improvements, and it also shows the promising aspect of using both quantization and adaptive KV in conjunction to reduce the high memory footprint of the KV cache.
+        </p>
+        <div class="content" style="margin-top: 10px; text-align: center;">
+          <img src="./static/images/eval.jpg"
+          class="interpolation-image"
+          alt="MiniKV Evaluation." style="width: 90%;"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX" style="margin-top: -40px;">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{2024minikv,
+  title={MiniKV: Pushing the Limits of 2-Bit KV Cache via Compression and System Co-Design for Efficient Long Context Inferences},
+  author={Akshat Sharma, Hangliang Ding, Jianping Li, Neel Dani, Minjia Zhang},
+  journal={arXiv preprint arXiv:2411.18077},
+  year={2024}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
