@@ -366,7 +366,7 @@
           <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Background</h2>
           <div style="background: linear-gradient(135deg, #fff5f5 0%, #f0f8ff 100%); border-radius: 15px; padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             <p class="has-text-justified" style="margin-bottom: 20px;">
-              <strong>Mixture-of-Experts (MoE)</strong> models have emerged as a powerful approach to scale neural networks efficiently by activating only a subset of parameters during inference. Traditional MoE architectures typically employ <strong>coarse-grained experts</strong> with relatively large hidden dimensions and small routing values (e.g., top-2), where each expert handles diverse types of inputs.
+              <strong>Mixture-of-Experts (MoE)</strong> models have emerged as a powerful approach to scale neural networks efficiently by activating only a subset of parameters per token. Traditional MoE architectures typically employ <strong>coarse-grained experts</strong> with relatively large hidden dimensions and small routing values (e.g., top-1 or top-2).
             </p>
             
             <p class="has-text-justified" style="margin-bottom: 20px;">
@@ -439,7 +439,7 @@
           
           <div class="feature-box">
             <h4><strong>Redundancy-Bypassing Dispatch (RBD)</strong></h4>
-            <p>A hierarchical multi-stage dispatching process that eliminates redundant inter-node communication by using pilot tokens and local replicas, reducing communication overhead by up to 52.5%.</p>
+            <p>A hierarchical multi-stage dispatching process that eliminates redundant inter-node communication by using pilot tokens and local replicas, reducing communication overhead on repeated tokens.</p>
           </div>
             
           <div class="feature-box">
