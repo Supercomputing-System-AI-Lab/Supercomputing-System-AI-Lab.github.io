@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms.">
+  <meta name="keywords" content="X-MoE, Mixture of Experts, HPC, Deep Learning Training, Scalability">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <style>
+    /* Custom style to increase the max width of is-max-desktop */
+    .is-max-desktop {
+      max-width: 1020px; /* Adjust this value as needed */
+    }
+    
+    /* News highlight styles */
+    .news-highlight {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      margin: 20px 0;
+      border-left: 5px solid #ffd700;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .news-highlight::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .news-highlight .award-badge {
+      display: inline-block;
+      background: #ffd700;
+      color: #333;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+      margin-left: 10px;
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+    }
+    
+    /* Gentle news highlight */
+    .news-gentle {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+      border: 1px solid #d1e7ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+      box-shadow: 0 2px 15px rgba(102, 126, 234, 0.1);
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .news-gentle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+    }
+    
+    .news-gentle .trophy-icon {
+      color: #ffd700;
+      margin-right: 10px;
+      text-shadow: 0 1px 3px rgba(255, 215, 0, 0.3);
+    }
+    
+    .news-gentle .award-text {
+      color: #667eea;
+      font-weight: 600;
+    }
+    
+    /* Title enhancement */
+    .publication-title {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+    }
+    
+    /* Section headers with gradient */
+    .gradient-header {
+      background: linear-gradient(45deg, #333, #666);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+    
+    .gradient-header::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+    
+    /* Enhanced challenge and design sections */
+    .feature-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 25px;
+      margin: 15px 0;
+      border-left: 4px solid #667eea;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    /* Abstract styling */
+    .abstract-box {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    /* Results section enhancement */
+    .results-item {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #28a745;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .results-item:hover {
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      transform: translateX(5px);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://minjiazhang.github.io">
+        <span class="icon">
+            <i class="fas fa-home"></i>
+        </span>
+        </a>
+  
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://minjiazhang.github.io/">
+              Publications
+            </a>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title" style="font-size: 45px;">X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://yueming-yuan.github.io/">Yueming Yuan</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://github.com/spikerheado1234">Ahan Gupta</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://jpli02.github.io/">Jianping Li</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.ornl.gov/staff-profile/sajal-dash">Sajal Dash</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.ornl.gov/staff-profile/feiyi-wang">Feiyi Wang</a><sup>2</sup>,
+            <span class="author-block">
+              <a href="https://minjiazhang.github.io/">Minjia Zhang</a><sup>1</sup>
+            </span>
+          </div>
+ 
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="margin-right: 10px;"><sup>1</sup>University of Illinois Urbana-Champaign</span>
+            <span class="author-block" style="margin-right: 10px;"><sup>2</sup>Oak Ridge National Laboratory</span>
+          </div>
+
+          <!-- <div class="is-size-5">
+            <sup>1</sup> <a href="https://illinois.edu/"><img style="width:15%; padding-right: 15px;"
+                    src="static/logo/uiuc.png"> </a>
+            <sup>2</sup> <a href="https://www.microsoft.com/en-us/research/"><img style="width:20%; padding-right: 15px;"
+                    src="static/logo/microsoft.jpg"> </a>
+            <sup>3</sup> <a href="https://stasosphere.com/machine-learning/"><img style="width:12%; padding-right: 15px;"
+                    src="static/logo/s-logo.png"> </a>
+        </div> -->
+
+        <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block" style="margin-right: 20px;">
+                <a href="https://arxiv.org/abs/2406.18820"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              <!-- <span class="link-block" style="margin-right: 20px;">
+                <a href="https://arxiv.org/abs/2406.18820"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://github.com/microsoft/DeepSpeed"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://www.deepspeed.ai/tutorials/universal-checkpointing/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-toggle-on"></i>
+                  </span>
+                  <span>Tutorial</span>
+                  </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://github.com/microsoft/DeepSpeed/blob/master/blogs/deepspeed-ucp/README.md"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-blog"></i>
+                  </span>
+                  <span>Blog</span>
+                  </a>
+              </span> -->
+            </div>
+        </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -50px;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
+          <div class="news-gentle">
+            <i class="fas fa-trophy trophy-icon" style="font-size: 1.2em;"></i>
+            <strong>2025-06-26:</strong> X-MoE has been accepted at <span class="award-text">SC 2025</span> and received <span class="award-text">Best Student Paper Nomination</span>! 🎉
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/ucp.jpg"
+      class="interpolation-image"
+      alt="UCP main results image."/>
+      <h2 class="subtitle">
+        UCP boosts large-scale training efficiency: 
+        <ul>
+          <li>🚀 Flexible change of parallelism (PP, SP, TP, ZeRO-DP) or GPU count mid-stream </li>
+          <li>🚀 Improve resilience by scaling down to healthy nodes</li>
+          <li>🚀 Increase throughput by scaling up to elastic nodes</li>
+        </ul>
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Abstract</h2>
+        <div class="abstract-box">
+          <div class="content has-text-justified" style="margin-top: -10pt;">
+            <p>
+              <strong>Expert-specialized Mixture-of-Experts (MoEs) </strong> represent a significant advancement in large language models, employing fine-grained experts with large top-k routing to enhance expert specialization. However, training these emerging MoE architectures poses significant challenges for existing off-the-shelf MoE training solutions, especially on <strong>heterogeneous HPC platforms</strong>. These challenges include inefficient cross-platform kernels, shifted memory bottlenecks from model parameters to activations, and expensive all-to-all communication on hierarchical networks.
+            </p>
+            <p>
+              To address these issues, we present <strong> X-MoE</strong>, a comprehensive training system designed specifically for expert-specialized MoEs on HPC platforms. X-MoE introduces three key innovations: (1) a padding-free sparse MoE training pipeline with cross-platform kernels that eliminates zero-padding overhead, (2) a hierarchical redundancy-bypassing dispatch algorithm that reduces communication redundancy on hierarchical networks, and (3) a hybrid parallelism strategy with sequence-sharded MoE blocks that addresses the shifted memory bottleneck. Our evaluation on the Frontier supercomputer demonstrates that X-MoE enables training of models up to <strong style="color: #667eea;">545B parameters</strong> on <strong>1024 AMD GPUs</strong>—<strong style="color: #667eea;">10× larger</strong> than existing solutions—while achieving up to <strong style="color: #667eea;">1.42× higher training throughput</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Background</h2>
+          <div style="background: linear-gradient(135deg, #fff5f5 0%, #f0f8ff 100%); border-radius: 15px; padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <p class="has-text-justified" style="margin-bottom: 20px;">
+              <strong>Mixture-of-Experts (MoE)</strong> models have emerged as a powerful approach to scale neural networks efficiently by activating only a subset of parameters per token. Traditional MoE architectures typically employ <strong>coarse-grained experts</strong> with relatively large hidden dimensions and small routing values (e.g., top-1 or top-2).
+            </p>
+            
+            <p class="has-text-justified" style="margin-bottom: 20px;">
+              In contrast, <strong style="color: #667eea;">expert-specialized MoEs</strong> represent a paradigm shift toward more fine-grained expertise. These architectures feature:
+            </p>
+            
+            <div style="background: white; border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea;">
+              <ul style="margin: 0;">
+                <li><strong>Fine-grained experts</strong> with smaller hidden dimensions that encourage specialization</li>
+                <li><strong>Large top-k routing</strong> (e.g., top-8) that activates multiple specialized experts per token</li>
+                <li><strong>Enhanced expert specialization</strong> where each expert learns to handle specific types of linguistic patterns or knowledge domains</li>
+              </ul>
+              <div class="content" style="margin-top: 20px; text-align: center;">
+                <img src="./static/images/background.jpg"
+                class="interpolation-image"
+                alt="MoE Background" style="width: 50%;"/>
+              </div>
+            </div>
+            
+
+            
+            <p class="has-text-justified" style="margin-bottom: 20px;">
+              Recent models like <strong>DeepSeek-v3</strong> and <strong>Qwen3-MoE</strong> have demonstrated the effectiveness of this approach, achieving superior performance while maintaining computational efficiency. However, this architectural shift introduces significant<strong style="color: #667eea;"> new challenges for training systems</strong>:
+            </p>
+            
+            <div style="background: white; border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea;">
+              <div style="margin-bottom: 20px;">
+                <h5><strong>Lack of Efficient Cross-Platform Training Pipeline</strong></h5>
+                <p>Existing MoE training frameworks rely on dense, CUDA-specific implementations that are inefficient for expert-specialized MoEs and difficult to port to non-NVIDIA platforms, leading to inflated memory usage and degraded performance.</p>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <h5><strong>Memory Bottleneck Shift: High Activation Memory Usage</strong></h5>
+                <p>As expert-specialized MoEs increase the number of routed experts and shrink expert hidden dimensions, per-device memory bottlenecks shift from model parameters to activations, particularly in the dispatch and combine stages.</p>
+              </div>
+              
+              <div>
+                <h5><strong>Expensive All-to-All Communication</strong></h5>
+                <p>Expert-specialized MoEs increase the number of routed experts per token, leading to significant communication duplication. On HPC platforms with hierarchical networks, this results in inefficient use of inter-node bandwidth.</p>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">X-MoE Design</h2>
+          
+          <div class="content" style="margin-top: 20px; text-align: center;">
+            <img src="./static/images/xmoe-overview.jpg"
+            class="interpolation-image"
+            alt="X-MoE Overview" style="width: 90%;"/>
+          </div>
+          
+          <div class="feature-box">
+            <h4><strong>Padding-Free Sparse MoE Training</strong></h4>
+            <p>X-MoE introduces PFT (Padding-Free Token buffers), a novel sparse data structure that eliminates zero-padding through MoE computation and communication stages. Cross-platform Triton-based kernels handle sparse and irregular workloads efficiently.</p>
+          </div>
+          
+          <div class="feature-box">
+            <h4><strong>Redundancy-Bypassing Dispatch (RBD)</strong></h4>
+            <p>A hierarchical multi-stage dispatching process that eliminates redundant inter-node communication by using pilot tokens and local replicas, reducing communication overhead on repeated tokens.</p>
+          </div>
+            
+          <div class="feature-box">
+            <h4><strong>Sequence-Sharded MoE Blocks (SSMB)</strong></h4>
+            <p>A hybrid parallelism strategy that combines tensor-slicing with sequence-sharded execution for MoE blocks, reducing activation memory by a factor of the TP group size while maintaining compatibility with standard MoE routing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 gradient-header">Evaluation Results</h2>
+        </div>
+        
+        <div class="content" style="margin-top: 20px; text-align: center;">
+          <img src="./static/images/main-result.jpg"
+          class="interpolation-image"
+          alt="X-MoE Main Results" style="width: 65%;"/>
+        </div>
+        
+        <p>
+          We evaluate X-MoE on the Frontier supercomputer using up to <strong> 1024 AMD MI250X GPUs </strong>, on <strong> DeepSeek-style MoE models </strong> (Small, Medium, Large, Super model configurations are created with reference to DeepSeek-MoE, v2 and v3). Our results demonstrate significant improvements in both model scale and training efficiency:
+        </p>
+        <div class="results-item">
+          <strong>📊 Scale:</strong> X-MoE enables training of models up to <strong style="color: #28a745;">545B parameters</strong>, which is <strong style="color: #28a745;">10× larger</strong> than existing solutions under the same hardware budget.
+        </div>
+        <div class="results-item">
+          <strong>⚡ Throughput:</strong> Up to <strong style="color: #28a745;">1.42× higher training throughput</strong> compared to state-of-the-art MoE systems like Tutel and DeepSpeed-MoE.
+        </div>
+        <div class="results-item">
+          <strong>💾 Memory Efficiency:</strong> Significant reduction in activation memory usage through padding-free pipeline and sequence sharding.
+        </div>
+        <!-- <div class="results-item">
+          <strong>📡 Communication Optimization:</strong> Up to <strong style="color: #28a745;">75.1% reduction</strong> in redundant communication through hierarchical dispatch algorithm.
+        </div>
+        <div class="results-item">
+          <strong>📈 Scalability:</strong> Excellent weak and strong scaling performance across different GPU configurations.
+        </div> -->
+        
+        <p style="margin-top: 25px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #28a745;">
+          <strong>🔧 Integration:</strong> X-MoE is built on top of DeepSpeed, which is compatible with the DeepSpeed-Megatron training options.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX" style="margin-top: -40px;">
+  <div class="container is-max-desktop content">
+    <h2 class="title gradient-header">BibTeX</h2>
+    <pre style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;"><code>@article{xmoe2025,
+  title     = {X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms},
+  author    = {Yuan, Yueming and Gupta, Ahan and Li, Jianping and Dash, Sajal and Wang, Feiyi and Zhang, Minjia},
+  journal   = {Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis (SC '25)},
+  year      = {2025},
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
+
