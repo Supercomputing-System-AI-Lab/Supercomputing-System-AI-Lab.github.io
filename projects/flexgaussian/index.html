@@ -116,14 +116,14 @@
         <div class="container is-max-desktop">
           <h1 class="title is-2">FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</h1>
           <p>
-            <a href="https://ece.illinois.edu/about/directory/grad-students/boyuant2" target="_blank">Boyuan Tian</a><sup>1</sup>,
-            <a href="https://www.linkedin.com/in/qizhe-gao-140bb1222/?locale=en_US" target="_blank">Qizhe Gao</a><sup>1</sup>,
-            <a href="https://www.linkedin.com/in/siran-xianyu-93b318335/" target="_blank">Siran Xianyu</a><sup>1</sup>,
-            <a href="https://xiaotongcui.example.com" target="_blank">Xiaotong Cui</a><sup>1</sup>,
-            <a href="https://minjiazhang.github.io/" target="_blank">Minjia Zhang</a><sup>1</sup>
+            <a href="https:" target="_blank">Boyuan Tian</a>,
+            <a href="https://www.linkedin.com/in/qizhe-gao-140bb1222/?locale=en_US" target="_blank">Qizhe Gao</a>,
+            <a href="https://www.linkedin.com/in/siran-xianyu-93b318335/" target="_blank">Siran Xianyu</a>,
+            <a href="https://xiaotongcui.example.com" target="_blank">Xiaotong Cui</a>,
+            <a href="https://minjiazhang.github.io/" target="_blank">Minjia Zhang</a>
           </p>
 
-          <p><sup>1</sup>University of illinois at Urbana Champaign</p>
+          <p>University of illinois at Urbana Champaign</p>
             <div class="buttons is-centered mt-4">
               <a class="button is-dark" href="https://yourpaperlink.com" target="_blank">📄 Paper</a>
               <a class="button is-dark" href="https://arxiv.org/abs/2507.06671" target="_blank">✖ arXiv</a>
@@ -173,7 +173,7 @@
         <div class="content">
           <h2 class="title is-3">Methodology</h2>
 
-          <h3 class="title is-4" style="color: #003366;">➤ What makes model so lightweight</h3>
+          <h3 class="title is-4" style="color: #003366;">➤ How to make the model lightweight</h3>
           <p>
             After delving into the storage structure of the original 3DGS design, we found out why it takes us hundreds of megabytes to store a scene of a garden. The scene is essentially a point cloud that comprises hundreds of thousands of colored ellipsoids named Gaussian points. Before they are rendered into what we see in real time, each Gaussian point is stored as a vector containing the ellipsoid center’s 3D coordinate, scaling factor, rotation quaternion, base color, and spherical harmonic (SH) coefficients. Especially, when SH degree is chosen to be 3 for higher reconstruction quality, 3(l + 1) ^2 = 48 parameters are needed to store the color coefficients of one gaussian. When all parameters are stored as 32-bit floating-point numbers, and we need to store all points in the point cloud no matter their importance, storing the model will be expensive.
           </p>
@@ -182,6 +182,12 @@
           <p>
             Given the point-based nature of the models, we approached the compression problem of 3DGS models by identifying points and attributes that contribute less to the rendering results. Furthermore, we use a more compact structure with fewer bits used to store the "less important" attributes. The two stages of our method were developed independently and later integrated into one pipeline that gives us the final compressed model.
           </p>
+
+          <h3 class="title is-4" style="color: #003366;">➤Attribute-Discriminative Pruning</h3>
+          <p>
+            We begin the pipeline by identifying points with less contribution to what is displayed on our screen with the help of the importance score introduced in LightGaussian. This metric considers the Gaussian point's contribution to global pixels, opacity, and volumetric density. With a one-time calculation of the importance scores of the Gaussians, we can perform pruning by retaining the top α% of Gaussians and discarding the bottom β% that contribute minimally to quality. Since no re-training and recalculating of importance score are involved in this efficient process, we have time to visit several pruning parameter configurations to determine which one is optimal in the limited set of parameter pairs. This helps us find a pruning setting unique to the scene we want to compress, while considering both quality and the compression ratio.
+          </p>
+
 
           <h3 class="title is-4" style="color: #003366;">➤Precision-Aware Bit-Width Quantization</h3>
 <p>
@@ -231,6 +237,11 @@
 <p>
   We evaluate FlexGaussian on Mip-NeRF360, Tanks&Temples, and Deep Blending—spanning diverse indoor and outdoor scenes. Compared to the original 3DGS and several compression baselines (e.g., FCGS, LightGaussian, CompGS), FlexGaussian achieves up to <strong>96.4% compression</strong> with <strong>&lt;1 dB</strong> PSNR drop. It runs <strong>1.7×–2.1× faster</strong> than FCGS and up to <strong>100× faster</strong> than retraining-based methods. All experiments were run on an RTX 3090, with additional tests on Jetson Xavier confirming efficiency on edge devices.
 </p>
+
+<p class="has-text-centered is-size-6 has-text-grey mt-4 mb-2">
+  <em>If the images are not displayed correctly, please try reloading the page.</em>
+</p>
+
               
                   <!-- IMAGE ROW -->
 <div class="columns is-gapless">
