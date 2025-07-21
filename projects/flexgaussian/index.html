@@ -24,6 +24,23 @@
   font-weight: 600;
 }
 
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 
 .lens {
   position: absolute;
@@ -115,6 +132,9 @@
       <div class="hero-body has-text-centered">
         <div class="container is-max-desktop">
           <h1 class="title is-2">FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</h1>
+                <h2 class="subtitle is-3 has-text-primary" style="font-family: 'Georgia', serif; letter-spacing: 1px;">
+        acmmm2025
+      </h2>
           <p>
             <a href="https:" target="_blank">Boyuan Tian</a>,
             <a href="https://www.linkedin.com/in/qizhe-gao-140bb1222/?locale=en_US" target="_blank">Qizhe Gao</a>,
@@ -132,22 +152,29 @@
 
         </div>
       </div>
+
+<div class="columns is-centered mt-5">
+  <div class="column is-8">
+    <div class="video-container">
+      <iframe width="100%" height="315" src="video-bicycle.mp4"
+              title="Video 1" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="columns is-centered mt-5">
+  <div class="column is-8">
+    <div class="video-container">
+      <iframe width="100%" height="315" src="video-garden.mp4"
+              title="Video 2" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+
     </section>
 
-    <section class="section">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column">
-            <h2 class="title is-3">News</h2>
-            <div class="content">
-              <ul>
-                <li>2025-07-11 Paper accepted at ACMMM Conference!</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -461,39 +488,108 @@
   </div>
 </footer>
 <script>
-function attachMagnifier(imgId, lensId, resultId, zoom = 4) {
-  const img = document.getElementById(imgId);
-  const lens = document.getElementById(lensId);
-  const result = document.getElementById(resultId);
+const zoom = 4;
 
-  result.style.backgroundImage = `url('${img.src}')`;
-  result.style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
+// Array of image, lens, and result element IDs for row 1
+const row1 = [
+  { img: "img1", lens: "lens1", result: "result1" },
+  { img: "img2", lens: "lens2", result: "result2" },
+  { img: "img3", lens: "lens3", result: "result3" },
+  { img: "img4", lens: "lens4", result: "result4" },
+  { img: "img5", lens: "lens5", result: "result5" },
+];
 
-  lens.addEventListener("mousemove", moveLens);
-  img.addEventListener("mousemove", moveLens);
+function setupSynchronizedZoom(row) {
+  const images = row.map(el => document.getElementById(el.img));
+  const lenses = row.map(el => document.getElementById(el.lens));
+  const results = row.map(el => document.getElementById(el.result));
 
-  function moveLens(e) {
-    const pos = getCursorPos(e);
-    let x = pos.x - lens.offsetWidth / 2;
-    let y = pos.y - lens.offsetHeight / 2;
+  row.forEach((_, idx) => {
+    const img = images[idx];
+    const lens = lenses[idx];
 
-    x = Math.max(0, Math.min(x, img.width - lens.offsetWidth));
-    y = Math.max(0, Math.min(y, img.height - lens.offsetHeight));
+    // Set background image and size for all results
+    results[idx].style.backgroundImage = `url('${img.src}')`;
+    results[idx].style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
 
-    lens.style.left = x + "px";
-    lens.style.top = y + "px";
+    // Add mousemove listener to lens and image
+    lens.addEventListener("mousemove", e => syncMove(e, img));
+    img.addEventListener("mousemove", e => syncMove(e, img));
+  });
 
-    result.style.backgroundPosition = `-${x * zoom}px -${y * zoom}px`;
+  function syncMove(e, baseImg) {
+    const pos = getCursorPos(e, baseImg);
+    const lensWidth = lenses[0].offsetWidth;
+    const lensHeight = lenses[0].offsetHeight;
+
+    let x = pos.x - lensWidth / 2;
+    let y = pos.y - lensHeight / 2;
+
+    x = Math.max(0, Math.min(x, baseImg.width - lensWidth));
+    y = Math.max(0, Math.min(y, baseImg.height - lensHeight));
+
+    lenses.forEach((lens, i) => {
+      lens.style.left = x + "px";
+      lens.style.top = y + "px";
+
+      results[i].style.backgroundPosition = `-${x * zoom}px -${y * zoom}px`;
+    });
   }
 
-  function getCursorPos(e) {
+  function getCursorPos(e, img) {
     const rect = img.getBoundingClientRect();
     return {
       x: e.pageX - rect.left - window.pageXOffset,
-      y: e.pageY - rect.top - window.pageYOffset
+      y: e.pageY - rect.top - window.pageYOffset,
     };
   }
 }
+
+setupSynchronizedZoom(row1);
+
+setupSynchronizedZoom([
+  { img: "img6", lens: "lens6", result: "result6" },
+  { img: "img7", lens: "lens7", result: "result7" },
+  { img: "img8", lens: "lens8", result: "result8" },
+  { img: "img9", lens: "lens9", result: "result9" },
+  { img: "img10", lens: "lens10", result: "result10" },
+]);
+
+setupSynchronizedZoom([
+  { img: "img11", lens: "lens11", result: "result11" },
+  { img: "img12", lens: "lens12", result: "result12" },
+  { img: "img13", lens: "lens13", result: "result13" },
+  { img: "img14", lens: "lens14", result: "result14" },
+  { img: "img15", lens: "lens15", result: "result15" },
+]);
+
+setupSynchronizedZoom([
+  { img: "img16", lens: "lens16", result: "result16" },
+  { img: "img17", lens: "lens17", result: "result17" },
+  { img: "img18", lens: "lens18", result: "result18" },
+  { img: "img19", lens: "lens19", result: "result19" },
+  { img: "img20", lens: "lens20", result: "result20" },
+]);
+
+setupSynchronizedZoom([
+  { img: "img21", lens: "lens21", result: "result21" },
+  { img: "img22", lens: "lens22", result: "result22" },
+  { img: "img23", lens: "lens23", result: "result23" },
+  { img: "img24", lens: "lens24", result: "result24" },
+  { img: "img25", lens: "lens25", result: "result25" },
+]);
+
+setupSynchronizedZoom([
+  { img: "img26", lens: "lens26", result: "result26" },
+  { img: "img27", lens: "lens27", result: "result27" },
+  { img: "img28", lens: "lens28", result: "result28" },
+  { img: "img29", lens: "lens29", result: "result29" },
+  { img: "img30", lens: "lens30", result: "result30" },
+]);
+
+
+// Repeat for rows 3, 4, 5 as needed
+
 
 // Attach all 5
 attachMagnifier("img1", "lens1", "result1");
