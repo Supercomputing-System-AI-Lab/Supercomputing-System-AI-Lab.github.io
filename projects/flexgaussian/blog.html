@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+  <head>
+    <meta charset="utf-12">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+      html {
+        font-size: 18px;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.7;
+        color: #222;
+      }
+
+      h1.title {
+        font-size: 2.5rem;
+      }
+
+      h2.title {
+        font-size: 2rem;
+      }
+
+      h3.title {
+        font-size: 1.5rem;
+      }
+
+      p, li {
+        font-size: 1.1rem;
+      }
+
+      .button {
+        font-size: 1rem;
+        padding: 10px 16px;
+      }
+
+      .section {
+        margin-top: -40px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start" style="flex-grow: 1; justify-content: center;"></div>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-body has-text-centered">
+        <div class="container is-max-desktop">
+          <h1 class="title is-3">FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</h1>
+          <h2 class="subtitle is-3" style="color: #27ae60;">ACM MM 2025</h2>
+          <p>
+            <a href="https:" target="_blank">Boyuan Tian</a>,
+            <a href="https://www.linkedin.com/in/qizhe-gao-140bb1222/?locale=en_US" target="_blank">Qizhe Gao</a>,
+            <a href="https://www.linkedin.com/in/siran-xianyu-93b318335/" target="_blank">Siran Xianyu</a>,
+            <a href="https://xiaotongcui.example.com" target="_blank">Xiaotong Cui</a>,
+            <a href="https://minjiazhang.github.io/" target="_blank">Minjia Zhang</a>
+          </p>
+          <p>University of Illinois at Urbana-Champaign</p>
+          <div class="buttons is-centered mt-4">
+            <a class="button is-dark" href="https://yourpaperlink.com" target="_blank">📄 Paper</a>
+            <a class="button is-dark" href="https://arxiv.org/abs/2507.06671" target="_blank">✖ arXiv</a>
+            <a class="button is-dark" href="https://github.com/Supercomputing-System-AI-Lab/FlexGaussian" target="_blank">💻 Code</a>
+            <a class="button is-dark" href="https://yourbloglink.com" target="_blank">📝 Blog</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column">
+            <div class="content">
+              <h2 class="title is-3">Blog: Training-Free Compression That Scales</h2>
+              <p><strong>3D Gaussian Splatting (3DGS)</strong> has rapidly become the de facto candidate for representing 3D scenes. It strikes a rare balance—offering both exceptional visual quality and real-time rendering speeds. But it comes at the cost of massive file sizes.</p>
+              <p>Compressing 3DGS is essential. While prior work uses pruning, quantization, or compact data structures, most methods require retraining—making them slow and impractical.</p>
+              <h3 class="title is-4" style="color: #003366;">Can We Compress Without Training?</h3>
+              <p>Yes. Inspired by zero-shot LLM compression, we explore training-free 3DGS compression. The key insight: attribute sensitivity varies widely, and we can exploit this to prune and quantize wisely—without retraining.</p>
+              <h3 class="title is-4" style="color: #003366;">Introducing FlexGaussian</h3>
+              <ul>
+                <li><strong>Pruning:</strong> Remove less important Gaussians using importance scores</li>
+                <li><strong>Quantization:</strong> Apply different bit-widths per attribute based on visual impact</li>
+              </ul>
+              <p>We evaluate (P_row, P_sh) pruning parameters and quantize attributes to 4/8/16 bits. Some (e.g. SH colors) tolerate low bits; others (e.g. positions) do not.</p>
+              <h3 class="title is-4" style="color: #003366;">Pipeline</h3>
+              <ol>
+                <li>Compute importance scores</li>
+                <li>Prune using (P_row, P_sh)</li>
+                <li>Quantize attributes</li>
+                <li>Render and evaluate PSNR</li>
+              </ol>
+              <p>This loop takes 1–2 seconds. No retraining. No overhead. Just fast, adaptive compression.</p>
+              <h3 class="title is-4" style="color: #003366;">Results</h3>
+              <ul>
+                <li>Up to 96.4% compression</li>
+                <li>&lt; 1 dB PSNR drop</li>
+                <li>1.7–2.1× faster than FCGS</li>
+                <li>Efficient on Jetson Xavier</li>
+              </ul>
+              <p>FlexGaussian is a powerful, training-free method that enables 3DGS streaming and deployment on edge devices.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content">
+              <p>
+                We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
