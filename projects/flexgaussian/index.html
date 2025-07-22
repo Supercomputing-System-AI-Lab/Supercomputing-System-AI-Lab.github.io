@@ -1,119 +1,85 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-  <head>
-    <meta charset="utf-12">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
-<style>
-  .magnifier-container {
-  position: relative;
-  width: 300px;
-}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+  <style>
+    html { font-size: 18px; }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+      color: #222;
+    }
 
-#mainImage {
-  width: 100%;
-  display: block;
-  border-radius: 6px;
-}
+    h1.title { font-size: 2.5rem; }
+    h2.title { font-size: 2rem; }
+    h3.title { font-size: 1.5rem; }
 
-
-.image-title {
-  color: #003366;
-  font-weight: 600;
-}
-
-.video-container {
-  position: relative;
-  padding-bottom: 56.25%; /* 16:9 ratio */
-  height: 0;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.video-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
+    p, li { font-size: 1.1rem; }
+    .button { font-size: 1rem; padding: 10px 16px; }
+    .section { margin-top: -40px; }
+    .interpolation-image {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
 
 
-.lens {
-  position: absolute;
-  border: 2px solid #000;
-  width: 60px;
-  height: 60px;
-  background-color: rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  cursor: none;
-}
 
-.zoom-result {
-  border: 2px solid #003366;
-  height: 300px;
-  background-repeat: no-repeat;
-  background-size: 400% 400%; /* or adjust zoom */
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* optional */
-}
+    .video-container {
+      max-width: 700px;       /* max width of text/video area */
+      width: 90%;             /* shrink when window shrinks */
+      margin: 0 auto;         /* center horizontally */
+      background-color: black;  background behind video 
+      padding: 10px;          /* optional spacing */
+    }
+
+    video {
+      width: 100%;            /* video fills container width */
+      height: auto;           /* keep aspect ratio */
+      display: block;
+    }
+
+    .magnifier-container { position: relative; width: 300px; }
+    .lens {
+      position: absolute;
+      border: 2px solid #000;
+      width: 60px;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      cursor: none;
+    }
+
+    .zoom-result {
+      border: 2px solid #003366;
+      height: 300px;
+      background-repeat: no-repeat;
+      background-size: 400% 400%;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #result {
+      border: 1px solid #d4d4d4;
+      width: 300px;
+      height: 300px;
+      background-repeat: no-repeat;
+      background-size: 600px 600px;
+      border-radius: 6px;
+    }
+
+    .image-title {
+      color: #003366;
+      font-weight: 600;
+    }
+  </style>
+</head>
 
 
-#result {
-  border: 1px solid #d4d4d4;
-  width: 300px;
-  height: 300px;
-  background-repeat: no-repeat;
-  background-size: 600px 600px; /* adjust for zoom */
-  border-radius: 6px;
-}
-
-  html {
-    font-size: 18px; /* Base font size (default is usually 16px) */
-  }
-
-  body {
-    font-family: Arial, sans-serif;
-    line-height: 1.7;
-    color: #222;
-  }
-
-  h1.title {
-    font-size: 2.5rem;
-  }
-
-  h2.title {
-    font-size: 2rem;
-  }
-
-  h3.title {
-    font-size: 1.5rem;
-  }
-
-  p, li {
-    font-size: 1.1rem;
-  }
-
-  .button {
-    font-size: 1rem;
-    padding: 10px 16px;
-  }
-
-  .section {
-    margin-top: -40px;
-  }
-
-  .interpolation-image {
-    width: 100%;
-    border-radius: 10px;
-    margin-top: 20px;
-  }
-</style>
-
-  </head>
   <body>
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
@@ -132,9 +98,7 @@
       <div class="hero-body has-text-centered">
         <div class="container is-max-desktop">
           <h1 class="title is-3">FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</h1>
-<h2 class="subtitle is-3" style="color: #27ae60;">
-  ACM MM 2025
-</h2>
+          <h2 class="subtitle is-3" style="color: #27ae60;">ACM MM 2025</h2>
 
           <p>
             <a href="https:" target="_blank">Boyuan Tian</a>,
@@ -144,34 +108,30 @@
             <a href="https://minjiazhang.github.io/" target="_blank">Minjia Zhang</a>
           </p>
 
-          <p>University of illinois at Urbana Champaign</p>
+          <p>University of Illinois Urbana-Champaign</p>
             <div class="buttons is-centered mt-4">
-              <a class="button is-dark" href="https://yourpaperlink.com" target="_blank">📄 Paper</a>
+              <a class="button is-dark" href="blog.html" target="_blank">📝 Blog</a>
               <a class="button is-dark" href="https://arxiv.org/abs/2507.06671" target="_blank">✖ arXiv</a>
+              <a class="button is-dark" href="https://yourpaperlink.com" target="_blank">📄 Paper</a>
               <a class="button is-dark" href="https://github.com/Supercomputing-System-AI-Lab/FlexGaussian" target="_blank">💻 Code</a>
             </div>
 
         </div>
       </div>
 
-<div class="columns is-centered mt-5">
-  <div class="column is-7">
-    <div class="video-container">
-      <iframe width="100%" height="315" src="video-bicycle.mp4"
-              title="Video 1" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
-</div>
+      <div class="container" style="text-align: center; margin-bottom: 30px;">
+        <video autoplay muted playsinline style="display: block; margin: 0 auto;">
+          <source src="video-bicycle.mp4" type="video/mp4">
+        </video>
+        <p style="font-weight: bold; font-family: Georgia, serif; font-size: 1.2em; color: #333; margin-top: 8px;">Bicycle - MipNeRF-360</p>
+      </div>
 
-<div class="columns is-centered mt-5">
-  <div class="column is-7">
-    <div class="video-container">
-      <iframe width="100%" height="315" src="video-garden.mp4"
-              title="Video 2" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
-</div>
-
+      <div class="container" style="text-align: center;">
+        <video autoplay muted playsinline style="display: block; margin: 0 auto;">
+          <source src="video-garden.mp4" type="video/mp4">
+        </video>
+        <p style="font-weight: bold; font-family: Georgia, serif; font-size: 1.2em; color: #333; margin-top: 8px;">Garden - MipNeRF-360</p>
+      </div>
 
     </section>
 
@@ -181,8 +141,8 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column">
-        <h2 class="title is-3">Intuition</h2>
-        <div class="content has-text-justified" style="margin-top: -10pt;">
+        <!-- <h2 class="title is-3">Intuition</h2> -->
+        <div class="content has-text-justified" style="margin-top: 50pt;">
           <p>
             3D Gaussian Splatting (3DGS) is a new and powerful technique that allow users to view complex and photorealistic 3D scenes in real-time. But it does comes with a price: what actually represents the static scenes are large models that can be unwieldy to store and transfer. When running the algorithm on edge devices with limited storage, the large model size can easily eat up space.
           </p>
@@ -201,12 +161,12 @@
         <div class="content">
           <h2 class="title is-3">Methodology</h2>
 
-          <h3 class="title is-4" style="color: #003366;">➤ How to make the model lightweight</h3>
+          <h3 class="title is-4" style="color: #003366;">➤ How to Make the Model Lightweight</h3>
           <p>
             After delving into the storage structure of the original 3DGS design, we found out why it takes us hundreds of megabytes to store a scene of a garden. The scene is essentially a point cloud that comprises hundreds of thousands of colored ellipsoids named Gaussian points. Before they are rendered into what we see in real time, each Gaussian point is stored as a vector containing the ellipsoid center’s 3D coordinate, scaling factor, rotation quaternion, base color, and spherical harmonic (SH) coefficients. Especially, when SH degree is chosen to be 3 for higher reconstruction quality, 3(l + 1) ^2 = 48 parameters are needed to store the color coefficients of one gaussian. When all parameters are stored as 32-bit floating-point numbers, and we need to store all points in the point cloud no matter their importance, storing the model will be expensive.
           </p>
 
-          <h3 class="title is-4" style="color: #003366;">➤Key design ideas</h3>
+          <h3 class="title is-4" style="color: #003366;">➤Key Design Ideas</h3>
           <p>
             Given the point-based nature of the models, we approached the compression problem of 3DGS models by identifying points and attributes that contribute less to the rendering results. Furthermore, we use a more compact structure with fewer bits used to store the "less important" attributes. The two stages of our method were developed independently and later integrated into one pipeline that gives us the final compressed model.
           </p>
@@ -239,7 +199,7 @@
   While some attributes can be aggressively quantized, we advise against applying low-bit quantization to the ellipsoid center positions. For example, 4-bit quantization limits each of the <em>x</em>, <em>y</em>, and <em>z</em> axes to just 16 discrete values—effectively turning the continuous 3D space into a coarse voxel grid and significantly distorting the scene layout.
 </p>
 
-          <h3 class="title is-4" style="color: #003366;">➤Overview of Flexgaussian</h3>
+          <h3 class="title is-4" style="color: #003366;">➤Overview of FlexGaussian</h3>
           <p>
             FlexGaussian first applies attribute-discriminative pruning (ADP) to obtain semi-structurally pruned Gaussian primitives. It then employs INT8/INT4 channel-wise mixed-precision quantization (MPQ) to further reduce the model size along the bit dimension. Finally, FlexGaussian introduces a novel lightweight online adaptation (FOA) algorithm to adaptively adjust the compression ratio for diverse scenes on hardware with different efficiency constraints.
           </p>
@@ -498,6 +458,8 @@
     </div>
   </div>
 </footer>
+
+
 <script>
 const zoom = 4;
 
