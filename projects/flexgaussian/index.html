@@ -255,14 +255,14 @@
 
               <p>This full loop—prune → quantize → render → evaluate—takes just 1–2 seconds, enabling real-time adaptation to different compression needs without training (see Fig. 3).</p>
 
-              <!--
+              
               <figure style="text-align: center; margin: 2em 0;">
                 <img src="pipeline.png" alt="FlexGaussian compression pipeline" style="max-width: 75%; height: auto;">
                 <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
                   <strong>Figure 3:</strong> The execution pipeline prunes low-importance primitives, applies RTN-based quantization and dequantization with attribute-specific bit-widths, renders the output, and evaluates quality—completing the loop in 1–2 seconds per step. Each step corresponds to a different compression ratio and quality drop, enabling flexible, training-free compression under diverse requirements.
                 </figcaption>
               </figure> 
-              -->
+              
 
 
               <h3 class="title is-4" style="color: #003366;">Results: Fast, Flexible, and Powerful</h3>
@@ -289,12 +289,14 @@
 
               <p>Quality comparisons are shown in the interactive zoom-in results and rendered video. Most notably, FlexGaussian's training-free, low-cost design makes it deployable on <b>mobile-class</b> devices like Jetson AGX Xavier, expanding its usability beyond desktops and into real-world edge deployments.</p>
 
+              <!--
               <figure style="text-align: center; margin: 2em 0;">
                 <img src="quality.png" alt="FlexGaussian results compared to baseline" style="width: 100%; height: auto;">
                 <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
                   <strong>Figure 3:</strong> FlexGaussian achieves high compression ratios and competitive visual quality without training. It supports fast, real-time compression with flexible trade-offs, outperforming baseline methods that require retraining or complex pipelines.
                 </figcaption>
               </figure>
+              -->
 
               <h3 class="title is-4" style="color: #003366;">Closing Thoughts</h3>
 
