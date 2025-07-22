@@ -255,12 +255,14 @@
 
               <p>This full loop—prune → quantize → render → evaluate—takes just 1–2 seconds, enabling real-time adaptation to different compression needs without training (see Fig. 3).</p>
 
+              <!--
               <figure style="text-align: center; margin: 2em 0;">
                 <img src="pipeline.png" alt="FlexGaussian compression pipeline" style="max-width: 75%; height: auto;">
                 <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
                   <strong>Figure 3:</strong> The execution pipeline prunes low-importance primitives, applies RTN-based quantization and dequantization with attribute-specific bit-widths, renders the output, and evaluates quality—completing the loop in 1–2 seconds per step. Each step corresponds to a different compression ratio and quality drop, enabling flexible, training-free compression under diverse requirements.
                 </figcaption>
-              </figure>
+              </figure> 
+              -->
 
 
               <h3 class="title is-4" style="color: #003366;">Results: Fast, Flexible, and Powerful</h3>
@@ -372,7 +374,7 @@
     <div class="columns is-centered">
       <div class="column">
         <div class="content">
-          <h2 class="title is-3 has-text-centered">Evaluation</h2>
+          <h2 class="title is-3 has-text-centered">Qualitative Comparisons</h2>
           <!--<p>
             We evaluate FlexGaussian on Mip-NeRF360, Tanks&Temples, and Deep Blending—spanning diverse indoor and outdoor scenes. Compared to the original 3DGS and several compression baselines (e.g., FCGS, LightGaussian, CompGS), FlexGaussian achieves up to <strong>96.4% compression</strong> with <strong>&lt;1 dB</strong> PSNR drop. It runs <strong>1.7×–2.1× faster</strong> than FCGS and up to <strong>100× faster</strong> than retraining-based methods. All experiments were run on an RTX 3090, with additional tests on Jetson Xavier confirming efficiency on edge devices.
           </p> -->
