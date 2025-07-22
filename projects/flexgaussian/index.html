@@ -33,7 +33,7 @@
       max-width: 700px;       /* max width of text/video area */
       width: 90%;             /* shrink when window shrinks */
       margin: 0 auto;         /* center horizontally */
-      background-color: black;  background behind video 
+      background-color: black;  /*background behind video */
       padding: 10px;          /* optional spacing */
     }
 
@@ -43,7 +43,15 @@
       display: block;
     }
 
-    .magnifier-container { position: relative; width: 300px; }
+.magnifier-container {
+  position: relative;
+  width: 340px;
+  height: 200px; /* adjust as needed */
+  overflow: hidden;
+  border: 2px solid #ccc; /* Light gray boundary */
+  border-radius: 6px;       /* Optional: slightly rounded corners */
+}
+
     .lens {
       position: absolute;
       border: 2px solid #000;
@@ -358,222 +366,107 @@
 </section> -->
 
 
-    <section class="section">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column">
-            <div class="content">
-              <h2 class="title is-3">Evaluation</h2>
-<<!-- p>
-  We evaluate FlexGaussian on Mip-NeRF360, Tanks&Temples, and Deep Blending—spanning diverse indoor and outdoor scenes. Compared to the original 3DGS and several compression baselines (e.g., FCGS, LightGaussian, CompGS), FlexGaussian achieves up to <strong>96.4% compression</strong> with <strong>&lt;1 dB</strong> PSNR drop. It runs <strong>1.7×–2.1× faster</strong> than FCGS and up to <strong>100× faster</strong> than retraining-based methods. All experiments were run on an RTX 3090, with additional tests on Jetson Xavier confirming efficiency on edge devices.
-</p> -->
 
-<p class="has-text-centered is-size-6 has-text-grey mt-4 mb-2">
-  <em>If the images are not displayed correctly, please try reloading the page.</em>
-</p>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 has-text-centered">Evaluation</h2>
+          <!--<p>
+            We evaluate FlexGaussian on Mip-NeRF360, Tanks&Temples, and Deep Blending—spanning diverse indoor and outdoor scenes. Compared to the original 3DGS and several compression baselines (e.g., FCGS, LightGaussian, CompGS), FlexGaussian achieves up to <strong>96.4% compression</strong> with <strong>&lt;1 dB</strong> PSNR drop. It runs <strong>1.7×–2.1× faster</strong> than FCGS and up to <strong>100× faster</strong> than retraining-based methods. All experiments were run on an RTX 3090, with additional tests on Jetson Xavier confirming efficiency on edge devices.
+          </p> -->
 
-              
-                  <!-- IMAGE ROW -->
-<div class="columns is-gapless">
-  <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img4" src="Bi_GT.png"><div class="lens" id="lens4"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img5" src="Bi_ours.png"><div class="lens" id="lens5"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img1" src="Bi_3dgs.png"><div class="lens" id="lens1"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">Compressed3D</p><div class="magnifier-container"><img id="img3" src="Bi_compressed3D.png"><div class="lens" id="lens3"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">CompGS</p><div class="magnifier-container"><img id="img2" src="Bi_comp.png"><div class="lens" id="lens2"></div></div></div>
+          <p class="has-text-centered is-size-6 has-text-grey mt-4 mb-2">
+            <em>If the images are not displayed correctly, please try reloading the page.</em>
+          </p>
 
-</div>
+          <!-- BEGIN EVALUATION ROW BLOCKS -->
 
-<!-- ZOOM RESULTS ROW -->
-<div class="columns is-gapless mt-3">
-  <div class="column"><div class="zoom-result" id="result1"></div></div>
-  <div class="column"><div class="zoom-result" id="result2"></div></div>
-  <div class="column"><div class="zoom-result" id="result3"></div></div>
-  <div class="column"><div class="zoom-result" id="result4"></div></div>
-  <div class="column"><div class="zoom-result" id="result5"></div></div>
-</div>
+          <!-- Repeat this block for each of the 5 rows -->
 
-
-
-<!-- ROW 2: Original images -->
-<div class="columns is-gapless">
-  <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img9" src="G_GT.png"><div class="lens" id="lens9"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img10" src="G_ours.png"><div class="lens" id="lens10"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img6" src="G_3dgs.png"><div class="lens" id="lens6"></div></div></div>
-    <div class="column"><p class="image-title is-size-6 mb-2">Compressed3D</p><div class="magnifier-container"><img id="img8" src="G_compressed3D.png"><div class="lens" id="lens8"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">CompGS</p><div class="magnifier-container"><img id="img7" src="G_comp.png"><div class="lens" id="lens7"></div></div></div>
-
-
-</div>
-
-<!-- ROW 2: Zoomed images -->
-<div class="columns is-gapless mt-3">
-  <div class="column"><div class="zoom-result" id="result6"></div></div>
-  <div class="column"><div class="zoom-result" id="result7"></div></div>
-  <div class="column"><div class="zoom-result" id="result8"></div></div>
-  <div class="column"><div class="zoom-result" id="result9"></div></div>
-  <div class="column"><div class="zoom-result" id="result10"></div></div>
-</div>
-
-
-
-
-
-
-<!-- ROW 2: Original images -->
-<div class="columns is-gapless">
-  <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img14" src="p_GT.png"><div class="lens" id="lens14"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img15" src="p_ours.png"><div class="lens" id="lens15"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img11" src="p_3dgs.png"><div class="lens" id="lens11"></div></div></div>
-    <div class="column"><p class="image-title is-size-6 mb-2">Compressed3D</p><div class="magnifier-container"><img id="img13" src="p_compressed3D.png"><div class="lens" id="lens13"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">CompGS</p><div class="magnifier-container"><img id="img12" src="p_comp.png"><div class="lens" id="lens12"></div></div></div>
-
-
-</div>
-
-<!-- ROW 2: Zoomed images -->
-<div class="columns is-gapless mt-3">
-  <div class="column"><div class="zoom-result" id="result11"></div></div>
-  <div class="column"><div class="zoom-result" id="result12"></div></div>
-  <div class="column"><div class="zoom-result" id="result13"></div></div>
-  <div class="column"><div class="zoom-result" id="result14"></div></div>
-  <div class="column"><div class="zoom-result" id="result15"></div></div>
-</div>
-
-
-<!-- ROW 3: Original images -->
-<div class="columns is-gapless mt-5">
-    <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img19" src="d_GT.png"><div class="lens" id="lens19"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img20" src="d_ours.png"><div class="lens" id="lens20"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img16" src="d_3dgs.png"><div class="lens" id="lens16"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">Compressed3D</p><div class="magnifier-container"><img id="img18" src="d_compressed3D.png"><div class="lens" id="lens18"></div></div></div>
-  <div class="column"><p class="image-title is-size-6 mb-2">CompGS</p><div class="magnifier-container"><img id="img17" src="d_comp.png"><div class="lens" id="lens17"></div></div></div>
-
-
-</div>
-
-<!-- ROW 3: Zoomed images -->
-<div class="columns is-gapless mt-3">
-  <div class="column"><div class="zoom-result" id="result16"></div></div>
-  <div class="column"><div class="zoom-result" id="result17"></div></div>
-  <div class="column"><div class="zoom-result" id="result18"></div></div>
-  <div class="column"><div class="zoom-result" id="result19"></div></div>
-  <div class="column"><div class="zoom-result" id="result20"></div></div>
-</div>
-
-
-
-
-<!-- ROW 4: Original images -->
-<div class="columns is-gapless mt-5">
-    <div class="column">
-    <p class="image-title is-size-6 mb-2">GroundTruth</p>
-    <div class="magnifier-container">
-      <img id="img24" src="t_GT.png">
-      <div class="lens" id="lens24"></div>
-    </div>
-  </div>
-  <div class="column">
-    <p class="image-title is-size-6 mb-2">Ours</p>
-    <div class="magnifier-container">
-      <img id="img25" src="t_ours.png">
-      <div class="lens" id="lens25"></div>
-    </div>
-  </div>
-  <div class="column">
-    <p class="image-title is-size-6 mb-2">3DGS</p>
-    <div class="magnifier-container">
-      <img id="img21" src="t_3dgs.png">
-      <div class="lens" id="lens21"></div>
-    </div>
-  </div>
-    <div class="column">
-    <p class="image-title is-size-6 mb-2">Compressed3D</p>
-    <div class="magnifier-container">
-      <img id="img23" src="t_compressed3D.png">
-      <div class="lens" id="lens23"></div>
-    </div>
-  </div>
-  <div class="column">
-    <p class="image-title is-size-6 mb-2">CompGS</p>
-    <div class="magnifier-container">
-      <img id="img22" src="t_comp.png">
-      <div class="lens" id="lens22"></div>
-    </div>
-  </div>
-
-
-</div>
-
-<!-- ROW 4: Zoomed images -->
-<div class="columns is-gapless mt-3">
-  <div class="column"><div class="zoom-result" id="result21"></div></div>
-  <div class="column"><div class="zoom-result" id="result22"></div></div>
-  <div class="column"><div class="zoom-result" id="result23"></div></div>
-  <div class="column"><div class="zoom-result" id="result24"></div></div>
-  <div class="column"><div class="zoom-result" id="result25"></div></div>
-</div>
-
-
-
-<!-- ROW 5: Original images -->
-<div class="columns is-gapless mt-5">
-    <div class="column">
-    <p class="image-title is-size-6 mb-2">GroundTruth</p>
-    <div class="magnifier-container">
-      <img id="img29" src="tr_GT.png">
-      <div class="lens" id="lens29"></div>
-    </div>
-  </div>
-  <div class="column">
-    <p class="image-title is-size-6 mb-2">Ours</p>
-    <div class="magnifier-container">
-      <img id="img30" src="tr_ours.png">
-      <div class="lens" id="lens30"></div>
-    </div>
-  </div>
-  <div class="column">
-    <p class="image-title is-size-6 mb-2">3DGS</p>
-    <div class="magnifier-container">
-      <img id="img26" src="tr_3dgs.png">
-      <div class="lens" id="lens26"></div>
-    </div>
-  </div>
-    <div class="column">
-    <p class="image-title is-size-6 mb-2">Compressed3D</p>
-    <div class="magnifier-container">
-      <img id="img28" src="tr_compressed3D.png">
-      <div class="lens" id="lens28"></div>
-    </div>
-  </div>
-
-  <div class="column">
-    <p class="image-title is-size-6 mb-2">CompGS</p>
-    <div class="magnifier-container">
-      <img id="img27" src="tr_comp.png">
-      <div class="lens" id="lens27"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ROW 5: Zoomed images -->
-<div class="columns is-gapless mt-3">
-  <div class="column"><div class="zoom-result" id="result26"></div></div>
-  <div class="column"><div class="zoom-result" id="result27"></div></div>
-  <div class="column"><div class="zoom-result" id="result28"></div></div>
-  <div class="column"><div class="zoom-result" id="result29"></div></div>
-  <div class="column"><div class="zoom-result" id="result30"></div></div>
-</div>
-
-
-
-
-
-
-            </div>
+          <!-- Example Row 1 -->
+          <!-- Row 2 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img4" src="Bi_GT.png"><div class="lens" id="lens4"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img5" src="Bi_ours.png"><div class="lens" id="lens5"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img1" src="Bi_3dgs.png"><div class="lens" id="lens1"></div></div></div>
           </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result4"></div></div>
+            <div class="column"><div class="zoom-result" id="result5"></div></div>
+            <div class="column"><div class="zoom-result" id="result1"></div></div>
+          </div>
+
+
+          <!-- Row 2 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img9" src="G_GT.png"><div class="lens" id="lens9"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img10" src="G_ours.png"><div class="lens" id="lens10"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img6" src="G_3dgs.png"><div class="lens" id="lens6"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result9"></div></div>
+            <div class="column"><div class="zoom-result" id="result10"></div></div>
+            <div class="column"><div class="zoom-result" id="result6"></div></div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img14" src="p_GT.png"><div class="lens" id="lens14"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img15" src="p_ours.png"><div class="lens" id="lens15"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img11" src="p_3dgs.png"><div class="lens" id="lens11"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result14"></div></div>
+            <div class="column"><div class="zoom-result" id="result15"></div></div>
+            <div class="column"><div class="zoom-result" id="result11"></div></div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img19" src="d_GT.png"><div class="lens" id="lens19"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img20" src="d_ours.png"><div class="lens" id="lens20"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img16" src="d_3dgs.png"><div class="lens" id="lens16"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result19"></div></div>
+            <div class="column"><div class="zoom-result" id="result20"></div></div>
+            <div class="column"><div class="zoom-result" id="result16"></div></div>
+          </div>
+
+          <!-- Row 4 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img24" src="t_GT.png"><div class="lens" id="lens24"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img25" src="t_ours.png"><div class="lens" id="lens25"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img21" src="t_3dgs.png"><div class="lens" id="lens21"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result24"></div></div>
+            <div class="column"><div class="zoom-result" id="result25"></div></div>
+            <div class="column"><div class="zoom-result" id="result21"></div></div>
+          </div>
+
+          <!-- Row 5 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img29" src="tr_GT.png"><div class="lens" id="lens29"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img30" src="tr_ours.png"><div class="lens" id="lens30"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img26" src="tr_3dgs.png"><div class="lens" id="lens26"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result29"></div></div>
+            <div class="column"><div class="zoom-result" id="result30"></div></div>
+            <div class="column"><div class="zoom-result" id="result26"></div></div>
+          </div>
+
+          <!-- END BLOCK -->
+
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+
 
     <section class="section" id="BibTeX">
       <div class="container is-max-desktop content">
@@ -605,15 +498,6 @@
 <script>
 const zoom = 4;
 
-// Array of image, lens, and result element IDs for row 1
-const row1 = [
-  { img: "img1", lens: "lens1", result: "result1" },
-  { img: "img2", lens: "lens2", result: "result2" },
-  { img: "img3", lens: "lens3", result: "result3" },
-  { img: "img4", lens: "lens4", result: "result4" },
-  { img: "img5", lens: "lens5", result: "result5" },
-];
-
 function setupSynchronizedZoom(row) {
   const images = row.map(el => document.getElementById(el.img));
   const lenses = row.map(el => document.getElementById(el.lens));
@@ -623,11 +507,9 @@ function setupSynchronizedZoom(row) {
     const img = images[idx];
     const lens = lenses[idx];
 
-    // Set background image and size for all results
     results[idx].style.backgroundImage = `url('${img.src}')`;
     results[idx].style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
 
-    // Add mousemove listener to lens and image
     lens.addEventListener("mousemove", e => syncMove(e, img));
     img.addEventListener("mousemove", e => syncMove(e, img));
   });
@@ -660,93 +542,101 @@ function setupSynchronizedZoom(row) {
   }
 }
 
-setupSynchronizedZoom(row1);
+// Define all zoom rows
+const rows = [
+  [
+    { img: "img4", lens: "lens4", result: "result4" },
+    { img: "img5", lens: "lens5", result: "result5" },
+    { img: "img1", lens: "lens1", result: "result1" },
+  ],
+  [
+    { img: "img9", lens: "lens9", result: "result9" },
+    { img: "img10", lens: "lens10", result: "result10" },
+    { img: "img6", lens: "lens6", result: "result6" },
+  ],
+  [
+    { img: "img14", lens: "lens14", result: "result14" },
+    { img: "img15", lens: "lens15", result: "result15" },
+    { img: "img11", lens: "lens11", result: "result11" },
+  ],
+  [
+    { img: "img19", lens: "lens19", result: "result19" },
+    { img: "img20", lens: "lens20", result: "result20" },
+    { img: "img16", lens: "lens16", result: "result16" },
+  ],
+  [
+    { img: "img24", lens: "lens24", result: "result24" },
+    { img: "img25", lens: "lens25", result: "result25" },
+    { img: "img21", lens: "lens21", result: "result21" },
+  ],
+  [
+    { img: "img29", lens: "lens29", result: "result29" },
+    { img: "img30", lens: "lens30", result: "result30" },
+    { img: "img26", lens: "lens26", result: "result26" },
+  ]
+];
 
-setupSynchronizedZoom([
-  { img: "img6", lens: "lens6", result: "result6" },
-  { img: "img7", lens: "lens7", result: "result7" },
-  { img: "img8", lens: "lens8", result: "result8" },
-  { img: "img9", lens: "lens9", result: "result9" },
-  { img: "img10", lens: "lens10", result: "result10" },
-]);
+rows.forEach(setupSynchronizedZoom);
 
-setupSynchronizedZoom([
-  { img: "img11", lens: "lens11", result: "result11" },
-  { img: "img12", lens: "lens12", result: "result12" },
-  { img: "img13", lens: "lens13", result: "result13" },
-  { img: "img14", lens: "lens14", result: "result14" },
-  { img: "img15", lens: "lens15", result: "result15" },
-]);
+function attachMagnifier(imgId, lensId, resultId) {
+  const img = document.getElementById(imgId);
+  const lens = document.getElementById(lensId);
+  const result = document.getElementById(resultId);
 
-setupSynchronizedZoom([
-  { img: "img16", lens: "lens16", result: "result16" },
-  { img: "img17", lens: "lens17", result: "result17" },
-  { img: "img18", lens: "lens18", result: "result18" },
-  { img: "img19", lens: "lens19", result: "result19" },
-  { img: "img20", lens: "lens20", result: "result20" },
-]);
+  lens.addEventListener("mousemove", e => moveLens(e));
+  img.addEventListener("mousemove", e => moveLens(e));
 
-setupSynchronizedZoom([
-  { img: "img21", lens: "lens21", result: "result21" },
-  { img: "img22", lens: "lens22", result: "result22" },
-  { img: "img23", lens: "lens23", result: "result23" },
-  { img: "img24", lens: "lens24", result: "result24" },
-  { img: "img25", lens: "lens25", result: "result25" },
-]);
+  function moveLens(e) {
+    const pos = getCursorPos(e);
+    let x = pos.x - lens.offsetWidth / 2;
+    let y = pos.y - lens.offsetHeight / 2;
 
-setupSynchronizedZoom([
-  { img: "img26", lens: "lens26", result: "result26" },
-  { img: "img27", lens: "lens27", result: "result27" },
-  { img: "img28", lens: "lens28", result: "result28" },
-  { img: "img29", lens: "lens29", result: "result29" },
-  { img: "img30", lens: "lens30", result: "result30" },
-]);
+    x = Math.max(0, Math.min(x, img.width - lens.offsetWidth));
+    y = Math.max(0, Math.min(y, img.height - lens.offsetHeight));
 
+    lens.style.left = x + "px";
+    lens.style.top = y + "px";
 
-// Repeat for rows 3, 4, 5 as needed
+    result.style.backgroundImage = `url('${img.src}')`;
+    result.style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
+    result.style.backgroundPosition = `-${x * zoom}px -${y * zoom}px`;
+  }
 
+  function getCursorPos(e) {
+    const rect = img.getBoundingClientRect();
+    return {
+      x: e.pageX - rect.left - window.pageXOffset,
+      y: e.pageY - rect.top - window.pageYOffset,
+    };
+  }
+}
 
-// Attach all 5
-attachMagnifier("img1", "lens1", "result1");
-attachMagnifier("img2", "lens2", "result2");
-attachMagnifier("img3", "lens3", "result3");
-attachMagnifier("img4", "lens4", "result4");
-attachMagnifier("img5", "lens5", "result5");
-
-attachMagnifier("img6", "lens6", "result6");
-attachMagnifier("img7", "lens7", "result7");
-attachMagnifier("img8", "lens8", "result8");
-attachMagnifier("img9", "lens9", "result9");
-attachMagnifier("img10", "lens10", "result10");
-
-attachMagnifier("img11", "lens11", "result11");
-attachMagnifier("img12", "lens12", "result12");
-attachMagnifier("img13", "lens13", "result13");
-attachMagnifier("img14", "lens14", "result14");
-attachMagnifier("img15", "lens15", "result15");
-
-attachMagnifier("img16", "lens16", "result16");
-attachMagnifier("img17", "lens17", "result17");
-attachMagnifier("img18", "lens18", "result18");
-attachMagnifier("img19", "lens19", "result19");
-attachMagnifier("img20", "lens20", "result20");
-
-
-attachMagnifier("img21", "lens21", "result21");
-attachMagnifier("img22", "lens22", "result22");
-attachMagnifier("img23", "lens23", "result23");
-attachMagnifier("img24", "lens24", "result24");
-attachMagnifier("img25", "lens25", "result25");
-
-
-attachMagnifier("img26", "lens26", "result26");
-attachMagnifier("img27", "lens27", "result27");
-attachMagnifier("img28", "lens28", "result28");
-attachMagnifier("img29", "lens29", "result29");
-attachMagnifier("img30", "lens30", "result30");
-
-
+// Automatically attach all magnifiers for listed image ids
+[...Array(30).keys()].forEach(i => {
+  const imgId = `img${i + 1}`;
+  const lensId = `lens${i + 1}`;
+  const resultId = `result${i + 1}`;
+  if (document.getElementById(imgId)) {
+    const img = document.getElementById(imgId);
+    img.style.width = "100%"; // Force images to take full width of the column
+    img.style.height = "auto";
+    attachMagnifier(imgId, lensId, resultId);
+  }
+});
 </script>
+
+<style>
+.columns.is-gapless > .column {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.magnifier-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+</style>
 
 
 </body>
