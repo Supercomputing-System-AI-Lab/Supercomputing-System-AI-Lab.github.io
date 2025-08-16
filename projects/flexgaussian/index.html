@@ -1,16 +1,93 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Your Paper Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <style>
-      .title { font-weight: bold; font-family: Arial; }
-      .section { margin-top: -40px; }
-      .interpolation-image { width: 100%; border-radius: 10px; margin-top: 20px; }
-    </style>
-  </head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+  <style>
+    html { font-size: 18px; }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+      color: #222;
+    }
+
+    h1.title { font-size: 2.5rem; }
+    h2.title { font-size: 2rem; }
+    h3.title { font-size: 1.5rem; }
+
+    p, li { font-size: 1.1rem; }
+    .button { font-size: 1rem; padding: 10px 16px; }
+    .section { margin-top: -40px; }
+    .interpolation-image {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+
+
+    .video-container {
+      max-width: 700px;       /* max width of text/video area */
+      width: 90%;             /* shrink when window shrinks */
+      margin: 0 auto;         /* center horizontally */
+      background-color: black;  /*background behind video */
+      padding: 10px;          /* optional spacing */
+    }
+
+    video {
+      width: 100%;            /* video fills container width */
+      height: auto;           /* keep aspect ratio */
+      display: block;
+    }
+
+.magnifier-container {
+  position: relative;
+  width: 340px;
+  height: 200px; /* adjust as needed */
+  overflow: hidden;
+  border: 2px solid #ccc; /* Light gray boundary */
+  border-radius: 6px;       /* Optional: slightly rounded corners */
+}
+
+    .lens {
+      position: absolute;
+      border: 2px solid #000;
+      width: 60px;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      cursor: none;
+    }
+
+    .zoom-result {
+      border: 2px solid #003366;
+      height: 300px;
+      background-repeat: no-repeat;
+      background-size: 400% 400%;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #result {
+      border: 1px solid #d4d4d4;
+      width: 300px;
+      height: 300px;
+      background-repeat: no-repeat;
+      background-size: 600px 600px;
+      border-radius: 6px;
+    }
+
+    .image-title {
+      color: #003366;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+
   <body>
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
@@ -28,59 +105,209 @@
     <section class="hero">
       <div class="hero-body has-text-centered">
         <div class="container is-max-desktop">
-          <h1 class="title is-2">FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</h1>
+          <h1 class="title is-3">FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</h1>
+          <h2 class="subtitle is-3" style="color: #27ae60;">ACM MM 2025</h2>
+
           <p>
-            <a href="#">Boyuan Tian</a><sup>1</sup>,
-            <a href="#">Qizhe Gao</a><sup>1</sup>,
-            <a href="#">Siran Xianyu</a><sup>1</sup>
-            <a href="#">Xiaotong Cui</a><sup>1</sup>
-            <a href="#">Minjia Zhang</a><sup>1</sup>
+            <a href="">Boyuan Tian</a>,
+            <a href="https://www.linkedin.com/in/qizhe-gao-140bb1222/?locale=en_US" target="_blank">Qizhe Gao</a>,
+            <a href="https://www.linkedin.com/in/siran-xianyu-93b318335/" target="_blank">Siran Xianyu</a>,
+            <a href="https://xiaotongcui.example.com" target="_blank">Xiaotong Cui</a>,
+            <a href="https://minjiazhang.github.io/" target="_blank">Minjia Zhang</a>
           </p>
-          <p><sup>1</sup>University of illinois at Urbana Champaign</p>
-          <div class="buttons is-centered mt-4">
-            <a class="button is-dark" href="#">📄 Paper</a>
-            <a class="button is-dark" href="#">✖ arXiv</a>
-            <a class="button is-dark" href="#">💻 Code</a>
-            <a class="button is-dark" href="#">🎥 Tutorial</a>
-            <a class="button is-dark" href="#">📝 Blog</a>
-          </div>
+
+          <p>University of Illinois Urbana-Champaign</p>
+            <div class="buttons is-centered mt-4">
+              <a class="button is-dark" href="https://arxiv.org/abs/2507.06671" target="_blank">✖ arXiv</a>
+              <a class="button is-dark" href="https://acmmm2025.org" target="_blank">📄 Paper</a>
+              <a class="button is-dark" href="https://github.com/Supercomputing-System-AI-Lab/FlexGaussian" target="_blank">💻 Code</a>
+            </div>
+
         </div>
       </div>
+
+      <div class="container" style="text-align: center; margin-bottom: 30px;">
+        <video autoplay muted playsinline style="display: block; margin: 0 auto;">
+          <source src="video-bicycle.mp4" type="video/mp4">
+        </video>
+        <p style="font-weight: normal; font-family: Arial, serif; font-size: 1.2em; color: #333; margin-top: 8px;">Novel views synthesized from our compressed versus uncompressed 3DGS models — Bicycle (MipNeRF-360).</p>
+      </div>
+
+      <div class="container" style="text-align: center;">
+        <video autoplay muted playsinline style="display: block; margin: 0 auto;">
+          <source src="video-garden.mp4" type="video/mp4">
+        </video>
+        <p style="font-weight: normal; font-family: Arial, serif; font-size: 1.2em; color: #333; margin-top: 8px;">Novel views synthesized from our compressed versus uncompressed 3DGS models — Garden (MipNeRF-360).</p>
+      </div>
+
     </section>
+
+  
 
     <section class="section">
       <div class="container is-max-desktop">
         <div class="columns is-centered">
           <div class="column">
-            <h2 class="title is-3">News</h2>
             <div class="content">
+              <!-- <h2 class="title is-3">Blog: Compressing 3DGS Can Be Lightweight, Flexible, and Mobile-Ready — No Training Required</h2> -->
+              <h1 class="title is-3" style="margin-top: 3em">
+                Compressing 3DGS Can Be Lightweight, Flexible, and Mobile-Ready — No Training Required
+              </h1>
+
+              <p><strong>3D Gaussian Splatting (3DGS)</strong> has rapidly become the de facto candidate for representing 3D scenes. It strikes a rare balance—offering both exceptional visual quality than meshes, voxels, or surfels, and real-time rendering speeds that outperform NeRF-like methods. Its success is evident in applications like novel view synthesis, avatars, animation, and physics simulations, where high fidelity and speed are crucial.</p>
+
+              <p>But this power comes with a catch: <b>massive file sizes.</b></p>
+
+              <p>Because 3DGS explicitly models the physical world by fitting it with millions of 3D Gaussians—each treated as a point with view-dependent attributes like color, orientation, and scale—the resulting model becomes a specialized, attribute-rich point cloud. Each point is an oriented ellipse, splatted into the target view and blended in the right order—conceptually similar to triangle rasterization in traditional graphics.</p>
+
+              <p>These large files are problematic, especially for edge devices with limited storage and memory, and for scenarios involving network transmission, where bandwidth and latency matter.</p>
+
+              <h3 class="title is-4" style="color: #003366;">The Problem: Compression That Doesn’t Scale</h3>
+
+              <p>Compressing 3DGS models is a natural solution—and researchers have explored techniques like:</p>
               <ul>
-                <li>2025-07-11 Paper accepted at ACMMM Conference!</li>
+                <li>Pruning</li>
+                <li>Quantization</li>
+                <li>Entropy coding</li>
+                <li>Compact data structures (e.g., hash tables and grids)</li>
               </ul>
+
+              <p>While effective, most existing approaches depend heavily on retraining or refinement steps to restore lost quality. These steps are resource-intensive and often require specialized software frameworks or hardware setups, making them impractical for large-scale or high-resolution scenes (see Fig. 1).</p>
+
+              <figure style="text-align: center; margin: 1.5em 0;">
+                <img src="scaling.png" alt="Scalability challenges in training 3D Gaussian Splatting models" style="max-width: 75%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 1:</strong> Scaling 3D Gaussian Splatting to large, high-resolution scenes pushes both software and hardware limits. Training pipelines have evolved from single-GPU setups (e.g., 3DGS) to distributed systems (e.g., Grendel-GS, RetinaGS), while Gaussian counts and pixel budgets per scene have increased 20–100× — making training-involved compression hard to scale.
+                </figcaption>
+              </figure>
+
+              <p>Even worse, if you want a different compression ratio or quality target, you typically need to tweak parameters and rerun the pipeline from scratch—an inflexible and time-consuming process, especially when dealing with fluctuating bandwidth or diverse user hardware capabilities.</p>
+
+              <h3 class="title is-4" style="color: #003366;">Can We Compress Without Training?</h3>
+
+              <p>What if we eliminate training altogether?</p>
+
+              <p>This is challenging—no learning means no opportunity for a model to discover compact representations or compensate for quality loss. Inspired by zero-shot techniques used in language model compression, we experimented with naive pruning and scalar quantization. However, they struggled to effectively reduce redundancy while preserving quality.</p>
+
+              <p>Then came a key insight: <b>parameter importance in 3DGS is highly skewed</b>—not just across entire Gaussian primitives, but across their individual attributes.</p>
+
+              <p>For example:</p>
+              <ul>
+                <li>Some 3D Gaussians cover large areas with high opacity, making them critical to preserve, while others contribute little to the final image.</li>
+                <li>Some attributes (like position) have high visual impact, while others (like minor color variations) are more tolerant to errors.</li>
+              </ul>
+
+              <p>Unfortunately, prior methods either ignored these varying sensitivities, applying the same bit-widths or pruning across the board, or required excessive retraining or refinement to learn.</p>
+
+              <p>We found that while importance for Gaussian primitives is scene-dependent, the error sensitivity pattern across attributes is largely scene-agnostic, enabling a middle-ground solution that avoids retraining altogether.</p>
+
+              <h3 class="title is-4" style="color: #003366;">FlexGaussian: Training-Free Compression with Attribute-Sensitivity-Aware Pruning and Quantization</h3>
+
+              <p>FlexGaussian compresses pre-trained 3DGS models using:</p>
+              <ul>
+                <li><strong>Pruning:</strong> selectively removing entire or partial Gaussians based on importance</li>
+                <li><strong>Quantization:</strong> applying round-to-nearest (RTN) scalar quantization to each attribute, using different bit-widths depending on tolerance to error</li>
+              </ul>
+
+              <p>We introduce two pruning parameters:</p>
+              <ul>
+                <li><strong>P_row</strong> – controls row-wise pruning</li>
+                <li><strong>P_sh</strong> – controls shape-based pruning</li>
+              </ul>
+
+              <p>Both strategies individually achieve ~6× compression with only 0.2–0.4 dB drop in PSNR, depending on the scene. However, combining pruning and quantization is tricky:</p>
+              <ul>
+                <li>It amplifies compression, but also compounds quality loss</li>
+                <li>While attribute importance is consistent across scenes, Gaussian importance is scene-dependent, meaning that the same P_row and P_sh settings can result in very different outcomes</li>
+              </ul>
+
+              <p>Here’s the advantage of our training-free approach: <b>even though optimal parameters vary per scene, evaluating them is fast and cheap.</b></p>
+
+              <p>Through profiling, we observed that only a limited number of pruning-quantization combinations lie on the Pareto-optimal frontier for quality and compression. This allows us to search efficiently over this small set to find the best setting. We call this system FlexGaussian.</p>
+
+              <h3 class="title is-4" style="color: #003366;">How FlexGaussian Works</h3>
+
+              <p>FlexGaussian starts with a pre-trained 3DGS model and a user-specified compression target—either a quality threshold (e.g., max PSNR drop) or a file size goal.</p>
+
+              <p>Put it together, FlexGaussian works with the below pipeline (as shown in Fig. 2):</p>
+              <ol>
+                <li>Compute importance scores for each Gaussian primitive</li>
+                  <ul>
+                    <li>This step is modular and can be replaced with future improvements</li>
+                  </ul>
+                <li>For each candidate pair of pruning parameters (P_row, P_sh):</li>
+                  <ul>
+                    <li>Apply pruning</li>
+                    <li>Apply scalar quantization with attribute-specific bit-widths</li>
+                    <li>Dequantize and render the scene</li>
+                    <li>Evaluate quality (e.g., PSNR)</li>
+                  </ul>
+                <li>Loop until a valid solution is found or all combinations are exhausted</li>
+              </ol>
+
+              <figure style="text-align: center; margin: 2em 0;">
+                <img src="figurepipe.png" alt="" style="max-width: 100%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 2:</strong> FlexGaussian first applies attribute-discriminative pruning (ADP) to obtain semi-structurally pruned Gaussian primitives. It then employs INT8/INT4 channel-wise mixed-precision quantization (MPQ) to further reduce the model size along the bit dimension. Finally, FlexGaussian introduces a novel lightweight online adaptation (FOA) algorithm to adaptively adjust the compression ratio for diverse scenes on hardware with different efficiency constraints.
+                </figcaption>
+              </figure>
+
+
+              <p>This full loop—prune → quantize → render → evaluate—takes just 1–2 seconds, enabling real-time adaptation to different compression needs without training (see Fig. 3).</p>
+
+              
+              <figure style="text-align: center; margin: 2em 0;">
+                <img src="pipeline.png" alt="FlexGaussian compression pipeline" style="max-width: 75%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 3:</strong> The execution pipeline prunes low-importance primitives, applies RTN-based quantization and dequantization with attribute-specific bit-widths, renders the output, and evaluates quality—completing the loop in 1–2 seconds per step. Each step corresponds to a different compression ratio and quality drop, enabling flexible, training-free compression under diverse requirements.
+                </figcaption>
+              </figure> 
+              
+
+
+              <h3 class="title is-4" style="color: #003366;">Results: Fast, Flexible, and Powerful</h3>
+
+              <p>We evaluated FlexGaussian across multiple benchmarks:</p>
+              <ul>
+                <li>Mip-NeRF360, Tanks &amp; Temples, Deep Blending</li>
+              </ul>
+
+              <p>We compared against:</p>
+              <ul>
+                <li>Retraining-based methods</li>
+                <li>Refinement-based methods</li>
+                <li>FCGS – the only known training-free state-of-the-art (SOTA)</li>
+              </ul>
+
+              <p>On a desktop with NVIDIA RTX 3090, FlexGaussian achieved:</p>
+              <ul>
+                <li>Up to 96.4% file size reduction</li>
+                <li>&lt;1 dB quality loss</li>
+                <li>1.7–2.1× faster performance than FCGS</li>
+                <li>Orders of magnitude faster than training-based approaches</li>
+              </ul>
+
+              <p>Quality comparisons are shown in the interactive zoom-in results and rendered video. Most notably, FlexGaussian's training-free, low-cost design makes it deployable on <b>mobile-class</b> devices like Jetson AGX Xavier, expanding its usability beyond desktops and into real-world edge deployments.</p>
+
+              <!--
+              <figure style="text-align: center; margin: 2em 0;">
+                <img src="quality.png" alt="FlexGaussian results compared to baseline" style="width: 100%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 3:</strong> FlexGaussian achieves high compression ratios and competitive visual quality without training. It supports fast, real-time compression with flexible trade-offs, outperforming baseline methods that require retraining or complex pipelines.
+                </figcaption>
+              </figure>
+              -->
+
+              <h3 class="title is-4" style="color: #003366;">Closing Thoughts</h3>
+
+              <p>FlexGaussian strikes a powerful balance between compression performance, visual quality, and computational cost—all without retraining. It offers a fast, flexible, and scalable solution for compressing 3D Gaussian Splatting, paving the way for deployment across distributed edge devices and enabling efficient 3DGS streaming.</p>
+
             </div>
           </div>
         </div>
       </div>
     </section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified" style="margin-top: -10pt;">
-          <p>
-            3D Gaussian splatting has emerged as a powerful technique for representing and rendering complex 3D scenes, offering high fidelity and real-time performance. However, as model sizes grow, efficient compression becomes essential—particularly for deployment on mobile and edge devices with constrained memory and compute resources. While existing methods can significantly reduce the size of 3D Gaussian models, they often rely on retraining or fine-tuning, making them less adaptable to varying compression requirements.
-          </p>
-          <p>
-            In this paper, we present <strong>FlexGaussian</strong>, a flexible, training-free compression framework that combines mixed-precision quantization with attribute-discriminative pruning. FlexGaussian requires no retraining and can easily adapt to different compression targets. Our method achieves up to <strong>96.4% compression</strong> with minimal quality degradation (less than 1 dB PSNR drop) and is suitable for real-time rendering on mobile devices. Furthermore, FlexGaussian is <strong>1.7×–2.1× faster</strong> than state-of-the-art training-free methods and <strong>10×–100× faster</strong> than training-involved approaches, making it highly efficient for practical use.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+<!-- 
 <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
@@ -88,25 +315,155 @@
         <div class="content">
           <h2 class="title is-3">Methodology</h2>
 
-          <h3 class="title is-4">Problem Formulation</h3>
+          <h3 class="title is-4" style="color: #003366;">➤ How to Make the Model Lightweight</h3>
           <p>
-            FlexGaussian aims to compress pre-trained 3D Gaussian Splatting (3D-GS) models without any access to training images or retraining. Each 3D-GS model can be viewed as an \( N \times M \) matrix, where each row represents a Gaussian and each column an attribute (e.g., position, rotation, scale, opacity, color, spherical harmonics). The goal is to reduce model size while preserving rendering quality within a user-specified threshold.
+            After delving into the storage structure of the original 3DGS design, we found out why it takes us hundreds of megabytes to store a scene of a garden. The scene is essentially a point cloud that comprises hundreds of thousands of colored ellipsoids named Gaussian points. Before they are rendered into what we see in real time, each Gaussian point is stored as a vector containing the ellipsoid center’s 3D coordinate, scaling factor, rotation quaternion, base color, and spherical harmonic (SH) coefficients. Especially, when SH degree is chosen to be 3 for higher reconstruction quality, 3(l + 1) ^2 = 48 parameters are needed to store the color coefficients of one gaussian. When all parameters are stored as 32-bit floating-point numbers, and we need to store all points in the point cloud no matter their importance, storing the model will be expensive.
           </p>
 
-          <h3 class="title is-4">Channel-wise Mixed-Precision Quantization (MPQ)</h3>
+          <h3 class="title is-4" style="color: #003366;">➤Key Design Ideas</h3>
           <p>
-            Unlike uniform quantization, FlexGaussian observes that different attribute channels (e.g., position vs. spherical harmonics) have varying sensitivity to bit-width reduction. Based on this, it applies a channel-wise quantization strategy using INT4 or INT8 depending on each channel’s quality sensitivity. To further improve accuracy, attributes are divided into sub-groups, each quantized with its own dynamic range. This selective precision strategy enables substantial size reduction with minimal visual degradation.
+            Given the point-based nature of the models, we approached the compression problem of 3DGS models by identifying points and attributes that contribute less to the rendering results. Furthermore, we use a more compact structure with fewer bits used to store the "less important" attributes. The two stages of our method were developed independently and later integrated into one pipeline that gives us the final compressed model.
           </p>
 
-          <h3 class="title is-4">Attribute-Discriminative Pruning (ADP)</h3>
+          <h3 class="title is-4" style="color: #003366;">➤Attribute-Discriminative Pruning</h3>
           <p>
-            FlexGaussian also introduces a semi-structured pruning scheme that targets redundant attributes rather than pruning entire Gaussians. Using a global significance score that captures the contribution of each Gaussian to rendering (considering opacity, volume, and pixel impact), it selectively removes low-impact attributes (e.g., spherical harmonics) from low-importance Gaussians. This yields a better trade-off between compression ratio and quality than prior row-based or attribute-only pruning.
+            We begin the pipeline by identifying points with less contribution to what is displayed on our screen with the help of the importance score introduced in LightGaussian. This metric considers the Gaussian point's contribution to global pixels, opacity, and volumetric density. With a one-time calculation of the importance scores of the Gaussians, we can perform pruning by retaining the top α% of Gaussians and discarding the bottom β% that contribute minimally to quality. Since no re-training and recalculating of importance score are involved in this efficient process, we have time to visit several pruning parameter configurations to determine which one is optimal in the limited set of parameter pairs. This helps us find a pruning setting unique to the scene we want to compress, while considering both quality and the compression ratio.
           </p>
 
-          <h3 class="title is-4">Fast Online Adaptation (FOA)</h3>
+
+          <h3 class="title is-4" style="color: #003366;">➤Precision-Aware Bit-Width Quantization</h3>
+<p>
+  One major contributor to the large file size of 3D Gaussian models is storing all coefficients as 32-bit floating point values. To address this, we apply quantization to reduce bit-widths while preserving rendering quality. Specifically, we quantize parameters after training and dequantize them during loading, before feeding them into the rendering pipeline. The sensitivity of each parameter group is measured by the PSNR drop between images rendered from the original and quantized models.
+</p>
+
+<p>
+  In our implementation, we choose 4-bit, 8-bit, and 16-bit quantization levels. These powers-of-two bit widths ensure memory alignment and enable efficient bit-packing, simplifying compression and decompression logic. While finer-grained precision might offer more flexibility, it introduces complex bit manipulation and often degrades runtime efficiency.
+</p>
+
+<p>
+  The trade-offs across precision levels are as follows:
+  <ul>
+    <li><strong>16-bit:</strong> Maintains high visual fidelity but yields a modest compression ratio.</li>
+    <li><strong>8-bit:</strong> Strikes a balance between storage savings and acceptable visual loss.</li>
+    <li><strong>4-bit:</strong> Provides the highest compression but introduces noticeable degradation.</li>
+  </ul>
+</p>
+
+<p>
+  While some attributes can be aggressively quantized, we advise against applying low-bit quantization to the ellipsoid center positions. For example, 4-bit quantization limits each of the <em>x</em>, <em>y</em>, and <em>z</em> axes to just 16 discrete values—effectively turning the continuous 3D space into a coarse voxel grid and significantly distorting the scene layout.
+</p>
+
+          <h3 class="title is-4" style="color: #003366;">➤Overview of FlexGaussian</h3>
           <p>
-            To support real-time adaptability, FlexGaussian includes a Fast Online Adaptation module that efficiently explores compression configurations given a target quality or compression ratio. By leveraging the consistent structure of Pareto-optimal frontiers across scenes, FOA quickly searches for the best MPQ and ADP parameters without retraining, typically completing in seconds.
+            FlexGaussian first applies attribute-discriminative pruning (ADP) to obtain semi-structurally pruned Gaussian primitives. It then employs INT8/INT4 channel-wise mixed-precision quantization (MPQ) to further reduce the model size along the bit dimension. Finally, FlexGaussian introduces a novel lightweight online adaptation (FOA) algorithm to adaptively adjust the compression ratio for diverse scenes on hardware with different efficiency constraints.
           </p>
+
+          <figure class="image" style="margin-top: 20px;">
+                <img src="figurepipe.png" alt="Evaluation Results">
+                <figcaption class="has-text-centered">Overview of FlexGaussian. </figcaption>
+              </figure>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 has-text-centered">Qualitative Comparisons</h2>
+          <!--<p>
+            We evaluate FlexGaussian on Mip-NeRF360, Tanks&Temples, and Deep Blending—spanning diverse indoor and outdoor scenes. Compared to the original 3DGS and several compression baselines (e.g., FCGS, LightGaussian, CompGS), FlexGaussian achieves up to <strong>96.4% compression</strong> with <strong>&lt;1 dB</strong> PSNR drop. It runs <strong>1.7×–2.1× faster</strong> than FCGS and up to <strong>100× faster</strong> than retraining-based methods. All experiments were run on an RTX 3090, with additional tests on Jetson Xavier confirming efficiency on edge devices.
+          </p> -->
+
+          <p class="has-text-centered is-size-6 has-text-grey mt-4 mb-2">
+            <em>If the images are not displayed correctly, please try reloading the page.</em>
+          </p>
+
+          <!-- BEGIN EVALUATION ROW BLOCKS -->
+
+          <!-- Repeat this block for each of the 5 rows -->
+
+          <!-- Example Row 1 -->
+          <!-- Row 2 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img4" src="Bi_GT.png"><div class="lens" id="lens4"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img5" src="Bi_ours.png"><div class="lens" id="lens5"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img1" src="Bi_3dgs.png"><div class="lens" id="lens1"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result4"></div></div>
+            <div class="column"><div class="zoom-result" id="result5"></div></div>
+            <div class="column"><div class="zoom-result" id="result1"></div></div>
+          </div>
+
+
+          <!-- Row 2 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img9" src="G_GT.png"><div class="lens" id="lens9"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img10" src="G_ours.png"><div class="lens" id="lens10"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img6" src="G_3dgs.png"><div class="lens" id="lens6"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result9"></div></div>
+            <div class="column"><div class="zoom-result" id="result10"></div></div>
+            <div class="column"><div class="zoom-result" id="result6"></div></div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img14" src="p_GT.png"><div class="lens" id="lens14"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img15" src="p_ours.png"><div class="lens" id="lens15"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img11" src="p_3dgs.png"><div class="lens" id="lens11"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result14"></div></div>
+            <div class="column"><div class="zoom-result" id="result15"></div></div>
+            <div class="column"><div class="zoom-result" id="result11"></div></div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img19" src="d_GT.png"><div class="lens" id="lens19"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img20" src="d_ours.png"><div class="lens" id="lens20"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img16" src="d_3dgs.png"><div class="lens" id="lens16"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result19"></div></div>
+            <div class="column"><div class="zoom-result" id="result20"></div></div>
+            <div class="column"><div class="zoom-result" id="result16"></div></div>
+          </div>
+
+          <!-- Row 4 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img24" src="t_GT.png"><div class="lens" id="lens24"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img25" src="t_ours.png"><div class="lens" id="lens25"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img21" src="t_3dgs.png"><div class="lens" id="lens21"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result24"></div></div>
+            <div class="column"><div class="zoom-result" id="result25"></div></div>
+            <div class="column"><div class="zoom-result" id="result21"></div></div>
+          </div>
+
+          <!-- Row 5 -->
+          <div class="columns is-gapless mt-5">
+            <div class="column"><p class="image-title is-size-6 mb-2">GroundTruth</p><div class="magnifier-container"><img id="img29" src="tr_GT.png"><div class="lens" id="lens29"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">Ours</p><div class="magnifier-container"><img id="img30" src="tr_ours.png"><div class="lens" id="lens30"></div></div></div>
+            <div class="column"><p class="image-title is-size-6 mb-2">3DGS</p><div class="magnifier-container"><img id="img26" src="tr_3dgs.png"><div class="lens" id="lens26"></div></div></div>
+          </div>
+          <div class="columns is-gapless mt-3">
+            <div class="column"><div class="zoom-result" id="result29"></div></div>
+            <div class="column"><div class="zoom-result" id="result30"></div></div>
+            <div class="column"><div class="zoom-result" id="result26"></div></div>
+          </div>
+
+          <!-- END BLOCK -->
 
         </div>
       </div>
@@ -115,34 +472,14 @@
 </section>
 
 
-    <section class="section">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column">
-            <div class="content">
-              <h2 class="title is-3">Evaluation</h2>
-              <p>We evaluate FlexGaussian across three standard datasets—Mip-NeRF360, Tanks&Temples, and Deep Blending—covering a wide range of indoor and outdoor scenes with varying levels of complexity. Comparisons are made against the original 3DGS and multiple compression baselines, including the training-free method FCGS and several training-involved methods such as LightGaussian, Compressed3D, PUP-3DGS, and CompGS. Evaluation metrics include compression ratio, rendering quality (PSNR, SSIM, LPIPS), and compression time. FlexGaussian achieves up to 96.4% compression with less than 1 dB PSNR drop, while requiring only seconds to run—demonstrating 1.7×–2.1× speedup over FCGS and up to 100× faster than retraining-based methods. Notably, FCGS fails on over half the scenes due to excessive memory usage, necessitating a reduced-memory variant for fair comparison. All experiments were conducted on an RTX 3090 setup, with additional deployment tested on the Jetson Xavier to validate FlexGaussian’s efficiency on edge devices..</p>
-              
-              <figure class="image is-3by2" style="margin-top: 20px;">
-                <img src="figure1.png" alt="Evaluation Results">
-                <figcaption class="has-text-centered">Figure 3: Compression-quality tradeoffs across methods and datasets.</figcaption>
-              </figure>
-
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="section" id="BibTeX">
       <div class="container is-max-desktop content">
         <h2 class="title">BibTeX</h2>
-        <pre><code>@inproceedings{your2025paper,
-  title={FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting},
-  author={Boyuan Tian, Qizhe Gao, Siran Xianyu, Xiaotong Cui and Minjia Zhang},
-  booktitle={arXiv:2507.06671},
-  year={2025}
+        <pre><code>@inproceedings{FlexGaussian,
+        title={FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting},
+        author={Tian, Boyuan and Gao, Qizhe and Xianyu, Siran and Cui, Xiaotong and Zhang, Minjia},
+        booktitle={Proceedings of the 33rd ACM International Conference on Multimedia},
+        year={2025}
 }</code></pre>
       </div>
     </section>
@@ -160,6 +497,151 @@
     </div>
   </div>
 </footer>
+
+
+<script>
+const zoom = 4;
+
+function setupSynchronizedZoom(row) {
+  const images = row.map(el => document.getElementById(el.img));
+  const lenses = row.map(el => document.getElementById(el.lens));
+  const results = row.map(el => document.getElementById(el.result));
+
+  row.forEach((_, idx) => {
+    const img = images[idx];
+    const lens = lenses[idx];
+
+    results[idx].style.backgroundImage = `url('${img.src}')`;
+    results[idx].style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
+
+    lens.addEventListener("mousemove", e => syncMove(e, img));
+    img.addEventListener("mousemove", e => syncMove(e, img));
+  });
+
+  function syncMove(e, baseImg) {
+    const pos = getCursorPos(e, baseImg);
+    const lensWidth = lenses[0].offsetWidth;
+    const lensHeight = lenses[0].offsetHeight;
+
+    let x = pos.x - lensWidth / 2;
+    let y = pos.y - lensHeight / 2;
+
+    x = Math.max(0, Math.min(x, baseImg.width - lensWidth));
+    y = Math.max(0, Math.min(y, baseImg.height - lensHeight));
+
+    lenses.forEach((lens, i) => {
+      lens.style.left = x + "px";
+      lens.style.top = y + "px";
+
+      results[i].style.backgroundPosition = `-${x * zoom}px -${y * zoom}px`;
+    });
+  }
+
+  function getCursorPos(e, img) {
+    const rect = img.getBoundingClientRect();
+    return {
+      x: e.pageX - rect.left - window.pageXOffset,
+      y: e.pageY - rect.top - window.pageYOffset,
+    };
+  }
+}
+
+// Define all zoom rows
+const rows = [
+  [
+    { img: "img4", lens: "lens4", result: "result4" },
+    { img: "img5", lens: "lens5", result: "result5" },
+    { img: "img1", lens: "lens1", result: "result1" },
+  ],
+  [
+    { img: "img9", lens: "lens9", result: "result9" },
+    { img: "img10", lens: "lens10", result: "result10" },
+    { img: "img6", lens: "lens6", result: "result6" },
+  ],
+  [
+    { img: "img14", lens: "lens14", result: "result14" },
+    { img: "img15", lens: "lens15", result: "result15" },
+    { img: "img11", lens: "lens11", result: "result11" },
+  ],
+  [
+    { img: "img19", lens: "lens19", result: "result19" },
+    { img: "img20", lens: "lens20", result: "result20" },
+    { img: "img16", lens: "lens16", result: "result16" },
+  ],
+  [
+    { img: "img24", lens: "lens24", result: "result24" },
+    { img: "img25", lens: "lens25", result: "result25" },
+    { img: "img21", lens: "lens21", result: "result21" },
+  ],
+  [
+    { img: "img29", lens: "lens29", result: "result29" },
+    { img: "img30", lens: "lens30", result: "result30" },
+    { img: "img26", lens: "lens26", result: "result26" },
+  ]
+];
+
+rows.forEach(setupSynchronizedZoom);
+
+function attachMagnifier(imgId, lensId, resultId) {
+  const img = document.getElementById(imgId);
+  const lens = document.getElementById(lensId);
+  const result = document.getElementById(resultId);
+
+  lens.addEventListener("mousemove", e => moveLens(e));
+  img.addEventListener("mousemove", e => moveLens(e));
+
+  function moveLens(e) {
+    const pos = getCursorPos(e);
+    let x = pos.x - lens.offsetWidth / 2;
+    let y = pos.y - lens.offsetHeight / 2;
+
+    x = Math.max(0, Math.min(x, img.width - lens.offsetWidth));
+    y = Math.max(0, Math.min(y, img.height - lens.offsetHeight));
+
+    lens.style.left = x + "px";
+    lens.style.top = y + "px";
+
+    result.style.backgroundImage = `url('${img.src}')`;
+    result.style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
+    result.style.backgroundPosition = `-${x * zoom}px -${y * zoom}px`;
+  }
+
+  function getCursorPos(e) {
+    const rect = img.getBoundingClientRect();
+    return {
+      x: e.pageX - rect.left - window.pageXOffset,
+      y: e.pageY - rect.top - window.pageYOffset,
+    };
+  }
+}
+
+// Automatically attach all magnifiers for listed image ids
+[...Array(30).keys()].forEach(i => {
+  const imgId = `img${i + 1}`;
+  const lensId = `lens${i + 1}`;
+  const resultId = `result${i + 1}`;
+  if (document.getElementById(imgId)) {
+    const img = document.getElementById(imgId);
+    img.style.width = "100%"; // Force images to take full width of the column
+    img.style.height = "auto";
+    attachMagnifier(imgId, lensId, resultId);
+  }
+});
+</script>
+
+<style>
+.columns.is-gapless > .column {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.magnifier-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+</style>
+
 
 </body>
 </html>

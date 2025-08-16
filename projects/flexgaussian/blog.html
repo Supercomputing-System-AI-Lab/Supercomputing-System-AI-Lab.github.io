@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlexGaussian: Flexible and Cost-Effective Training-Free Compression for 3D Gaussian Splatting</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+      html {
+        font-size: 18px;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.7;
+        color: #222;
+      }
+
+      h1.title {
+        font-size: 2.5rem;
+      }
+
+      h2.title {
+        font-size: 2rem;
+      }
+
+      h3.title {
+        font-size: 1.5rem;
+      }
+
+      p, li {
+        font-size: 1.1rem;
+      }
+
+      .button {
+        font-size: 1rem;
+        padding: 10px 16px;
+      }
+
+      .section {
+        margin-top: -40px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start" style="flex-grow: 1; justify-content: center;"></div>
+      </div>
+    </nav>
+
+<section class="hero">
+  <div class="hero-body has-text-centered">
+    <div class="container is-max-desktop">
+      <h1 class="title is-3">
+        Compressing 3DGS Can Be Lightweight, Flexible, and Mobile-Ready — No Training Required
+      </h1>
+<!--       <p class="subtitle is-5" style="color: #27ae60;">
+        Insights and techniques from the FlexGaussian project
+      </p> -->
+      <p>
+        By
+        <a href="https://boyuantian.example.com" target="_blank">Boyuan Tian</a>,
+        <a href="https://www.linkedin.com/in/qizhe-gao-140bb1222/?locale=en_US" target="_blank">Qizhe Gao</a>,
+        <a href="https://www.linkedin.com/in/siran-xianyu-93b318335/" target="_blank">Siran Xianyu</a>,
+        <a href="https://xiaotongcui.example.com" target="_blank">Xiaotong Cui</a>,
+        and
+        <a href="https://minjiazhang.github.io/" target="_blank">Minjia Zhang</a>
+      </p>
+      <p>University of Illinois Urbana-Champaign</p>
+      <div class="buttons is-centered mt-4">
+        <a class="button is-dark" href="https://supercomputing-system-ai-lab.github.io/projects/flexgaussian/" target="_blank">📝 Project Page</a>
+        <a class="button is-dark" href="https://github.com/Supercomputing-System-AI-Lab/FlexGaussian" target="_blank">💻 GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column">
+            <div class="content">
+              <!-- <h2 class="title is-3">Blog: Compressing 3DGS Can Be Lightweight, Flexible, and Mobile-Ready — No Training Required</h2> -->
+
+              <p><strong>3D Gaussian Splatting (3DGS)</strong> has rapidly become the de facto candidate for representing 3D scenes. It strikes a rare balance—offering both exceptional visual quality than meshes, voxels, or surfels, and real-time rendering speeds that outperform NeRF-like methods. Its success is evident in applications like novel view synthesis, avatars, animation, and physics simulations, where high fidelity and speed are crucial.</p>
+
+              <p>But this power comes with a catch: <b>massive file sizes.</b></p>
+
+              <p>Because 3DGS explicitly models the physical world by fitting it with millions of 3D Gaussians—each treated as a point with view-dependent attributes like color, orientation, and scale—the resulting model becomes a specialized, attribute-rich point cloud. Each point is an oriented ellipse, splatted into the target view and blended in the right order—conceptually similar to triangle rasterization in traditional graphics.</p>
+
+              <p>These large files are problematic, especially for edge devices with limited storage and memory, and for scenarios involving network transmission, where bandwidth and latency matter.</p>
+
+              <h3 class="title is-4" style="color: #003366;">The Problem: Compression That Doesn’t Scale</h3>
+
+              <p>Compressing 3DGS models is a natural solution—and researchers have explored techniques like:</p>
+              <ul>
+                <li>Pruning</li>
+                <li>Quantization</li>
+                <li>Entropy coding</li>
+                <li>Compact data structures (e.g., hash tables and grids)</li>
+              </ul>
+
+              <p>While effective, most existing approaches depend heavily on retraining or refinement steps to restore lost quality. These steps are resource-intensive and often require specialized software frameworks or hardware setups, making them impractical for large-scale or high-resolution scenes (see Fig. 1).</p>
+
+              <figure style="text-align: center; margin: 1.5em 0;">
+                <img src="scaling.pdf" alt="Scalability challenges in training 3D Gaussian Splatting models" style="max-width: 75%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 1:</strong> Scaling 3D Gaussian Splatting to large, high-resolution scenes pushes both software and hardware limits. Training pipelines have evolved from single-GPU setups (e.g., 3DGS) to distributed systems (e.g., Grendel-GS, RetinaGS), while Gaussian counts and pixel budgets per scene have increased 20–100× — making training-involved compression hard to scale.
+                </figcaption>
+              </figure>
+
+              <p>Even worse, if you want a different compression ratio or quality target, you typically need to tweak parameters and rerun the pipeline from scratch—an inflexible and time-consuming process, especially when dealing with fluctuating bandwidth or diverse user hardware capabilities.</p>
+
+              <h3 class="title is-4" style="color: #003366;">Can We Compress Without Training?</h3>
+
+              <p>What if we eliminate training altogether?</p>
+
+              <p>This is challenging—no learning means no opportunity for a model to discover compact representations or compensate for quality loss. Inspired by zero-shot techniques used in language model compression, we experimented with naive pruning and scalar quantization. However, they struggled to effectively reduce redundancy while preserving quality.</p>
+
+              <p>Then came a key insight: <b>parameter importance in 3DGS is highly skewed</b>—not just across entire Gaussian primitives, but across their individual attributes.</p>
+
+              <p>For example:</p>
+              <ul>
+                <li>Some 3D Gaussians cover large areas with high opacity, making them critical to preserve, while others contribute little to the final image.</li>
+                <li>Some attributes (like position) have high visual impact, while others (like minor color variations) are more tolerant to errors.</li>
+              </ul>
+
+              <p>Unfortunately, prior methods either ignored these varying sensitivities, applying the same bit-widths or pruning across the board, or required excessive retraining or refinement to learn.</p>
+
+              <p>We found that while importance for Gaussian primitives is scene-dependent, the error sensitivity pattern across attributes is largely scene-agnostic, enabling a middle-ground solution that avoids retraining altogether.</p>
+
+              <h3 class="title is-4" style="color: #003366;">FlexGaussian: Training-Free Compression with Attribute-Sensitivity-Aware Pruning and Quantization</h3>
+
+              <p>FlexGaussian compresses pre-trained 3DGS models using:</p>
+              <ul>
+                <li><strong>Pruning:</strong> selectively removing entire or partial Gaussians based on importance</li>
+                <li><strong>Quantization:</strong> applying round-to-nearest (RTN) scalar quantization to each attribute, using different bit-widths depending on tolerance to error</li>
+              </ul>
+
+              <p>We introduce two pruning parameters:</p>
+              <ul>
+                <li><strong>P_row</strong> – controls row-wise pruning</li>
+                <li><strong>P_sh</strong> – controls shape-based pruning</li>
+              </ul>
+
+              <p>Both strategies individually achieve ~6× compression with only 0.2–0.4 dB drop in PSNR, depending on the scene. However, combining pruning and quantization is tricky:</p>
+              <ul>
+                <li>It amplifies compression, but also compounds quality loss</li>
+                <li>While attribute importance is consistent across scenes, Gaussian importance is scene-dependent, meaning that the same P_row and P_sh settings can result in very different outcomes</li>
+              </ul>
+
+              <p>Here’s the advantage of our training-free approach: <b>even though optimal parameters vary per scene, evaluating them is fast and cheap.</b></p>
+
+              <p>Through profiling, we observed that only a limited number of pruning-quantization combinations lie on the Pareto-optimal frontier for quality and compression. This allows us to search efficiently over this small set to find the best setting. We call this system FlexGaussian.</p>
+
+              <h3 class="title is-4" style="color: #003366;">How FlexGaussian Works</h3>
+
+              <p>FlexGaussian starts with a pre-trained 3DGS model and a user-specified compression target—either a quality threshold (e.g., max PSNR drop) or a file size goal.</p>
+
+              <p>Put it together, FlexGaussian works with the below pipeline:</p>
+              <ol>
+                <li>Compute importance scores for each Gaussian primitive</li>
+                  <ul>
+                    <li>This step is modular and can be replaced with future improvements</li>
+                  </ul>
+                <li>For each candidate pair of pruning parameters (P_row, P_sh):</li>
+                  <ul>
+                    <li>Apply pruning</li>
+                    <li>Apply scalar quantization with attribute-specific bit-widths</li>
+                    <li>Dequantize and render the scene</li>
+                    <li>Evaluate quality (e.g., PSNR)</li>
+                  </ul>
+                <li>Loop until a valid solution is found or all combinations are exhausted</li>
+              </ol>
+
+              <p>This full loop—prune → quantize → render → evaluate—takes just 1–2 seconds, enabling real-time adaptation to different compression needs without training (see Fig. 2).</p>
+
+              <figure style="text-align: center; margin: 2em 0;">
+                <img src="pipeline.pdf" alt="FlexGaussian compression pipeline" style="max-width: 75%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 2:</strong> The execution pipeline prunes low-importance primitives, applies RTN-based quantization and dequantization with attribute-specific bit-widths, renders the output, and evaluates quality—completing the loop in 1–2 seconds per step. Each step corresponds to a different compression ratio and quality drop, enabling flexible, training-free compression under diverse requirements.
+                </figcaption>
+              </figure>
+
+
+              <h3 class="title is-4" style="color: #003366;">Results: Fast, Flexible, and Powerful</h3>
+
+              <p>We evaluated FlexGaussian across multiple benchmarks:</p>
+              <ul>
+                <li>Mip-NeRF360</li>
+                <li>Tanks &amp; Temples</li>
+                <li>Deep Blending</li>
+              </ul>
+
+              <p>We compared against:</p>
+              <ul>
+                <li>Retraining-based methods</li>
+                <li>Refinement-based methods</li>
+                <li>FCGS – the only known training-free state-of-the-art (SOTA)</li>
+              </ul>
+
+              <p>On a desktop with NVIDIA RTX 3090, FlexGaussian achieved:</p>
+              <ul>
+                <li>Up to 96.4% file size reduction</li>
+                <li>&lt;1 dB quality loss</li>
+                <li>1.7–2.1× faster performance than FCGS</li>
+                <li>Orders of magnitude faster than training-based approaches</li>
+              </ul>
+
+              <p>Quality comparisons are shown in Fig. 3. For interactive zoom-in results and rendered video, we encourage readers to visit the <a href="https://supercomputing-system-ai-lab.github.io/projects/flexgaussian/" target="_blank">project page</a>. Most notably, FlexGaussian's training-free, low-cost design makes it deployable on <b>mobile-class</b> devices like Jetson AGX Xavier, expanding its usability beyond desktops and into real-world edge deployments.</p>
+
+              <figure style="text-align: center; margin: 2em 0;">
+                <img src="quality.png" alt="FlexGaussian results compared to baseline" style="width: 100%; height: auto;">
+                <figcaption style="font-size: 0.9rem; color: #555; margin-top: 0.5em;">
+                  <strong>Figure 3:</strong> FlexGaussian achieves high compression ratios and competitive visual quality without training. It supports fast, real-time compression with flexible trade-offs, outperforming baseline methods that require retraining or complex pipelines.
+                </figcaption>
+              </figure>
+
+              <h3 class="title is-4" style="color: #003366;">Closing Thoughts</h3>
+
+              <p>FlexGaussian strikes a powerful balance between compression performance, visual quality, and computational cost—all without retraining. It offers a fast, flexible, and scalable solution for compressing 3D Gaussian Splatting, paving the way for deployment across distributed edge devices and enabling efficient 3DGS streaming.</p>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content">
+              <p>
+                We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
