@@ -2,7 +2,7 @@ name: Build Hugo (blog_src) and deploy to gh-pages/blogs
 
 on:
   push:
-    branches: [ main ]   # 你在哪个分支改 blog_src，填哪个
+    branches: [ gh-pages ]   # 你在哪个分支改 blog_src，填哪个
 
 permissions:
   contents: write        # 允许推送到同仓库的 gh-pages 分支
