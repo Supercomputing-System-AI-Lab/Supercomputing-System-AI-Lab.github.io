@@ -13,6 +13,6 @@ hero: "hero.png"
 
 This is a test blog post for testing the tag filter functionality.
 
-## Test Content 1
+## Test Content 2
 
 Add more test content here to verify that the tag filter is working correctly.
