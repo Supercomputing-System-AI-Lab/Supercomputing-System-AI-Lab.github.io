@@ -1,38 +1,43 @@
-name: Build Hugo (blog_src) and deploy to gh-pages/blogs
+name: Build Hugo (blog_src) → gh-pages/blogs
 
 on:
   push:
-    branches: [ blog_update ]     # 源码分支自定义为 blog_update
-    paths:
-      - 'blog_src/**'
+    branches: [ blog_update ]
+  workflow_dispatch:
 
 permissions:
-  contents: write                 # 允许推送到 gh-pages 分支
+  contents: write
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: true    # 若用主题子模块，必须；用 Modules 留着也不碍事
           fetch-depth: 0
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
+      # 仅当你用 Hugo Modules 时保留这段
+      - name: Hugo Modules vendor
+        run: |
+          cd blog_src
+          hugo mod get -u
+          hugo mod vendor
+
+      - uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: 'latest'
-          extended: true       # 如果用到了 SCSS/SASS，请保持 true
+          extended: true
 
-      - name: Build site from ./blog_src
+      - name: Build from ./blog_src
         run: hugo --gc --minify -s ./blog_src
 
       - name: Deploy to gh-pages/blogs
         uses: peaceiris/actions-gh-pages@v4
         with:
-          publish_dir: ./blog_src/public
-          publish_branch: gh-pages
-          destination_dir: blogs
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./blog_src/public
+          destination_dir: blogs
+          # 如果 gh-pages 历史“脏”或被保护规则影响，临时打开：
+          # force_orphan: true
