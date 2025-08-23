@@ -1,0 +1,13 @@
+id: "s_bekman"
+name: "Sarah Bekman"
+title: "Machine Learning Engineer"
+avatar: "images/authors/default.png"
+bio: "Experienced ML engineer with expertise in deep learning, computer vision, and scalable ML systems. Passionate about making AI more accessible and practical."
+social:
+  - name: "GitHub"
+    url: "https://github.com/sbekman"
+  - name: "LinkedIn"
+    url: "https://linkedin.com/in/sbekman"
+website: "https://sbekman.dev"
+location: "New York, NY"
+company: "Tech Innovations Inc"

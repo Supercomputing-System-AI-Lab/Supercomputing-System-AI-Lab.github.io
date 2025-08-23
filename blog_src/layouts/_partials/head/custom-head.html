@@ -1,0 +1,3 @@
+<!-- Custom head -->
+{{ $over := resources.Get "css/overrides.css" | minify }}
+<link rel="stylesheet" href="{{ $over.RelPermalink }}">

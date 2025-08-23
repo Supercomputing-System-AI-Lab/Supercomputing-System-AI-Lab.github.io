@@ -1,0 +1,81 @@
+{{ define "main" }}
+<div class="row justify-content-center">
+  <div class="col-md-12 col-lg-9">
+    <div class="author-profile text-center mb-5">
+      <div class="d-flex align-items-center justify-content-center mb-3">
+        <img src="{{ if .Params.avatar }}{{ .Params.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ .Title }}" class="author-avatar me-3" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+        <div class="text-start">
+          <h1 class="mb-1">{{ .Title }}</h1>
+          {{ if .Params.role }}
+            <p class="lead text-muted mb-0">{{ .Params.role }}</p>
+          {{ end }}
+        </div>
+      </div>
+      {{ if .Params.bio }}
+        <p class="lead">{{ .Params.bio }}</p>
+      {{ end }}
+      {{ if .Params.company }}
+        <p class="text-muted">{{ .Params.company }}</p>
+      {{ end }}
+      {{ if .Params.location }}
+        <p class="text-muted">{{ .Params.location }}</p>
+      {{ end }}
+
+      <!-- Social Links -->
+      {{ if .Params.social }}
+        <div class="social-links mt-3">
+          {{ range .Params.social }}
+            <a href="{{ .url }}" class="btn btn-outline-primary me-2" target="_blank" rel="noopener">
+              {{ .name }}
+            </a>
+          {{ end }}
+        </div>
+      {{ end }}
+
+      {{ if .Params.website }}
+        <div class="mt-3">
+          <a href="{{ .Params.website }}" class="btn btn-primary" target="_blank" rel="noopener">
+            <i class="fas fa-globe"></i> Visit Website
+          </a>
+        </div>
+      {{ end }}
+    </div>
+
+    {{ with .Content }}
+      <div class="author-content mb-5">
+        {{ . }}
+      </div>
+    {{ end }}
+
+    <!-- Author's Posts -->
+    <div class="author-posts">
+      <h3>Posts by {{ .Title }}</h3>
+      <div class="row">
+        {{ $author := .File.TranslationBaseName }}
+        {{ range where .Site.RegularPages "Params.authors" "intersect" (slice $author) }}
+          <div class="col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a href="{{ .RelPermalink }}" class="text-decoration-none">{{ .Title }}</a>
+                </h5>
+                <p class="card-text">{{ .Summary }}</p>
+                <p class="card-text">
+                  <small class="text-muted">{{ .Date.Format "January 2, 2006" }}</small>
+                </p>
+                {{ if .Params.tags }}
+                  <div class="mb-2">
+                    {{ range .Params.tags }}
+                      <span class="badge bg-light text-dark me-1">{{ . }}</span>
+                    {{ end }}
+                  </div>
+                {{ end }}
+              </div>
+            </div>
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

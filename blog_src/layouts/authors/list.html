@@ -1,0 +1,58 @@
+{{ define "main" }}
+<div class="row justify-content-center">
+  <div class="col-md-12 col-lg-9">
+    <h1 class="text-center">{{ .Title }}</h1>
+    {{ with .Content }}<div class="text-center">{{ . }}</div>{{ end }}
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-12">
+    <div class="row justify-content-center">
+      {{ range .Site.Data.authors }}
+        <div class="col-12 mb-4">
+          <div class="card author-card h-100 position-relative">
+            <!-- 添加可点击的链接覆盖整个卡片 -->
+            <a href="/authors/{{ .id }}/" class="stretched-link" style="text-decoration: none; color: inherit;">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                    <h4 class="card-title">{{ .name }}</h4>
+                    <p class="card-text text-muted mb-2">{{ .title }}</p>
+                    <p class="card-text">{{ .bio }}</p>
+                    {{ if .company }}
+                      <p class="card-text"><small class="text-muted"><strong>Company:</strong> {{ .company }}</small></p>
+                    {{ end }}
+                    {{ if .location }}
+                      <p class="card-text"><small class="text-muted"><strong>Location:</strong> {{ .location }}</small></p>
+                    {{ end }}
+                  </div>
+                  <div class="col-12 mt-3">
+                    <div class="d-flex flex-column gap-2">
+                      {{ if .website }}
+                        <a href="{{ .website }}" class="btn btn-outline-primary w-100" target="_blank" rel="noopener" onclick="event.stopPropagation();">
+                          <i class="fas fa-globe"></i> Visit Website
+                        </a>
+                      {{ end }}
+                      {{ range .social }}
+                        <a href="{{ .url }}" class="btn btn-outline-secondary w-100" target="_blank" rel="noopener" onclick="event.stopPropagation();">
+                          <i class="fas fa-external-link-alt"></i> {{ .name }}
+                        </a>
+                      {{ end }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- 添加点击提示 -->
+            <div class="click-hint">
+              <i class="fas fa-arrow-right"></i> View Articles
+            </div>
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</div>
+{{ end }}
