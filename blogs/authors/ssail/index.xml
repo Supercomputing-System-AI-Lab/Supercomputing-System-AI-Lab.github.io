@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ssail on My Docs</title>
+    <link>http://localhost:1313/authors/ssail/</link>
+    <description>Recent content in Ssail on My Docs</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>Copyright (c) 2020-2024 Thulite</copyright>
+    <lastBuildDate>Thu, 14 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/authors/ssail/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Example Post</title>
+      <link>http://localhost:1313/blog/example-post/</link>
+      <pubDate>Thu, 07 Sep 2023 16:27:22 +0200</pubDate>
+      <guid>http://localhost:1313/blog/example-post/</guid>
+      <description>You can use blog posts for announcing product updates and features.</description>
+    </item>
+    <item>
+      <title>Blog</title>
+      <link>http://localhost:1313/blog/</link>
+      <pubDate>Thu, 07 Sep 2023 16:21:44 +0200</pubDate>
+      <guid>http://localhost:1313/blog/</guid>
+      <description>&lt;p&gt;Meet our team of passionate writers, researchers, and developers who share their knowledge and insights through our blog.&lt;/p&gt;&#xA;&lt;script&gt;&#xD;&#xA;function filterByTag(selectedTag) {&#xD;&#xA;  console.log(&#39;Selected tag:&#39;, selectedTag);&#xD;&#xA;&#xD;&#xA;  const blogCards = document.querySelectorAll(&#39;.card&#39;);&#xD;&#xA;  const allButtons = document.querySelectorAll(&#39;[data-tag]&#39;);&#xD;&#xA;&#xD;&#xA;  // 更新按钮状态&#xD;&#xA;  allButtons.forEach(btn =&gt; {&#xD;&#xA;    if (btn.getAttribute(&#39;data-tag&#39;) === selectedTag) {&#xD;&#xA;      btn.classList.remove(&#39;btn-outline-primary&#39;, &#39;btn-outline-secondary&#39;);&#xD;&#xA;      btn.classList.add(&#39;btn-primary&#39;);&#xD;&#xA;    } else {&#xD;&#xA;      btn.classList.remove(&#39;btn-primary&#39;);&#xD;&#xA;      if (btn.getAttribute(&#39;data-tag&#39;) === &#39;all&#39;) {&#xD;&#xA;        btn.classList.add(&#39;btn-outline-primary&#39;);&#xD;&#xA;      } else {&#xD;&#xA;        btn.classList.add(&#39;btn-outline-secondary&#39;);&#xD;&#xA;      }&#xD;&#xA;    }&#xD;&#xA;  });&#xD;&#xA;&#xD;&#xA;  // 过滤博客文章&#xD;&#xA;  blogCards.forEach(card =&gt; {&#xD;&#xA;    if (selectedTag === &#39;all&#39;) {&#xD;&#xA;      card.style.display = &#39;block&#39;;&#xD;&#xA;      card.style.opacity = &#39;1&#39;;&#xD;&#xA;      card.style.transform = &#39;scale(1)&#39;;&#xD;&#xA;    } else {&#xD;&#xA;      // 检查文章是否包含选中的标签&#xD;&#xA;      const cardText = card.textContent.toLowerCase();&#xD;&#xA;      if (cardText.includes(selectedTag.toLowerCase())) {&#xD;&#xA;        card.style.display = &#39;block&#39;;&#xD;&#xA;        card.style.opacity = &#39;1&#39;;&#xD;&#xA;        card.style.transform = &#39;scale(1)&#39;;&#xD;&#xA;      } else {&#xD;&#xA;        card.style.opacity = &#39;0&#39;;&#xD;&#xA;        card.style.transform = &#39;scale(0.95)&#39;;&#xD;&#xA;        setTimeout(() =&gt; {&#xD;&#xA;          card.style.display = &#39;none&#39;;&#xD;&#xA;        }, 300);&#xD;&#xA;      }&#xD;&#xA;    }&#xD;&#xA;  });&#xD;&#xA;}&#xD;&#xA;&#xD;&#xA;// 页面加载完成后初始化&#xD;&#xA;document.addEventListener(&#39;DOMContentLoaded&#39;, function() {&#xD;&#xA;  console.log(&#39;Tag filter initialized&#39;);&#xD;&#xA;  console.log(&#39;Blog cards found:&#39;, document.querySelectorAll(&#39;.card&#39;).length);&#xD;&#xA;});&#xD;&#xA;&lt;/script&gt;</description>
+    </item>
+    <item>
+      <title>Revealing the Internal of Agentic Memory: Mem0</title>
+      <link>http://localhost:1313/blog/revealing-the-internal-of-agentic-memory-mem0/</link>
+      <pubDate>Thu, 14 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/revealing-the-internal-of-agentic-memory-mem0/</guid>
+      <description>Deep dive into Mem0’s indexing, retrieval and generation pipeline with LOCOMO as the benchmark.</description>
+    </item>
+    <item>
+      <title>Test Post</title>
+      <link>http://localhost:1313/blog/test-post/</link>
+      <pubDate>Thu, 14 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/test-post/</guid>
+      <description>This is a test post for the blog.</description>
+    </item>
+  </channel>
+</rss>
