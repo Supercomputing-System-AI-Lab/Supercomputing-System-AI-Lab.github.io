@@ -1,0 +1,13 @@
+id: "Yueming_Yuan"
+name: "Yueming Yuan"
+title: "CS PhD Student at UIUC"
+avatar: "images/authors/Yueming_Yuan.png"
+bio: "1st year CS PhD student at UIUC (2024 - ). Working on LLM agents for real-world tasks and multi-modal understanding ability & efficiency."
+social:
+  - name: "Website"
+    url: "https://yueming-yuan.github.io/"
+  - name: "Email"
+    url: "mailto:yy28@illinois.edu"
+website: "https://yueming-yuan.github.io/"
+location: "Urbana, IL"
+company: "University of Illinois Urbana-Champaign"

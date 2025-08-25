@@ -92,7 +92,11 @@
                 {{ range .Params.authors }}
                   {{ $author := index $.Site.Data.authors . }}
                   {{ if $author }}
-                    <a href="https://github.com/Supercomputing-System-AI-Lab" class="text-decoration-none" target="_blank" rel="noopener">
+                    {{ if eq $author.name "Chengyi Wang" }}
+                      <a href="https://supercomputing-system-ai-lab.github.io/" class="text-decoration-none" target="_blank" rel="noopener">
+                    {{ else }}
+                      <a href="https://github.com/Supercomputing-System-AI-Lab" class="text-decoration-none" target="_blank" rel="noopener">
+                    {{ end }}
                       <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
                       <span class="badge bg-primary me-1" style="font-size: 0.8rem;">
                         {{ $author.name }}

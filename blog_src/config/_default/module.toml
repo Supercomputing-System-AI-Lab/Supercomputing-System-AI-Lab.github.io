@@ -95,8 +95,3 @@
 [[mounts]]
   source = "static"
   target = "static"
-
-[module]
-  [[module.imports]]
-    path = "github.com/thuliteio/doks"
-

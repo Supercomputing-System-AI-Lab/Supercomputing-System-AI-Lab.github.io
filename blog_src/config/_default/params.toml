@@ -25,10 +25,11 @@ mainSections = ["docs"]
   navBarButtonText = "Get started"
 
   # FlexSearch
-  flexSearch = true # true (default) or false
+  flexSearch = false # true (default) or false
   searchExclKinds = [] # list of page kinds to exclude from search indexing (e.g. ["home", "taxonomy", "term"] )
   searchExclTypes = [] # list of content types to exclude from search indexing (e.g. ["blog", "docs", "legal", "contributors", "categories"])
-  showSearch = [] # [] (all pages, default) or homepage (optionally) and list of sections (e.g. ["homepage", "blog", "guides"])
+  # showSearch = [] # [] (all pages, default) or homepage (optionally) and list of sections (e.g. ["homepage", "blog", "guides"])
+  showSearch = false # 禁用搜索按钮显示
   indexSummary = false # true or false (default); whether to index only the `.Summary` instead of the full `.Content`; limits the respective JSON field size and thus increases loading time
 
   ## Search results
@@ -122,16 +123,16 @@ mainSections = ["docs"]
   [seo.title]
     separator = " | "
     suffix = ""
-  [seo.favicons]
-    sizes = []
-    icon = "favicon.png" # favicon.png (default)
-    svgIcon = "favicon.svg" # favicon.svg (default)
-    maskIcon = "mask-icon.svg" # mask-icon.svg (default)
-    maskIconColor = "white" # white (default)
+  # [seo.favicons]
+  #   sizes = []
+  #   # icon = "favicon.png" # favicon.png (default)
+  #   # svgIcon = "favicon.svg" # favicon.svg (default)
+  #   # maskIcon = "mask-icon.svg" # mask-icon.svg (default)
+  #   maskIconColor = "white" # white (default)
   [seo.schemas]
     type = "Organization" # Organization (default) or Person
-    logo = "favicon-512x512.png" # Logo of Organization — favicon-512x512.png (default)
-    name = "Thulite" # Name of Organization or Person
+    # logo = "" # Logo of Organization — favicon-512x512.png (default)
+    name = "Supercomputing System and AI Lab" # Name of Organization or Person
     sameAs = ["https://github.com/Supercomputing-System-AI-Lab"] # E.g. ["https://github.com/Supercomputing-System-AI-Lab", "https://fosstodon.org/@thulite"]
     images = ["cover.png"] # ["cover.png"] (default)
     article = [] # Article sections

@@ -1,6 +1,6 @@
 title = "Home"
 baseURL = "https://supercomputing-system-ai-lab.github.io/blogs/"
-relativeURLs = true
+relativeURLs = false
 canonifyURLs = true
 disableAliases = true
 disableHugoGeneratorInject = true

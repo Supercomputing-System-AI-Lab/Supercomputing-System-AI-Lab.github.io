@@ -20,23 +20,23 @@
   name = "Lorem"
   weight = 10
   identifier = "lorem"
-  url = "/guide/lorem/"
+  url = "guide/lorem/"
 
 [[tutorial]]
   name = "Lorem"
   weight = 10
   identifier = "lorem"
-  url = "/tutorial/lorem/"
+  url = "tutorial/lorem/"
 
-[[main]]
-  name = "Docs"
-  url = "/docs/guides/example-guide/"
-# url = "/docs/1.0/prologue/introduction/"
-  weight = 10
+# [[main]]
+#   name = "Docs"
+#   url = "docs/guides/example/"
+# # url = "/docs/1.0/prologue/introduction/"
+#   weight = 10
 
 [[main]]
   name = "Blog"
-  url = "/blog/"
+  url = "blog/"
   weight = 30
 
 # [[social]]
@@ -79,10 +79,10 @@
 #   pageRef = "/docs/resources"
 #   weight = 30
 
-[[footer]]
-  name = "Privacy Policy"
-  url = "/privacy/"
-  weight = 10
+# [[footer]]
+#   name = "Privacy Policy"
+#   url = "privacy/"
+#   weight = 10
 
 # [[footer]]
 #   name = "Terms of Service"
