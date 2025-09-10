@@ -169,7 +169,7 @@
                     </div>
                     <div class="col-md-12 col-lg-9">
                         <p class=lead>This blog presents the motivation, insights, and key optimizations behind
-                            <strong>VoltanaLLM</strong>, our system for energy-efficient LLM inference . We’ll walk
+                            <strong>VoltanaLLM</strong>, our system for energy-efficient LLM inference. We’ll walk
                             through why energy matters, how conventional GPU frequency scaling falls short, the surprising behaviors we
                             uncovered when profiling LLM serving, how P/D disaggregated serving creates unique opportunities, and how VoltanaLLM’s co-design of <strong>frequency
                                 control</strong> and <strong>routing</strong> achieves up to <strong>36.3% GPU energy
@@ -185,9 +185,9 @@
                         <p>At the same time, LLMs are increasingly used in <strong>latency-sensitive
                                 applications</strong>, where violating SLOs like Time-to-First-Token (TTFT) or
                             Inter-Token Latency (ITL) degrades user experience. This creates a difficult tension:
-                            <strong>Can we even save energy without breaking latency guarantees?</strong></p>
+                            <strong>Can we even save energy without harming the SLO guarantees?</strong></p>
                         <p>We started by profiling LLM inference on NVIDIA A100s, expecting the usual tradeoff: lower
-                            frequency saves energy at the cost of latency. But our experiments told a unique story.</p>
+                            frequency saves energy at the cost of latency. But our experiments told a different story.</p>
                         <hr>
                         <h2 id=key-observations>Key observations</h2>
                         <p>We discuss our key observations here which will build the foundation of our insights and consequently our design. These observations helped us build VoltanaLLM as an efficient and adaptive system.</p>
@@ -196,8 +196,8 @@
                         <p>Instead of energy monotonically dropping with frequency, we saw a <strong>U-shaped
                                 relationship</strong>:</p>
                         <ul>
-                            <li>At <strong>low frequencies</strong>, execution time dominates, so energy rises.</li>
-                            <li>At <strong>high frequencies</strong>, power dominates, so energy rises again.</li>
+                            <li>At <strong>low frequencies</strong>, execution time dominates, so energy-consumption (power x time) rises fast.</li>
+                            <li>At <strong>high frequencies</strong>, power dominates as it increases hyper-linearly with frequency, raising the energy consumption again.</li>
                             <li>In the middle lies a <strong>sweet spot</strong>—but its exact location differs for varying hardware, workloads, and even
                                 <strong>prefill</strong> (compute-heavy) vs. <strong>decode</strong> (memory-heavy)
                                 phases.</li>
@@ -259,7 +259,7 @@
                                 width=80%></p>
                         <h3 id=ecopred>3. EcoPred: <strong>Load-aware latency predictor</strong></h3>
                         <ul>
-                            <li>Simple linear regression model</li>
+                            <li>Simple linear regression model.</li>
                             <li>Prefill latency ~ batch token count.</li>
                             <li>Decode latency ~ requests + KV cache tokens.</li>
                             <li>Accuracy: ~7–14 ms MAE for TTFT, ~2–3 ms MAE for ITL.</li>
