@@ -169,25 +169,25 @@
                     </div>
                     <div class="col-md-12 col-lg-9">
                         <p class=lead>This blog presents the motivation, insights, and key optimizations behind
-                            <strong>VoltanaLLM</strong>, our system for energy-efficient LLM inference . We’ll walk
+                            <strong>VoltanaLLM</strong>, our system for energy-efficient LLM inference. We’ll walk
                             through why energy matters, how conventional GPU frequency scaling falls short, the surprising behaviors we
                             uncovered when profiling LLM serving, how P/D disaggregated serving creates unique opportunities, and how VoltanaLLM’s co-design of <strong>frequency
                                 control</strong> and <strong>routing</strong> achieves up to <strong>36.3% GPU energy
                                 savings</strong> while maintaining near-perfect Service Level Objective (SLO)
                             attainment.</p>
                         <hr>
-                        <h2 id=why-energy-efficient-llm-serving-is-hard>Why is energy-efficient LLM serving important but hard?</h2>
+                        <h2 id=why-energy-efficient-llm-serving-is-hard>Why is energy-efficient LLM serving important but hard? </h2>
                         <p>Large Language Models (LLMs) have become the backbone of modern AI services—chatbots, coding
-                            assistants, agent pipelines—but their <strong>energy footprint is massive</strong>.
-                            Inference alone can account for <strong>90%+ of AI infrastructure utilization</strong>,
+                            assistants, agent pipelines—but their <strong>energy footprint is massive<sup><a href="#footnote2" id="ref2">[2]</a></sup><sup>,<a href="#footnote3" id="ref3">[3]</a></sup></strong>.
+                            Inference alone can account for <strong>90%+ of AI infrastructure utilization</strong><sup><a href="#footnote1" id="ref1">[1]</a></sup>,
                             pushing datacenter power and cooling limits. For context, large datacenters already draw
                             power equivalent to millions of households.</p>
                         <p>At the same time, LLMs are increasingly used in <strong>latency-sensitive
                                 applications</strong>, where violating SLOs like Time-to-First-Token (TTFT) or
                             Inter-Token Latency (ITL) degrades user experience. This creates a difficult tension:
-                            <strong>Can we even save energy without breaking latency guarantees?</strong></p>
+                            <strong>Can we even save energy without harming the SLO guarantees?</strong></p>
                         <p>We started by profiling LLM inference on NVIDIA A100s, expecting the usual tradeoff: lower
-                            frequency saves energy at the cost of latency. But our experiments told a unique story.</p>
+                            frequency saves energy at the cost of latency. But our experiments told a different story.</p>
                         <hr>
                         <h2 id=key-observations>Key observations</h2>
                         <p>We discuss our key observations here which will build the foundation of our insights and consequently our design. These observations helped us build VoltanaLLM as an efficient and adaptive system.</p>
@@ -196,8 +196,8 @@
                         <p>Instead of energy monotonically dropping with frequency, we saw a <strong>U-shaped
                                 relationship</strong>:</p>
                         <ul>
-                            <li>At <strong>low frequencies</strong>, execution time dominates, so energy rises.</li>
-                            <li>At <strong>high frequencies</strong>, power dominates, so energy rises again.</li>
+                            <li>At <strong>low frequencies</strong>, execution time dominates, so energy-consumption (power x time) rises fast.</li>
+                            <li>At <strong>high frequencies</strong>, power dominates as it increases hyper-linearly with frequency, raising the energy consumption again.</li>
                             <li>In the middle lies a <strong>sweet spot</strong>—but its exact location differs for varying hardware, workloads, and even
                                 <strong>prefill</strong> (compute-heavy) vs. <strong>decode</strong> (memory-heavy)
                                 phases.</li>
@@ -259,7 +259,7 @@
                                 width=80%></p>
                         <h3 id=ecopred>3. EcoPred: <strong>Load-aware latency predictor</strong></h3>
                         <ul>
-                            <li>Simple linear regression model</li>
+                            <li>Simple linear regression model.</li>
                             <li>Prefill latency ~ batch token count.</li>
                             <li>Decode latency ~ requests + KV cache tokens.</li>
                             <li>Accuracy: ~7–14 ms MAE for TTFT, ~2–3 ms MAE for ITL.</li>
@@ -326,7 +326,6 @@
                                 improvements but slightly lower SLO attainment. Two levels ([1005, 1410] MHz) hit a good
                                 balance.</li>
                         </ol>
-                        <hr>
                         <h2 id=closing-thoughts>Closing thoughts</h2>
                         <p>VoltanaLLM shows that <strong>energy-efficient LLM serving isn’t just about hardware
                                 knobs</strong>; it’s a systems problem. By combining <strong>control theory
@@ -336,6 +335,15 @@
                         <p>As LLM deployment scales further, we believe these ideas—<strong>fine-grained,
                                 feedback-driven, and phase-aware control</strong>—will be critical for sustainable AI
                             infrastructure.</p>
+                    
+                                                <hr>
+                        <div class="footnotes" style="font-size: 0.75rem; color: #666;">
+                            <p id="footnote1" style="margin-bottom: 0.5rem;"><sup>[1]</sup> Radosvet Desislavov, Fernando Martínez-Plumed, José Hernández-Orallo, "Trends in AI inference energy consumption: Beyond the performance-vs-parameter laws of deep learning," Sustainable Computing: Informatics and Systems, Volume 38, 2023. <a href="https://doi.org/10.1016/j.suscom.2023.100857">DOI: 10.1016/j.suscom.2023.100857</a> <a href="#ref1">↩</a></p>
+                            <p id="footnote2" style="margin-bottom: 0.5rem;"><sup>[2]</sup> Esha Choukse et al., "Power Stabilization for AI Training Datacenters," 2025. <a href="https://arxiv.org/abs/2508.14318">arXiv:2508.14318</a> <a href="#ref2">↩</a></p>
+                            <p id="footnote3" style="margin-bottom: 0.5rem;"><sup>[3]</sup> Cooper Elsworth et al., "Measuring the environmental impact of delivering AI at Google Scale," 2025. <a href="https://arxiv.org/abs/2508.15734">arXiv:2508.15734</a> <a href="#ref3">↩</a></p>
+                        </div>
+                        <hr>
+
                     </div>
                 </div>
         </div>
