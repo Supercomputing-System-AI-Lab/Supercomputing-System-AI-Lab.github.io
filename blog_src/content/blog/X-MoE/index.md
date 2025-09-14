@@ -4,13 +4,10 @@ date: 2025-08-24
 lastmod: 2025-08-24
 draft: false
 summary: "This blog presents the background and key optimizations behind X-MoE, along with our hands-on experience scaling MoE model training on Frontier, the AMD GPU supercomputer."
-categories: ["Technology"]
+categories: []
 tags: ["moe", "training", "scaling", "frontier", "amd", "gpu", "distributed-training"]
 contributors: []
-authors: ["Yueming_Yuan"]          # 对应 data/authors/Yueming Yuan.yaml
-hero: "hero.png"            # 放在同目录即可；没有就删掉
-toc: true                   # 如果你想在右侧/左侧显示目录（Doks 支持）
-readingTime: false           # 若想显示阅读时长（Doks 参数，可在 params 中启用）
+authors: ["Yueming_Yuan", "SSAIL"]  
 ---
 
 * * *
@@ -129,4 +126,10 @@ At very large scales, the dominant bottleneck becomes all-to-all stragglers. We 
 ## Experiment environment details
 
 We used PyTorch 2.2.0, ROCm 5.7.1, DeepSpeed 0.15.5, RCCL + AWS-OFI-RCCL (libfabric 1.20.1), and standard env tuning for Frontier. MI250X peak is ~191.5 TFLOPS per GCD (effective GPU).
+
+---
+
+<p style="text-align: center; margin-top: 2rem; font-style: italic; color: #6c757d;">
+  Edited by Prof. Minjia Zhang
+</p>
 

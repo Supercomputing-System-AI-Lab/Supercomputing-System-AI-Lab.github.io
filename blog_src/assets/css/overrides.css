@@ -210,3 +210,39 @@
 .author-info img {
   object-fit: cover;
 }
+
+/* --- Blog content adjustments --- */
+/* Shrink and center images only in VoltanaLLM post */
+.voltanallm-content img {
+  max-width: 85%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+}
+
+/* Keep author avatar and name on the same line */
+.author-info a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+/* Keep non-linked author items aligned like links */
+.author-info .author-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+/* References styling: smaller and gray */
+.references {
+  color: #6c757d; /* Bootstrap secondary text */
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.references > div {
+  margin-bottom: 0.25rem;
+}

@@ -12,21 +12,23 @@
           {{ range .Params.authors }}
             {{ $author := index $.Site.Data.authors . }}
             {{ if $author }}
-              {{ if $author.website }}
-                <a href="{{ $author.website }}" class="text-decoration-none" target="_blank" rel="noopener">
+              {{ $website := strings.TrimSpace $author.website }}
+              {{ if $website }}
+                <a href="{{ $website }}" class="text-decoration-none author-link" target="_blank" rel="noopener">
+                  <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+                  <span class="badge bg-primary me-1" style="font-size: 0.9rem;">{{ $author.name }}</span>
+                </a>
               {{ else }}
-                <a href="https://github.com/Supercomputing-System-AI-Lab" class="text-decoration-none" target="_blank" rel="noopener">
-              {{ end }}
-                <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
-                <span class="badge bg-primary me-1" style="font-size: 0.9rem;">
-                  {{ $author.name }}
+                <span class="author-item">
+                  <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+                  <span class="badge bg-primary me-1" style="font-size: 0.9rem;">{{ $author.name }}</span>
                 </span>
-              </a>
+              {{ end }}
             {{ else }}
-              <a href="https://github.com/Supercomputing-System-AI-Lab" class="text-decoration-none" target="_blank" rel="noopener">
+              <span class="author-item">
                 <img src="{{ "images/authors/default.png" | relURL }}" alt="{{ . }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
                 <span class="badge bg-secondary me-1" style="font-size: 0.9rem;">{{ . }}</span>
-              </a>
+              </span>
             {{ end }}
           {{ end }}
         </div>
@@ -92,21 +94,23 @@
                       {{ range .Params.authors }}
                         {{ $author := index $.Site.Data.authors . }}
                         {{ if $author }}
-                          {{ if $author.website }}
-                            <a href="{{ $author.website }}" class="text-decoration-none" target="_blank" rel="noopener">
-                          {{ else }}
-                            <a href="https://github.com/Supercomputing-System-AI-Lab" class="text-decoration-none" target="_blank" rel="noopener">
-                          {{ end }}
-                            <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
-                            <span class="badge bg-primary me-1" style="font-size: 0.8rem;">
-                              {{ $author.name }}
-                            </span>
-                          </a>
-                        {{ else }}
-                          <a href="https://github.com/Supercomputing-System-AI-Lab" class="text-decoration-none" target="_blank" rel="noopener">
-                              <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ . }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
-                              <span class="badge bg-secondary me-1" style="font-size: 0.8rem;">{{ . }}</span>
+                          {{ $website := strings.TrimSpace $author.website }}
+                          {{ if $website }}
+                            <a href="{{ $website }}" class="text-decoration-none author-link" target="_blank" rel="noopener">
+                              <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+                              <span class="badge bg-primary me-1" style="font-size: 0.8rem;">{{ $author.name }}</span>
                             </a>
+                          {{ else }}
+                            <span class="author-item">
+                              <img src="{{ if $author.avatar }}{{ $author.avatar | relURL }}{{ else }}{{ "images/authors/default.png" | relURL }}{{ end }}" alt="{{ $author.name }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+                              <span class="badge bg-primary me-1" style="font-size: 0.8rem;">{{ $author.name }}</span>
+                            </span>
+                          {{ end }}
+                        {{ else }}
+                          <span class="author-item">
+                            <img src="{{ "images/authors/default.png" | relURL }}" alt="{{ . }}" class="author-avatar me-2" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+                            <span class="badge bg-secondary me-1" style="font-size: 0.8rem;">{{ . }}</span>
+                          </span>
                         {{ end }}
                       {{ end }}
                     </div>
