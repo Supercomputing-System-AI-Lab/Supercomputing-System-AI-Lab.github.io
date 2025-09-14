@@ -246,3 +246,11 @@
 .references > div {
   margin-bottom: 0.25rem;
 }
+
+/* Per-author avatar framing tweaks */
+img[src$="/images/authors/Minjia_Zhang.jpg"],
+img[src$="images/authors/Minjia_Zhang.jpg"],
+img[src*="/images/authors/Minjia_Zhang.jpg?"] {
+  /* move crop up slightly to reveal hair */
+  object-position: 50% 20%;
+}
