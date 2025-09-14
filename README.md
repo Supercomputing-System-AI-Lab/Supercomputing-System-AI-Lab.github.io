@@ -67,31 +67,3 @@ hugo --gc --minify -b "https://supercomputing-system-ai-lab.github.io/blogs/"
 
 ### 5) Publish to the `blogs/` directory on the `main` branch
 After building, you will have output in `blog_src\public`. Copy everything from that directory into the repository's `main` branch under `blogs/`, then push.
-
-One possible approach (run from the repository root):
-```powershell
-cd ..  # back to repo root: Supercomputing-System-AI-Lab.github.io
-# Fetch and switch to main (fetch may be needed the first time)
-git fetch origin main:main
-git checkout main
-
-# Ensure blogs directory exists
-mkdir -Force blogs | Out-Null
-
-# Copy build artifacts into blogs/ (Windows: use robocopy)
-robocopy .\blog_src\public .\blogs /E /NFL /NDL /NJH /NJS /nc /ns /np
-
-# Commit and push
-git add blogs
-git commit -m "Publish blog: your-post"
-git push origin main
-```
-
-Once completed, the site will serve the latest content from `https://supercomputing-system-ai-lab.github.io/blogs/`.
-
-### Optional: local preview during writing
-You can preview locally while writing (optional):
-```powershell
-hugo server -D
-```
-Visit the local address shown in the terminal to preview the site.
