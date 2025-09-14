@@ -1,37 +1,37 @@
-### SSAIL Blogs 发布指南
+### SSAIL Blogs Publishing Guide
 
-以下步骤将指导你如何获取源码、写作、构建并发布到主分支的 `blogs/` 目录。
+This guide explains how to clone the source, write a post, build the site, and publish the output to the `blogs/` directory on the `main` branch.
 
-### 前置要求
-- 已安装 Git
-- 已安装 Hugo（参考官方安装文档）
+### Prerequisites
+- Git installed
+- Hugo installed (see official docs)
 
-安装 Hugo 请参考官方文档：[Hugo 安装教程](https://gohugo.io/installation/)
+Install Hugo by following the official guide: https://gohugo.io/installation/
 
-### 1) 获取仓库源码（blog_update 分支）
+### 1) Clone the repository (blog_update branch)
 ```powershell
 git clone -b blog_update --single-branch https://github.com/Supercomputing-System-AI-Lab/Supercomputing-System-AI-Lab.github.io.git
 cd Supercomputing-System-AI-Lab.github.io\blog_src
 ```
 
-说明：`blog_src` 目录是 Hugo 的站点源码目录，后续写作与构建都在该目录内进行。
+Note: `blog_src` is the Hugo site source directory. You will do author/post edits and builds inside this directory.
 
-### 2) 本地构建静态站点
-确保已安装 Hugo，然后在 `blog_src` 下执行：
+### 2) Build the static site locally
+Ensure Hugo is installed, then run in `blog_src`:
 ```powershell
 hugo --gc --minify -b "https://supercomputing-system-ai-lab.github.io/blogs/"
 ```
-构建完成后，静态文件输出在 `blog_src\public` 目录。
+After the build completes, the static files are generated in `blog_src\public`.
 
-### 3) 发布新 Blog 的写作规范
-- **添加作者信息**：在 `blog_src\data\authors` 中新增一个作者 `yaml` 文件，例如：`Your_Name.yaml`
+### 3) Create and publish a new blog post
+- **Add author info**: create a new author YAML file under `blog_src\data\authors`, e.g. `Your_Name.yaml`:
 ```yaml
 name: Your Name
-website: https://example.com        # 可选：个人网站，作者名会链接到此网址
-avatar: images/authors/yourname.jpg # 可选：头像相对路径（相对于 static/ 根）
+website: https://example.com        # Optional: personal website; author name will link to this URL
+avatar: images/authors/yourname.jpg # Optional: avatar path relative to the static/ root
 ```
-- **添加作者头像**：将头像图片放在 `blog_src\static\images\authors` 中；或者使用已有的 `default.png`。
-- **创建文章目录**：在 `blog_src\content\blog` 下为你的文章新建一个文件夹，例如：`your-post`，其结构建议为：
+- **Add author avatar**: place the avatar image under `blog_src\static\images\authors`; or use the existing `default.png`.
+- **Create a post directory**: under `blog_src\content\blog`, create a folder for your post, e.g. `your-post`, with the following structure:
 ```
 blog_src\content\blog\your-post\
 ├─ index.md
@@ -39,59 +39,59 @@ blog_src\content\blog\your-post\
    ├─ fig1.png
    └─ ...
 ```
-请将文章使用到的所有图片放入上述 `img` 文件夹中。
-- **`index.md` 题头（front matter）示例**：
+Put all images used by the post inside the `img` folder above.
+- **`index.md` front matter example**:
 ```yaml
 ---
-title: "文章标题"
+title: "Post Title"
 date: 2025-09-14
 lastmod: 2025-09-14
 draft: false
-summary: "一句话摘要。"
+summary: "One-sentence summary."
 categories: []
 tags: []
 contributors: []
 authors: ["Your Name"]
 ---
 
-在这里撰写你的 Markdown 正文内容。
+Write your Markdown content here.
 ```
 
-题头请参考已有文章，至少包含以下字段：`title`, `date`, `lastmod`, `draft`, `summary`, `categories: []`, `tags: []`, `contributors: []`, `authors: []`。
+The front matter should at least include: `title`, `date`, `lastmod`, `draft`, `summary`, `categories: []`, `tags: []`, `contributors: []`, `authors: []`. You can refer to existing posts for more examples.
 
-### 4) 重新构建站点
-每次完成/更新文章后，在 `blog_src` 下执行：
+### 4) Rebuild the site
+After creating/updating a post, run in `blog_src`:
 ```powershell
 hugo --gc --minify -b "https://supercomputing-system-ai-lab.github.io/blogs/"
 ```
 
-### 5) 发布到主分支的 `blogs/` 目录
-构建完成后，会产生 `blog_src\public` 目录。将该目录内的全部内容复制到仓库主分支（`main`）下的 `blogs/` 目录并推送。
+### 5) Publish to the `blogs/` directory on the `main` branch
+After building, you will have output in `blog_src\public`. Copy everything from that directory into the repository's `main` branch under `blogs/`, then push.
 
-一种可行的方式（在仓库根目录执行）：
+One possible approach (run from the repository root):
 ```powershell
-cd ..  # 回到仓库根目录 Supercomputing-System-AI-Lab.github.io
-# 获取并切换到 main 分支（首次需 fetch）
+cd ..  # back to repo root: Supercomputing-System-AI-Lab.github.io
+# Fetch and switch to main (fetch may be needed the first time)
 git fetch origin main:main
 git checkout main
 
-# 确保存在 blogs 目录
+# Ensure blogs directory exists
 mkdir -Force blogs | Out-Null
 
-# 将构建产物复制到 blogs/（Windows 下使用 robocopy）
+# Copy build artifacts into blogs/ (Windows: use robocopy)
 robocopy .\blog_src\public .\blogs /E /NFL /NDL /NJH /NJS /nc /ns /np
 
-# 提交并推送
+# Commit and push
 git add blogs
 git commit -m "Publish blog: your-post"
 git push origin main
 ```
 
-完成以上步骤后，站点将从 `https://supercomputing-system-ai-lab.github.io/blogs/` 提供最新内容。
+Once completed, the site will serve the latest content from `https://supercomputing-system-ai-lab.github.io/blogs/`.
 
-### 附：可选本地预览
-在写作过程中，你也可以本地预览（可选）：
+### Optional: local preview during writing
+You can preview locally while writing (optional):
 ```powershell
 hugo server -D
 ```
-访问命令行中给出的本地地址查看效果。
+Visit the local address shown in the terminal to preview the site.
