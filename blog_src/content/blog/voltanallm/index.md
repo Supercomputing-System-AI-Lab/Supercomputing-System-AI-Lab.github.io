@@ -8,6 +8,7 @@ categories: []
 tags: ["llm-inference", "energy-efficiency", "gpu"]
 contributors: []
 authors: ["Aryan_Taneja","Jiahuan_Yu", "Junfeng_Lin","Minjia_Zhang","SSAIL"]   
+time-to-read: 9
 ---
 
 <div class="voltanallm-content">

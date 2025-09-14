@@ -52,12 +52,13 @@ categories: []
 tags: []
 contributors: []
 authors: ["Your Name"]
+time-to-read：5
 ---
 
 Write your Markdown content here.
 ```
 
-The front matter should at least include: `title`, `date`, `lastmod`, `draft`, `summary`, `categories: []`, `tags: []`, `contributors: []`, `authors: []`. You can refer to existing posts for more examples.
+The front matter should at least include: `title`, `date`, `lastmod`, `draft`, `summary`, `categories: []`, `tags: []`, `contributors: []`, `authors: []`, `time-to-read`. You can refer to existing posts for more examples.
 
 ### 4) Rebuild the site
 After creating/updating a post, run in `blog_src`:

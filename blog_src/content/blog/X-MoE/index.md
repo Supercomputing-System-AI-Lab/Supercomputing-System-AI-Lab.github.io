@@ -8,6 +8,7 @@ categories: []
 tags: ["moe", "training", "scaling", "frontier", "amd", "gpu", "distributed-training"]
 contributors: []
 authors: ["Yueming_Yuan", "SSAIL"]  
+time-to-read: 10
 ---
 
 * * *
