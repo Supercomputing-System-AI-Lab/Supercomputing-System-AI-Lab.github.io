@@ -67,3 +67,5 @@ hugo --gc --minify -b "https://supercomputing-system-ai-lab.github.io/blogs/"
 
 ### 5) Publish to the `blogs/` directory on the `main` branch
 After building, you will have output in `blog_src\public`. Copy everything from that directory into the repository's `main` branch under `blogs/`, then push.
+
+**Important:** Don't forget to commit and push any modified site framework/source back to the `blog_update` branch.
