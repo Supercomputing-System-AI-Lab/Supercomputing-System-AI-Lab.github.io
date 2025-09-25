@@ -35,6 +35,8 @@
   .highlight-list li { font-size:19px; line-height:1.45; margin:0 0 12px; }
   .highlight-list li:last-child { margin-bottom:0; }
   .highlight-list li strong { font-weight:600; }
+  /* Indent code blocks inside lists */
+  .pre-indent { margin-left: 5px; }
   </style>
 </head>
 <body>
@@ -243,6 +245,37 @@
                   <ul>
                     <li><strong>NUMA Binding:</strong> NUMA Binding is required for efficient training on Nvidia GH200. Each GPU is paired with a CPU to ensure that the training process is launched on the CPU directly associated with that GPU. This pairing improves affinity, delivering higher CPU-GPU bandwidth and greater throughput. In DeepSpeed, we provide a simple interface to enable NUMA binding: simply add the `--bind_cores_to_rank` flag when launching the DeepSpeed engine.</li>
                     <li><strong>MPAM:</strong> Memory System Resource Partitioning and Monitoring (MPAM) is essential for achieving optimal throughput performance. In SuperOffload, GPU execution is overlapped with CPU-based Adam execution. MPAM helps reduce interference between these two processes, leading to smoother execution and better performance.</li>
+                    <li><strong>How to enable MPAM on Nvidia Superchips:</strong>
+                      <ol style="margin-top:6px; margin-bottom:0;">
+                        <li>Install the kernel from NVIDIA <a href="https://github.com/NVIDIA/NV-Kernels/tree/24.04_linux-nvidia-adv-6.11">NV-Kernels</a>.</li>
+                        <li>Check that MPAM is supported and enabled on the system:
+                          <pre class="pre-indent"><code class="language-bash">grep MPAM /boot/config-$(uname -r)</code></pre>
+                          <p class="pre-indent">Expected output:</p>
+                          <pre class="pre-indent"><code class="language-text">CONFIG_ARM64_MPAM=y
+CONFIG_ACPI_MPAM=y
+CONFIG_ARM64_MPAM_DRIVER=y
+CONFIG_ARM64_MPAM_RESCTRL_FS=y</code></pre>
+                          <p class="pre-indent"><em>Optional:</em> Verify resctrl filesystem:</p>
+                          <pre class="pre-indent"><code class="language-bash">ls -ld /sys/fs/resctrl</code></pre>
+                        </li>
+                        <li>Mount resctrl</li>
+                        <pre class="pre-indent"><code class="language-bash">mount -t resctrl resctrl /sys/fs/resctrl</code></pre>
+                        <li>Create partition p1, p2</li>
+                        <pre class="pre-indent"><code class="language-bash">mkdir /sys/fs/resctrl/p1 /sys/fs/resctrl/p2</code></pre>
+                        <li>Set cpu cores list and cache partition and memory partition for p1 and p2</li>
+                        <p class="pre-indent">Recommended config based on our experiments: </p>
+                        <pre class="pre-indent"><code class="language-bash">/sys/fs/resctrl/p1/cpus_list:
+0-6
+/sys/fs/resctrl/p2/cpus_list:
+7-71
+/sys/fs/resctrl/p1/schemata:
+MB:1=100
+L3:1=ff0
+/sys/fs/resctrl/p2/schemata:
+MB:1=20
+L3:1=f</code></pre>
+                      </ol>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -275,6 +308,12 @@
           </div>
         </section>
 
+        <section class="section" id="BibTeX" style="margin-top:-40px;">
+          <div class="container is-max-desktop content">
+            <h2 class="title">Acknowledgements</h2>
+            <p>This work is the result of a close collaboration between University of Illinois Urbana-Champaign (UIUC) and DeepSpeed team.</p>
+            <p>We also gratefully acknowledge William Gropp, Brett Bode, and Gregory H. Bauer from the National Center for Supercomputing Applications (NCSA), as well as Dan Ernst, Ian Karlin, Giridhar Chukkapalli, Kurt Rago, and others from NVIDIA for their valuable discussions and guidance on MPAM support on Grace CPU.</p>
+        </section>
         <section class="section" id="BibTeX" style="margin-top:-40px;">
           <div class="container is-max-desktop content">
             <h2 class="title">BibTeX</h2>
