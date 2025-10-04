@@ -5,9 +5,9 @@ lastmod: 2025-09-14
 draft: false
 summary: "This blog presents the motivation, insights, and key optimizations behind VoltanaLLM, our system for energy-efficient LLM inference. We’ll walk through why energy matters, how conventional GPU frequency scaling falls short, the surprising behaviors we uncovered when profiling LLM serving, how P/D disaggregated serving creates unique opportunities, and how VoltanaLLM’s co-design of frequency control and routing achieves up to 36.3% GPU energy savings while maintaining near-perfect Service Level Objective (SLO) attainment."
 categories: []
-tags: ["llm-inference", "energy-efficiency", "gpu"]
+tags: ["llm-inference", "gpu-optimization", "gpu"]
 contributors: []
-authors: ["Aryan_Taneja","Jiahuan_Yu", "Junfeng_Lin","Minjia_Zhang","SSAIL"]   
+authors: ["Aryan_Taneja","Jiahuan_Yu", "Junfeng_Lin","Minjia_Zhang","SSAIL"]
 time-to-read: 9
 ---
 

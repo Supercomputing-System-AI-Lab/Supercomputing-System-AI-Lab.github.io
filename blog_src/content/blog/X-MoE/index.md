@@ -5,9 +5,9 @@ lastmod: 2025-08-24
 draft: false
 summary: "This blog presents the background and key optimizations behind X-MoE, along with our hands-on experience scaling MoE model training on Frontier, the AMD GPU supercomputer."
 categories: []
-tags: ["moe", "training", "scaling", "frontier", "amd", "gpu", "distributed-training"]
+tags: ["moe", "training", "scaling", "frontier", "amd", "gpu-optimization", "distributed-training"]
 contributors: []
-authors: ["Yueming_Yuan", "SSAIL"]  
+authors: ["Yueming_Yuan", "SSAIL"]
 time-to-read: 10
 ---
 
