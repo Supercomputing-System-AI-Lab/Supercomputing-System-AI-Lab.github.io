@@ -36,7 +36,7 @@ Most existing efforts to train these expert-specialized MoEs have focused on NVI
 #### 1) The activation memory becomes significant.
 DeepSeek-style MoEs increase top-k and shrink expert FFN hidden sizes. That keeps parameters and per-token FLOPs roughly constant but moves the activation bottleneck into the dispatch and combine tensors, which now grow with the fine-grained factor m (i.e., with top-k).
 
-To be more intuitive, the table below shows the sizes of the 4 dominative activation tensors in the MoE block, where $M_{conv}$ means conventional MoE model $M_{spec}$ means expert-specialized MoE model.
+To be more intuitive, the table below shows the sizes of the 4 dominative activation tensors in the MoE block, where {{< math >}}$M_{conv}${{< /math >}} means conventional MoE model {{< math >}}$M_{spec}${{< /math >}} means expert-specialized MoE model.
 <p align="center">
   <img src="img/activation_memory_table.jpg" alt="X-MoE Overview" width="50%">
 </p>

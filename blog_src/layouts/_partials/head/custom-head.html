@@ -1,3 +1,24 @@
 <!-- Custom head -->
 {{ $over := resources.Get "css/overrides.css" | minify }}
 <link rel="stylesheet" href="{{ $over.RelPermalink }}">
+
+<!-- MathJax for LaTeX rendering -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['textmacros']}
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+      processHtmlClass: 'mathjax',
+      ignoreHtmlClass: 'tex2jax_ignore|no-mathjax'
+    },
+    loader: { load: ['[tex]/textmacros'] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>

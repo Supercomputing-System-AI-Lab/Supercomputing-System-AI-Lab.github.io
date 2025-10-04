@@ -72,3 +72,9 @@ After building, you will have output in `blog_src\public`. Copy everything from 
 View published site: [https://supercomputing-system-ai-lab.github.io/blogs/](https://supercomputing-system-ai-lab.github.io/blogs/)
 
 ### **Important: Don't forget to commit and push any modified site framework/source back to the `blog_update` branch.**
+
+### Math / LaTeX in posts
+
+To typeset LaTeX in a post, wrap the expression with the Hugo math shortcode.
+
+For example, write `{{< math >}}$E=mc^2${{< /math >}}` not `$E=mc^2$`。
