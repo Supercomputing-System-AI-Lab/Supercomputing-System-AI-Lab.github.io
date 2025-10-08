@@ -51,7 +51,7 @@ summary: "One-sentence summary."
 categories: []
 tags: []
 contributors: []
-authors: ["Your Name"]
+authors: ["Your Author File Name"]
 time-to-read：5
 ---
 
@@ -59,6 +59,8 @@ Write your Markdown content here.
 ```
 
 The front matter should at least include: `title`, `date`, `lastmod`, `draft`, `summary`, `categories: []`, `tags: []`, `contributors: []`, `authors: []`, `time-to-read`. You can refer to existing posts for more examples.
+
+Note on `authors`: In your post's `index.md`, set `authors` to the base names (without the `.yaml` suffix) of the author files you created under `blog_src\data\authors`. For example, if you created `blog_src\data\authors\Your_Name.yaml`, use `authors: ["Your_Name"]`.
 
 ### 4) Rebuild the site
 After creating/updating a post, run in `blog_src`:

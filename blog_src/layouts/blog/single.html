@@ -58,7 +58,7 @@
     {{ if .Params.tags -}}
     <div class="tag-list-single">
       {{ range $index, $tag := .Params.tags -}}
-        <a class="btn btn-light" href="{{ printf "tags/%s/" . | relURL }}" role="button">{{ . }}</a>
+        <a class="btn btn-light" href="{{ (printf "tags/%s/" (. | urlize)) | relURL }}" role="button">{{ . }}</a>
       {{ end -}}
     </div>
     {{ end -}}

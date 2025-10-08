@@ -7,7 +7,7 @@ summary: "Efficient full-parameter fine-tuning of GPT-OSS-20B & Qwen3-14B models
 categories: []
 tags: ["Efficient Deep Learning Training", "Heterogeneous Memory", "Superchip"]
 contributors: []
-authors: ["Xinyu Lian"]
+authors: ["Xinyu_Lian", "Minjia_Zhang", "SSAIL"]
 time-to-read: 5
 custom_style: "superoffload"
 ---

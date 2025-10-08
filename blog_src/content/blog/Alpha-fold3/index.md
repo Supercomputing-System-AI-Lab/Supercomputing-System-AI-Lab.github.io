@@ -1,5 +1,5 @@
 ---
-title: "Making GPUS go brrr… By training Alpha-fold 3!"
+title: "MegaFold: an Open-Sourced AlphaFold-3 Training System"
 date: 2025-10-03
 lastmod: 2025-10-03
 draft: false
@@ -20,7 +20,7 @@ Given its importance, we wanted to investigate how effective current techniques 
 This begged the question, what's going on? In this post, we uncover why exactly it's so difficult to train AF models (especially AF-3) and propose a bunch of novel optimisations that significantly increase both the speed and trainability of AF-3 models. Specifically:
 
 1. We investigate the model architecture of AF-3 and uncover two issues that elongate training times and cause memory explosions: (1) Complex retrieval augmented data-pipelines, and (2) Frequently launched compute and memory heavy operators.
-2. We propose a set of optimisations that target uncovered bottlenecks, culminating in a new system: MegaFold, which significantly accelerates AF-3 training whilst consuming less memory.
+2. We propose a set of optimisations that target uncovered bottlenecks, culminating in a new system: MegaFold, which significantly accelerates AF-3 training whilst consuming less memory. MegaFold consists of low-level Triton kernels as well as system optimizations that synergistically work together to tackle some of the issues we've uncovered. In writing our kernels in Triton, we hoped that our system would be performanc portable, a nice benefit in an age with many GPU hardware options.
 
 ## The AF-3 Model - Brief Overview
 
@@ -30,7 +30,7 @@ AF-3 consists of three sections: (1) Data loading & Preprocessing, (2) Pairforme
 
 ![AF3 overview](./img/af_background.png)
 
-**Data-loading and Preprocessing.** AF-3 has a unique data loading and preprocessing pipeline that augments the input biological complex with relevant information acquired from a database to assist in protein structure prediction. It prepares two sets of inputs: token-level {{< math >}}$\texttt{token}${{< /math >}} and token-pair {{< math >}}$\texttt{token}_{\text{pair}}${{< /math >}} representations. The pipeline first works by decomposing the input complex into atomic-level features, aggregating them into the {{< math >}}$\texttt{token}${{< /math >}} representation that is {{< math >}}$[N_{\text{token}}, N_{\text{token}}, h_{\text{dim}}]${{< /math >}}-sized. It then models how these tokens interact with each other, by aggregating evolutionary information from similarly retrieved complexes from databases such as the Protein-Databank (PDB) and forming the {{< math >}}$\texttt{token}_{\text{pair}}${{< /math >}} representation that is {{< math >}}$[N_{\text{token}}, N_{\text{token}}, h_{\text{dim}}]${{< /math >}}-sized. Unlike transformers which only build a single tokenized version of the input, AF-3 builds 2 sets of inputs, one of which is quadratic. Many layers in AF-3 operate on the quadratic set of inputs which in turn elongates runtime and increases size of activation memory produced.
+**Data-loading and Preprocessing.** AF-3 has a unique data loading and preprocessing pipeline that augments the input biological complex with relevant information acquired from a database to assist in protein structure prediction. It prepares two sets of inputs: token-level ({{< math >}}$\texttt{token}${{< /math >}}) and token-pair ({{< math >}}$\texttt{token}_{\text{pair}}${{< /math >}}) representations. The pipeline first works by decomposing the input complex into atomic-level features, aggregating them into the {{< math >}}$\texttt{token}${{< /math >}} representation that is {{< math >}}$[N_{\text{token}}, N_{\text{token}}, h_{\text{dim}}]${{< /math >}}-sized. It then models how these tokens interact with each other, by aggregating evolutionary information from similarly retrieved complexes from databases such as the Protein-Databank (PDB) and forming the {{< math >}}$\texttt{token}_{\text{pair}}${{< /math >}} representation that is {{< math >}}$[N_{\text{token}}, N_{\text{token}}, h_{\text{dim}}]${{< /math >}}-sized. Unlike transformers which only build a single tokenized version of the input, AF-3 builds 2 sets of inputs, one of which is quadratic. Many layers in AF-3 operate on the quadratic set of inputs which in turn elongates runtime and increases size of activation memory produced.
 
 **Pairformer Module.** The pairformer module further processes the prepared {{< math >}}$\texttt{token}${{< /math >}} & {{< math >}}$\texttt{token}_{\text{pair}}${{< /math >}} representations via 1-D and 2-D Evolutionary-Attention operators. We use the term Evolutionary-Attention to encompass all the attention operators within AF-3, some of which aggregate pairwise evolutionary information.
 
@@ -113,3 +113,29 @@ We see that data-loading and preprocessing consumes considerable runtime, above 
 ### Ahead-of-Time Caching
 
 To mitigate this issue, we analyzed the runtime data-dependencies in the data-loading and preprocessing step, segmenting this step into two: (1) cacheable features which are deterministic for each input complex, (2) non-cacheable features which are possibly randomly generated per input complex. We precompute (1) ahead-of-time for our dataset and modify the data-loading step to correctly load from the cache to use for the rest of the preprocessing steps. This significantly reduces end-to-end training time at the cost of generating the cache once ahead of time.
+
+## MegaFold's Performance
+
+Though MegaFold is still under active development, we wanted to share some of the results we get when training AF3. We built MegaFold over AlphaFold-3 PyTorch, an open-sourced training system for AF3. When benchmarking MegaFold's performance, we're primarily interested in two metrics: (1) Trainability - what's the maximum trainable input context length our methods enable? This is important as existing systems permit training on at most ~500 tokens, severely limiting the input size of a protein. (2) Runtime-performance, of course increasing the trainability of a model at the expense of runtime is usually not a good idea, so it's important to check what the per-iteration runtime is.
+
+First, with regards to trainability, we look at the peak memory allocated at various sequence lengths, comparing MegaFold to the AlphaFold-3 PyTorch baseline (compiled via Eager Mode and Inductor). We assessed performance on an NVIDIA H200-141GB GPU.
+
+![Trainability Result](./img/trainability_result.png)
+
+Notably, we see that MegaFold is the only system capable of training on sequence lengths of 640 and 768, a 1.5x increase in input sequence lengths compared to the baselines. Moreover, MegaFold consistenly has lower peak-memory consumptions across the sequence lengths that the baseline can also train on. Across these sequence lengths, MegaFold reduces peak memory consumption by 1.12x on average.
+
+Next, with regards to runtime-performance, we look at the per-iteration runtime at various sequence lengths. This time, we assessed MegaFold and the baselines on both NVIDIA H200-141GB (left) as well as AMD MI250-64GB GPUs (right) to demonstrate the performance portability of our method.
+
+![Runtime-Performance Result](./img/speed_e2e_result.png)
+
+Luckily, our kernels are well written and engineered to bring about performance. On sequence lengths that both MegaFold and the baseline can train on, MegaFold reduces per-iteration training time by 1.69x and 1.58x on NVIDIA and AMD hardware respectively.
+
+## Acknowledgements
+
+We would like to thank our collaborators: Alex Morehead and Jianlin Cheng for also working with us on this project as well as Phil Wang, for the original AlphaFold-3 PyTorch implementation.
+
+## Code Links and Other Resources
+
+MegaFold is still under active development, however we have open-sourced our code to facilitate open research. The code can be found [here](https://github.com/Supercomputing-System-AI-Lab/MegaFold/).
+
+Additionally, more details and results can be found in our preprint [here](https://arxiv.org/abs/2506.20686).
