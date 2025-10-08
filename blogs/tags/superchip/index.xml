@@ -1,1 +1,20 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Superchip on Home</title><link>https://supercomputing-system-ai-lab.github.io/blogs/tags/superchip/</link><description>Recent content in Superchip on Home</description><generator>Hugo</generator><language>en</language><copyright>Copyright (c) 2020-2024 Thulite</copyright><lastBuildDate>Tue, 07 Oct 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://supercomputing-system-ai-lab.github.io/blogs/tags/superchip/index.xml" rel="self" type="application/rss+xml"/><item><title>SuperOffload: Unleashing the Power of Large-Scale LLM Training on Superchips</title><link>https://supercomputing-system-ai-lab.github.io/blogs/blog/superoffload-unleashing-the-power-of-large-scale-llm-training-on-superchips/</link><pubDate>Tue, 07 Oct 2025 00:00:00 +0000</pubDate><guid>https://supercomputing-system-ai-lab.github.io/blogs/blog/superoffload-unleashing-the-power-of-large-scale-llm-training-on-superchips/</guid><description>Efficient full-parameter fine-tuning of GPT-OSS-20B &amp;amp; Qwen3-14B models on a single NVIDIA GH200 and Llama3-70B on four NVIDIA GH200 Superchips, while delivering up to 600 TFLOPS training throughput.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Superchip on Home</title>
+    <link>http://localhost:1313/blogs/tags/superchip/</link>
+    <description>Recent content in Superchip on Home</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>Copyright (c) 2020-2024 Thulite</copyright>
+    <lastBuildDate>Tue, 07 Oct 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/blogs/tags/superchip/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SuperOffload: Unleashing the Power of Large-Scale LLM Training on Superchips</title>
+      <link>http://localhost:1313/blogs/blog/superoffload-unleashing-the-power-of-large-scale-llm-training-on-superchips/</link>
+      <pubDate>Tue, 07 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blogs/blog/superoffload-unleashing-the-power-of-large-scale-llm-training-on-superchips/</guid>
+      <description>Efficient full-parameter fine-tuning of GPT-OSS-20B &amp;amp; Qwen3-14B models on a single NVIDIA GH200 and Llama3-70B on four NVIDIA GH200 Superchips, while delivering up to 600 TFLOPS training throughput.</description>
+    </item>
+  </channel>
+</rss>
