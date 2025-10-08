@@ -1,5 +1,5 @@
 {{ define "main" }}
-<article>
+<article{{ if .Params.custom_style }} class="blog-{{ .Params.custom_style }}"{{ end }}>
 <div class="row justify-content-center">
   <div class="col-md-12 col-lg-10">
     <div class="blog-header">

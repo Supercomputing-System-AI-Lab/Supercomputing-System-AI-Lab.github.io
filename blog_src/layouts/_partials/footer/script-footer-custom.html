@@ -1,5 +1,12 @@
 {{/* Put your custom <script></script> tags here */}}
 
+{{/* SuperOffload Table of Contents Script */}}
+{{ if eq .Params.custom_style "superoffload" -}}
+  {{ $opts := dict "targetPath" "js/superoffload-toc.js" }}
+  {{ $js := resources.Get "js/superoffload-toc.js" | js.Build $opts | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" defer></script>
+{{ end -}}
+
 {{/* EXAMPLE - only load script for production
 {{ if eq (hugo.Environment) "production" -}}
   {{ partial "footer/esbuild" (dict "src" "js/instantpage.js" "load" "async" "transpile" false) -}}

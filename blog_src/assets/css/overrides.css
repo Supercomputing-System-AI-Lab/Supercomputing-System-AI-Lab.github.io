@@ -254,3 +254,475 @@ img[src*="/images/authors/Minjia_Zhang.jpg?"] {
   /* move crop up slightly to reveal hair */
   object-position: 50% 20%;
 }
+
+/* ============================================= */
+/* SuperOffload Blog Custom Styles */
+/* Inspired by Thinking Machines Lab blog design */
+/* ============================================= */
+
+/* Main article styling - clean, professional look without sidebar */
+.blog-superoffload {
+  background: #ffffff;
+  max-width: 1900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.65;
+  color: #1a1a1a;
+  font-size: 16px;
+  display: block;
+  position: relative;
+}
+
+/* Content wrapper for main article */
+.blog-superoffload .row {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Title styling - semi-bold and prominent */
+.blog-superoffload .blog-header h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #000000;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+  border: none;
+  padding-bottom: 0;
+  text-shadow: none;
+}
+
+/* Meta information styling */
+.blog-superoffload .blog-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+/* Lead paragraph (summary) - subtle and elegant */
+.blog-superoffload .lead {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #4a4a4a;
+  font-weight: 400;
+  margin: 1rem 0 1.5rem 0;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+/* Section headers (h2) - clean and compact */
+.blog-superoffload h2 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #000000;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.015em;
+  border: none;
+  background: none;
+  padding: 0;
+  line-height: 1.2;
+}
+
+/* Subsection headers (h3) */
+.blog-superoffload h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+  line-height: 1.25;
+}
+
+/* Paragraph styling - compact spacing */
+.blog-superoffload p {
+  margin-bottom: 0.75rem;
+  line-height: 1.55;
+  color: #1a1a1a;
+}
+
+/* Code blocks - minimalist style */
+.blog-superoffload pre {
+  background: #f6f8fa !important;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 0.875rem !important;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-size: 0.875em;
+  line-height: 1.5;
+  box-shadow: none;
+}
+
+/* Inline code */
+.blog-superoffload code {
+  background: #f6f8fa;
+  color: #24292e;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
+  font-size: 0.9em;
+  border: 1px solid #e1e4e8;
+}
+
+.blog-superoffload pre code {
+  background: transparent;
+  color: #24292e;
+  padding: 0;
+  border: none;
+  font-size: 0.9em;
+}
+
+/* Blockquotes - elegant and subtle */
+.blog-superoffload blockquote {
+  border-left: 3px solid #d0d7de;
+  background: transparent;
+  padding: 0.4rem 0 0.4rem 1.25rem;
+  margin: 1rem 0;
+  color: #57606a;
+  font-style: italic;
+  font-size: 1em;
+  border-radius: 0;
+}
+
+/* Lists - clean spacing */
+.blog-superoffload ul,
+.blog-superoffload ol {
+  margin: 0.75rem 0;
+  padding-left: 2rem;
+}
+
+.blog-superoffload ul li,
+.blog-superoffload ol li {
+  margin-bottom: 0.35rem;
+  line-height: 1.55;
+}
+
+.blog-superoffload ul li::marker {
+  color: #57606a;
+  font-weight: normal;
+}
+
+/* Nested lists */
+.blog-superoffload ul ul,
+.blog-superoffload ol ol,
+.blog-superoffload ul ol,
+.blog-superoffload ol ul {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Images and figures - clean presentation */
+.blog-superoffload img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.25rem auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border: none;
+  transition: none;
+}
+
+.blog-superoffload img:hover {
+  transform: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+/* Image captions */
+.blog-superoffload p em {
+  color: #57606a;
+  font-size: 0.875rem;
+  display: block;
+  text-align: center;
+  margin-top: -0.75rem;
+  margin-bottom: 1.25rem;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* Figure with caption */
+.blog-superoffload figure {
+  margin: 2rem 0;
+}
+
+.blog-superoffload figcaption {
+  color: #57606a;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.75rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Horizontal rules - subtle divider */
+.blog-superoffload hr {
+  border: 0;
+  height: 1px;
+  background: #e5e5e5;
+  margin: 1.5rem 0;
+}
+
+/* Links - professional style */
+.blog-superoffload a:not(.btn) {
+  color: #0969da;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.blog-superoffload a:not(.btn):hover {
+  color: #0969da;
+  border-bottom-color: #0969da;
+  text-shadow: none;
+}
+
+/* Strong/bold text */
+.blog-superoffload strong,
+.blog-superoffload b {
+  font-weight: 600;
+  color: #000000;
+}
+
+/* Tables - clean and readable */
+.blog-superoffload table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 2rem 0;
+  font-size: 0.95em;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.blog-superoffload table th {
+  background: #f6f8fa;
+  color: #24292e;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  text-align: left;
+  border: 1px solid #d0d7de;
+}
+
+.blog-superoffload table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d0d7de;
+  background: #ffffff;
+}
+
+.blog-superoffload table tr:hover td {
+  background: #f6f8fa;
+}
+
+/* Math formulas - ensure proper rendering */
+.blog-superoffload .katex,
+.blog-superoffload .mathjax {
+  font-size: 1em;
+}
+
+/* Tags - minimal style */
+.blog-superoffload .tag-list-single {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.blog-superoffload .tag-list-single .btn {
+  background: #f6f8fa;
+  color: #24292e;
+  border: 1px solid #d0d7de;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-superoffload .tag-list-single .btn:hover {
+  background: #ffffff;
+  border-color: #57606a;
+  color: #000000;
+  transform: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* Citation/reference blocks */
+.blog-superoffload .citation,
+.blog-superoffload .reference {
+  background: #f6f8fa;
+  border-left: 3px solid #d0d7de;
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  font-size: 0.95em;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Footnotes */
+.blog-superoffload .footnotes {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e5e5;
+  font-size: 0.9em;
+  color: #57606a;
+}
+
+.blog-superoffload .footnotes ol {
+  padding-left: 2rem;
+}
+
+.blog-superoffload .footnotes li {
+  margin-bottom: 0.5rem;
+}
+
+/* Table of Contents - Hidden */
+.superoffload-toc {
+  display: none;
+}
+
+/* TOC Title */
+.superoffload-toc .toc-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #57606a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+/* TOC List */
+.superoffload-toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Top level TOC items */
+.superoffload-toc > ul > li {
+  margin-bottom: 0.4rem;
+}
+
+/* TOC links */
+.superoffload-toc a {
+  color: #57606a;
+  text-decoration: none;
+  border-bottom: none !important;
+  display: block;
+  padding: 0.15rem 0;
+  transition: color 0.2s ease;
+  line-height: 1.4;
+}
+
+.superoffload-toc a:hover {
+  color: #0969da;
+}
+
+/* Nested TOC items */
+.superoffload-toc ul ul {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 1rem;
+}
+
+.superoffload-toc ul ul li {
+  margin-bottom: 0.2rem;
+  font-size: 0.82rem;
+}
+
+/* Active/current TOC item */
+.superoffload-toc a.active {
+  color: #0969da;
+  font-weight: 500;
+  border-left: 2px solid #0969da;
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+/* Scrollbar styling for TOC */
+.superoffload-toc::-webkit-scrollbar {
+  width: 4px;
+}
+
+.superoffload-toc::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.superoffload-toc::-webkit-scrollbar-thumb {
+  background: #d0d7de;
+  border-radius: 2px;
+}
+
+.superoffload-toc::-webkit-scrollbar-thumb:hover {
+  background: #a8b1bb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .blog-superoffload {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .superoffload-toc {
+    position: static;
+    width: 100%;
+    max-height: none;
+    border-left: 3px solid #e5e5e5;
+    padding-left: 1rem;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .blog-superoffload {
+    font-size: 17px;
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+  
+  .blog-superoffload .blog-header h1 {
+    font-size: 2rem;
+  }
+  
+  .blog-superoffload h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .blog-superoffload h3 {
+    font-size: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  
+  .blog-superoffload .lead {
+    font-size: 1.1rem;
+  }
+  
+  .blog-superoffload img {
+    margin: 1.5rem auto;
+  }
+  
+  .blog-superoffload pre {
+    padding: 0.75rem !important;
+    font-size: 0.85em;
+  }
+  
+  .blog-superoffload table {
+    font-size: 0.85em;
+  }
+  
+  .blog-superoffload table th,
+  .blog-superoffload table td {
+    padding: 0.5rem;
+  }
+  
+  .superoffload-toc {
+    font-size: 0.85rem;
+  }
+}

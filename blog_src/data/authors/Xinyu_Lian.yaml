@@ -1,0 +1,13 @@
+id: "Xinyu_Lian"
+name: "Xinyu Lian"
+title: "CS PhD Student at UIUC"
+avatar: "images/authors/default.png"
+bio: "2nd year CS PhD student at UIUC (2024 - )"
+social:
+  - name: "Website"
+    url: "https://xinyulian.tech"
+  - name: "Email"
+    url: "mailto:lian7@illinois.edu"
+website: "https://xinyulian.tech"
+location: "Urbana, IL"
+company: "University of Illinois Urbana-Champaign"
