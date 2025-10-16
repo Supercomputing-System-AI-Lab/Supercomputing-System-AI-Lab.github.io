@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /admin/
+Sitemap: https://supercomputing-system-ai-lab.github.io/sitemap.xml
