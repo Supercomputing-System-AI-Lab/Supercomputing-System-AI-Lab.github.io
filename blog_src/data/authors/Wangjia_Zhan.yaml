@@ -1,13 +1,13 @@
 id: "Wangjia_Zhan"
 name: "Wangjia Zhan"
 title: "MSCS Student at UIUC"
-avatar: "images/authors/Wangjia_Zhan.png"
+avatar: "images/authors/default.png"
 bio: "1st year MSCS student at UIUC (2025 - )."
 social:
   - name: "Website"
-    url: "https://github.com/jackzhan01
+    url: "https://github.com/jackzhan01"
   - name: "Email"
     url: "mailto:wangjia2@illinois.edu"
-website: ""
+website: "https://github.com/jackzhan01"
 location: "Urbana, IL"
 company: "University of Illinois Urbana-Champaign"
