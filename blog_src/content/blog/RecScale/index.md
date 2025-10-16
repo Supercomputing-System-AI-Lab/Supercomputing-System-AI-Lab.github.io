@@ -3,235 +3,118 @@ title: "RecScale: System-Aware Scaling Laws for Deep Learning Recommendation Mod
 date: 2025-10-12
 lastmod: 2025-10-14
 draft: false
-summary: "This blog presents the motivation, designs, and key results behind Recscale."
+summary: "This blog presents the motivation, design principles, and key results behind RecScale, a system-aware approach to scaling Deep Learning Recommendation Models (DLRMs) that addresses critical memory and communication bottlenecks in distributed training."
 categories: []
-tags: ["llm-inference", "gpu-optimization", "gpu"]
+tags: ["dlrm", "scaling-laws", "compression", "distributed-training", "gpu-optimization", "row-parallelism"]
 contributors: []
 authors: ["Wangjia_Zhan","Tong_Wei", "Minjia_Zhang","SSAIL"]
-time-to-read: 8
+time-to-read: 10
 ---
 
 <div class="voltanallm-content">
 
-Scaling laws have guided the design of increasingly large machine learning models. For example, scaling laws in NLP, established by OpenAI and others, show that model performance improves predictably with increased parameters and training tokens, motivating the exponential growth of large language models (LLMs). So naturally, this made us wonder: can Deep Learning Recommendation Models (DLRMs) benefit from similar scaling laws? While Recent studies have begun characterizing scaling behavior in recommendation systems, they overlook critical system-level constraints—such as communication overhead, memory limitations, and embedding sharding strategies. This is why we built RecScale, a system that extends scaling laws for DLRMs with a system-aware perspective.
+Scaling laws have guided the design of increasingly large machine learning models. For example, scaling laws in NLP, established by OpenAI and others, show that model performance improves predictably with increased parameters and training tokens, motivating the exponential growth of large language models (LLMs). So naturally, this made us wonder: can Deep Learning Recommendation Models (DLRMs) benefit from similar scaling laws? While recent studies have begun characterizing scaling behavior in recommendation systems, they overlook critical system-level constraints—such as communication overhead, memory limitations, and embedding sharding strategies. This is why we built RecScale, a system that extends scaling laws for DLRMs with a system-aware perspective.
 
-At a glance, RecScale achieves up to **16× memory reduction** and **3.31× end-to-end training speedup** on 64 GPUs while preserving both accuracy and scaling-law trends. These results show that DLRMs can continue scaling efficiently once we eliminate memory and communication bottlenecks.
+At a glance, RecScale achieves up to **16×** memory reduction and **3.31×** end-to-end training speedup on 64 GPUs while preserving both accuracy and scaling-law trends. These results show that DLRMs can continue scaling efficiently once we eliminate memory and communication bottlenecks.
+
+<p align="center">
+  <img src="img/F6_overalldesign.jpg" alt="RecScale Overview" width="80%">
+</p>
 
 ## What makes it so hard to scale DLRMs
 
-Through our investigation, we identified two key challenges while further scaling DLRMs:
+Through our investigation, we identified two key challenges that hinder further scaling of DLRMs:
 
-### 1. Memory Wall from Embedding Tables
+**1. Memory Wall from Embedding Tables.**
+Unlike LLMs, DLRMs are embedding-heavy—embeddings account for 99% of total parameters in industrial-scale deployments. Even scaling-law-friendly architectures (e.g., the Wukong model) remain fundamentally bottlenecked by the embedding memory wall. This motivates us to reduce embedding memory consumption while explicitly preserving scaling-law behavior.
+<p align="center">
+  <img src="img/F4_memory.jpg" alt="Memory breakdown" width="80%">
+</p>
 
-Unlike LLMs, DLRMs are embedding-heavy—embeddings account for 99% of total parameters in industrial-scale cases. Even scaling-law-friendly DLRMs (Wukong model) remain bottlenecked by the embedding memory wall. This motivates us to reduce embedding memory while explicitly preserving scaling-law behavior.
+**2. Communication Wall in Row-wise Parallelism.**
+The massive embedding tables necessitate distribution across devices using row-wise parallelism. However, conventional implementations based on bucketization and reduce-scatter operations introduce significant communication redundancy and bandwidth constraints during distributed training. This motivates us to optimize communication patterns to enable efficient scalability across multi-node, multi-GPU clusters.
 
-### 2. Communication Wall in Row-wise Parallelism
+<p align="center">
+  <img src="img/F5_analysis2.png" alt="Communication analysis" width="80%">
+</p>
 
-The large embedding tables require splitting across devices using row-wise parallelism. However, conventional implementations based on bucketization and reduce-scatter introduce significant redundancy and bandwidth limitations during distributed training. This motivates us to optimize communication patterns to enable scalability across multi-node, multi-GPU clusters. (Figure 5, Figure 8)
+These two fundamental challenges—memory and communication bottlenecks—motivated the design of RecScale.
 
-These two challenges—memory and communication—motivated us to build RecScale.
+## How do we solve the challenge—RecScale Design
 
-## The RecScale Design
+### 1. Wukong++ (Addressing the Memory Wall) 
 
-### 1. Wukong++
+We introduce Wukong++ to substantially reduce the embedding footprint while preserving scaling-law trends, which enables the freed memory to be reinvested into the overarching architecture. Figure 7 illustrates the Wukong++ framework.
+<p align="center">
+  <img src="img/F7_wukong+.jpg" alt="Wukong++ design" width="80%">
+</p>
 
-1. QR-based Embedding Compression
-2. Head Cache Enhancement
-3. Memory Reinvestment to Overarch.
+**Key components:**
 
-### 2. SRP (Figure 9)
+a. **QR-based Embedding Compression:** Apply quotient-remainder hashing to compress large embedding tables using a threshold-based approach, reducing memory footprint while preserving representation quality.
 
-**(a) Embedding compaction:** In baseline RP, each GPU pads query buckets to a fixed size, creating large zero-filled buffers as GPU count increases. SRP replaces this with embedding compaction — after local lookups, it extracts only valid embeddings for each peer and packs them contiguously without padding. It also records metadata for communication splits and reconstruction, effectively removing zeros and redundant transfers while preserving correctness.
+b. **Head Cache Enhancement:** Employ an additional small full-precision embedding cache for features with high frequency and skewed distributions, effectively recovering accuracy loss introduced by compression.
 
-**(b) Sparse-aware all-to-all:** After compaction, each GPU holds contiguous valid embedding buffers and metadata for its peers. Instead of using fixed-size reduce-scatter and all-gather operations that waste bandwidth on zeros, SRP adopts a variable-sized all-to-all-single exchange based on per-peer split sizes. During the forward pass, metadata guides each GPU to scatter received embeddings into the correct [B,F,D] positions. In the backward pass, the same metadata maps gradients back to their corresponding rows, while non-local positions are zero-filled — ensuring full equivalence to baseline RP semantics without redundant data transfer.
+c. **Memory Reinvestment to Overarch:** Leverage the freed memory from compression to scale up the model architecture (inspired by Wukong's scaling capabilities), achieving superior performance with a reduced overall memory footprint.
 
-**(c) Result reconstruction and kernel optimization:** While SRP removes redundant communication, it adds extra pre- and post-processing (e.g., extracting non-zero indices, packing, and reconstructing embeddings). In PyTorch, these steps would normally trigger multiple kernels and heavy memory I/O, offsetting communication gains.
+### 2. SRP (Addressing the Communication Wall) 
 
-To address this, SRP uses fused Triton kernels that combine all stages—nonzero detection, coordinate assignment, packing, and reconstruction—into single, efficient kernels. Each kernel is block-parallel and memory-coalesced, using a Block-Aggregated Atomic scheme: instead of many atomic updates, each block reserves one output segment and assigns offsets via prefix-sums, greatly reducing contention.
+We introduce Sparse Row-wise Parallelism (SRP) to eliminate communication redundancy in distributed embedding lookup. SRP achieves this through three key techniques:
+<p align="center">
+  <img src="img/F9_SRP.jpg" alt="SRP design" width="80%">
+</p>
 
-In the backward pass, gradient filtering and packing are also fused, ensuring contiguous memory access and eliminating scattered writes. This fused design minimizes kernel launches and atomic overhead, amortizing preprocessing costs and significantly boosting end-to-end throughput.
+a. **Embedding Compaction:** Baseline row-wise parallelism pads query buckets to fixed sizes, creating zero-filled buffers that grow with GPU count. SRP extracts only valid embeddings after local lookups and packs them contiguously, recording metadata for communication splits and reconstruction. This eliminates padding overhead while preserving correctness.
 
-## Evaluation Highlights
+b. **Sparse-Aware All-to-All:** Instead of fixed-size reduce-scatter and all-gather operations that transfer zeros, SRP uses variable-sized all-to-all exchanges based on per-peer split sizes. In the forward pass, metadata guides each GPU to scatter received embeddings into correct [B,F,D] positions. In the backward pass, the same metadata maps gradients back to their corresponding rows, ensuring full semantic equivalence to baseline RP without redundant transfers.
 
-### 1. Main result
+c. **Fused Kernel Optimization:** SRP's compaction and reconstruction stages could trigger multiple kernel launches and memory I/O overhead. To amortize these costs, we implement fused Triton kernels that combine nonzero detection, coordinate assignment, packing, and reconstruction into single block-parallel operations. We employ a Block-Aggregated Atomic scheme where each block reserves output segments via prefix-sums rather than individual atomic updates, drastically reducing contention. Gradient filtering and packing are similarly fused in the backward pass, ensuring coalesced memory access and maximizing end-to-end throughput.
 
-### 2. Wukong++
+## How well does RecScale perform?
 
-### 3. SRP
+### 1. Main Results:
+<p align="center">
+  <img src="img/F10_mainresult.jpg" alt="Main Results" width="80%">
+</p>
 
-**(a) Communication Efficiency (Table 3):** SRP drastically reduces communication volume. At 64 GPUs, total traffic drops from 54.9B → 651M tensor elements, more than an order of magnitude reduction. This is because SRP sends only non-zero embeddings, avoiding the replicated padding seen in traditional reduce-scatter/all-gather.
+**Preserving Scaling-Law Efficiency:** RecScale achieves β=0.46 (scaling efficiency coefficient), closely matching Wukong (β=0.48) and significantly outperforming baseline models, demonstrating efficient scaling under aggressive compression.
 
-**(b) Scaling Behavior (Figure 13):**
+**Mitigating Embedding Memory Bottleneck:** Achieves up to 16× memory reduction through embedding compression coupled with overarch expansion, removing embeddings as the dominant bottleneck and enabling larger, more capable models under fixed GPU memory constraints without sacrificing accuracy.
 
-**Strong Scaling:** With a fixed global batch size, SRP maintains higher throughput as GPU count increases, while the baseline plateaus due to bandwidth limits.
+**Throughput and Scalability Gains:** Delivers up to 3.31× speedup on 64 GPUs through sparsity-aware row parallelism that eliminates redundant communication in pooled-embedding exchange *(Figure main result)*.
 
-**Weak Scaling:** With fixed per-GPU batch size, SRP sustains near-linear scaling — consistently outperforming the baseline even at large GPU counts.
+### 2. Wukong++ Component Analysis
 
-**(c) Kernel Optimization Speedup (Figure 14)**
+We ablate each component by incrementally enabling QR-based compression, head cache, and overarch scaling. As shown in Table 2, QR compression alone reduces model size by 28× but incurs a 0.2% AUC drop. Adding the head cache recovers this loss—achieving 26.6× compression with near-baseline accuracy. Reinvesting saved memory into the overarch (QR+head cache with scaling) fully restores performance at 16× compression, confirming that the head cache is critical for maintaining accuracy-memory efficiency under aggressive compression.
+<p align="center">
+  <img src="img/T2.png" alt="Table for wukong component" width="80%">
+</p>
 
-SRP's fused Triton kernels cut preprocessing overhead by over 70%, merging multiple stages (nonzero detection, packing, and reconstruction) into single efficient kernels. This ensures that the savings from reduced communication aren't offset by added compute costs.
+### 3. SRP Communication and Scaling Benefits
 
-**(d) Correctness Validation (Figure 15)**
+a. **Communication Efficiency** *(Table 3)*: SRP drastically reduces communication volume by sending only non-zero embeddings. At 64 GPUs, total traffic drops from 54.9B to 651M tensor elements—a reduction of over 84×—eliminating the replicated padding overhead of traditional reduce-scatter/all-gather.
 
-SRP preserves training correctness. Loss curves on the Criteo dataset are identical to the baseline, confirming that SRP's optimizations only reorder data without changing its semantics.
+b. **Scaling Behavior** *(Figure 13)*: In strong scaling (fixed global batch), SRP maintains higher throughput as GPU count increases while the baseline plateaus due to bandwidth limits. In weak scaling (fixed per-GPU batch), SRP sustains near-linear scaling, consistently outperforming the baseline even at large GPU counts.
 
+c. **Kernel Optimization** *(Figure 14)*: SRP's fused Triton kernels reduce preprocessing overhead by over 70% by merging nonzero detection, packing, and reconstruction into single efficient operations, ensuring communication savings aren't offset by compute costs.
 
+d. **Correctness Validation** *(Figure 15)*: Loss curves on the Criteo dataset match the baseline identically, confirming SRP preserves training semantics while optimizing data movement.
+<p align="center">
+  <img src="img/Result.jpg" alt="Result for SRP" width="80%">
+</p>
 
-
-Why is energy-efficient LLM serving important but hard?
--------------------------------------------------------
-
-Large Language Models (LLMs) have become the backbone of modern AI services—chatbots, coding assistants, agent pipelines—but their **energy footprint is massive[[2]](#ref2),[[3]](#ref3)**. Inference alone can account for **90%+ of AI infrastructure utilization**[[1]](#ref1), pushing datacenter power and cooling limits. For context, large datacenters already draw power equivalent to millions of households.
-
-At the same time, LLMs are increasingly used in **latency-sensitive applications**, where violating SLOs like Time-to-First-Token (TTFT) or Inter-Token Latency (ITL) degrades user experience. This creates a difficult tension: **Can we even save energy without harming the SLO guarantees?**
-
-We started by profiling LLM inference on NVIDIA A100s, expecting the usual tradeoff: lower frequency saves energy at the cost of latency. But our experiments told a different story.
-
-* * *
-
-Key observations
-----------------
-
-We discuss our key observations here which will build the foundation of our insights and consequently our design. These observations helped us build VoltanaLLM as an efficient and adaptive system.
-
-### 1\. **U-shaped energy-frequency curves**
-
-Instead of energy monotonically dropping with frequency, we saw a **U-shaped relationship**:
-
-*   At **low frequencies**, execution time dominates, so energy-consumption (power x time) rises fast.
-*   At **high frequencies**, power dominates as it increases hyper-linearly with frequency, raising the energy consumption again.
-*   In the middle lies a **sweet spot**—but its exact location differs for varying hardware, workloads, and even **prefill** (compute-heavy) vs. **decode** (memory-heavy) phases.
-
-![U-shaped energy-frequency curve for prefill and decode](img/u-curve.png)
-
-### 2\. **Temporal variation in prefill vs. decode demand**
-
-Using the Azure LLM Inference Trace 2024, we found that real workloads don’t stay balanced. This is also previously studied for a variety of applications that observe diurnal variation in demand on the internet.
-
-*   **Conversation requests** → stable decode demand.
-*   **Code requests** → strong diurnal variation, peaking in afternoons, with shorter decodes.
-*   Overall → the **prefill/decode ratio skews dynamically over time**, meaning a one-size-fits-all frequency policy is inefficient.
-
-![Daily variation of prefill/decode demand.](img/temporal.png)
-
-### 3\. **Batch size boundaries create inefficiency**
-
-GPUs do not scale workload efficiency smoothly as batch sizes increase. When a batch crosses certain thresholds (for example, from 128 to 129 requests), the hardware can no longer keep all of its processing units fully occupied. Even though some units sit idle, the GPU still expends a full cycle of computation, which shows up as **staircase-like jumps** in both inter-token latency (ITL) and energy-per-token (EPOT). This is a bit like a bus leaving the station half empty but still burning the same fuel for the trip. The effect is most pronounced during the _decode phase_, where batches are smaller and more frequently hover near these thresholds, making the inefficiency much more visible than in prefill.
-
-![ITL and EPOT staircase pattern.](img/staircase.png)
-
-_Takeaway:_ Energy efficiency in LLM serving isn’t just about lowering GPU frequency. It requires **phase-aware, adaptive control** that can handle workload variation and hardware quirks.
 
 * * *
 
-</div>
 
-The VoltanaLLM design
----------------------
 
-VoltanaLLM is built on top of prefill/decode (P/D) disaggregation architectures (supported in engines like SGLang and vLLM), which naturally separate the two phases onto different GPU instances. This separation is key: it lets us apply **phase-specific optimizations which get surpressed in traditional serving due to distinct and interfering properties of the prefill and decode phases.**.
-
-VoltanaLLM introduces three core components:
-
-### 1\. EcoFreq: **Feedback-driven frequency controller from a control theory perspective**
-
-![EcoFreq loop and latency budgeting.](img/ecofreq1.png)
-
-*   Runs a lightweight control loop inspired from control theory (<4 ms).
-*   Adjusts GPU frequency per batch, using load metrics and latency predictions.
-*   Selects the lowest safe frequency that satisfies SLOs.
-*   Handles prefill differently from decode (accounts for waiting time in queues for TTFT).
-*   Uses **pyNVML** instead of **nvidia-smi**, avoiding the usual larger overhead.
-
-![EcoFreq loop and latency budgeting.](img/ecofreq2.png)
-
-### 2\. EcoRoute: **State-space navigation router**
-
-![EcoRoute asymmetric routing vs. round-robin.](img/ecoroute1.png)
-
-*   Instead of round-robin, EcoRoute runs “what-if” analyses in the **state space** of decode instances.
-*   Routes asymmetrically to avoid batch-size boundaries, keeping one instance in low-frequency regime instead of both in higher frequency regimes.
-*   Falls back gracefully to round-robin when boundaries aren’t in play.
-
-![EcoRoute asymmetric routing vs. round-robin.](img/ecoroute2.png)
-
-### 3\. EcoPred: **Load-aware latency predictor**
-
-*   Simple linear regression model.
-*   Prefill latency ~ batch token count.
-*   Decode latency ~ requests + KV cache tokens.
-*   Accuracy: ~7–14 ms MAE for TTFT, ~2–3 ms MAE for ITL.
-*   Overhead: negligible (<0.1 ms).
-
-![EcoPred regression fits.](img/ecopred.png)
-
-* * *
-
-Evaluation highlights
----------------------
-
-We implemented VoltanaLLM on **SGLang (v0.4.7)** and tested on **A100 GPUs** with three models (Ministral-3B, LLaMA-3.1-8B, Qwen3-32B) and two datasets (ShareGPT, LMSYS-Chat-1M).
-
-**Main results (2 prefill, 2 decode instances):**
-
-*   **Energy savings:** Up to **36.3%** vs. static max-frequency baseline.
-*   **SLO attainment:** Comparable to always running at 1410 MHz (max-frequency).
-*   **Workload robustness:** Benefits held across request rates, workloads, and SLO profiles.
-
-![Energy and SLO attainment comparison.](img/main-result.png)
-
-### Module-level breakdown
-
-*   **EcoFreq only:** major energy savings by adaptive frequency scaling.
-*   **EcoRoute added:** extra savings in decode by avoiding batch-size boundary inefficiencies.
-
-![EcoFreq vs. EcoFreq+EcoRoute.](img/modulewise.png)
-
-### Per-iteration responsiveness matters
-
-Compared to window-based frequency control (e.g., 5s intervals in DynamoLLM):
-
-*   **Window-based:** degrades SLOs, especially in prefill (batch sizes fluctuate rapidly).
-*   **VoltanaLLM per-iteration:** adapts instantly, maintaining energy savings and latency targets.
-
-![Latency attainment vs. control interval.](img/iterationmatters.png)
-
-### Flexible SLO trade-offs
-
-By tuning SLO thresholds:
-
-*   **Tight SLOs:** VoltanaLLM behaves closer to max frequency.
-*   **Relaxed SLOs:** Operates more at low frequency, increasing energy savings.
-
-![Latency/energy tradeoffs under different SLO profiles.](img/slo-flex.png)
-
-* * *
-
-Practical lessons from building VoltanaLLM
-------------------------------------------
-
-1.  **Frequency switching overhead is real.** Calling **nvidia-smi** was too slow (~50 ms). Using **pyNVML** in a separate process brought it down to ~3 ms, enabling per-iteration responsiveness.
-2.  **Prefill vs. decode control loops must be distinct.** Prefill TTFT includes both waiting and execution time; decode ITL does not. Mixing them breaks guarantees.
-3.  **Batch boundaries dominate decode inefficiency.** EcoRoute’s boundary-aware routing avoided forcing _both_ instances into high frequency—an insight that wouldn’t emerge without fine-grained profiling.
-4.  **Simple models beat complex ones.** Linear regression was fast, interpretable, and accurate enough. More complex ML models would have added overhead with little benefit.
-5.  **Granularity tradeoffs matter.** More frequency levels gave slight energy improvements but slightly lower SLO attainment. Two levels (\[1005, 1410\] MHz) hit a good balance.
-
-Closing thoughts
-----------------
-
-VoltanaLLM shows that **energy-efficient LLM serving isn’t just about hardware knobs**; it’s a systems problem. By combining **control theory insights**, **phase-specific frequency scaling**, and **routing-aware scheduling**, VoltanaLLM achieves double-digit energy savings without compromising user-facing performance.
-
-As LLM deployment scales further, we believe these ideas—**fine-grained, feedback-driven, and phase-aware control**—will be critical for sustainable AI infrastructure.
-
-* * *
-
-<div class="references">
+<!-- <div class="references">
 <div id="ref1">[1] Radosvet Desislavov, Fernando Martínez-Plumed, José Hernández-Orallo, "Trends in AI inference energy consumption: Beyond the performance-vs-parameter laws of deep learning," Sustainable Computing: Informatics and Systems, Volume 38, 2023. <a href="https://doi.org/10.1016/j.suscom.2023.100857" target="_blank" rel="noopener">DOI: 10.1016/j.suscom.2023.100857</a> [↩](#ref1)</div>
 
 <div id="ref2">[2] Esha Choukse et al., "Power Stabilization for AI Training Datacenters," 2025. <a href="https://arxiv.org/abs/2508.14318" target="_blank" rel="noopener">arXiv:2508.14318</a> [↩](#ref2)</div>
 
 <div id="ref3">[3] Cooper Elsworth et al., "Measuring the environmental impact of delivering AI at Google Scale," 2025. <a href="https://arxiv.org/abs/2508.15734" target="_blank" rel="noopener">arXiv:2508.15734</a> [↩](#ref3)</div>
-</div>
+</div> -->
 
-* * *
+<!-- * * * -->
 
