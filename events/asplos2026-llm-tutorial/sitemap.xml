@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- replace WEBSITE with the address where this site is being hosted -->
+   <url>
+       <loc>WEBSITE</loc>
+   </url>
+   <url>
+       <loc>WEBSITE/schedule</loc>
+   </url>
+   <url>
+       <loc>WEBSITE/prerequisites</loc>
+   </url>
+   <url>
+       <loc>WEBSITE/organizers</loc>
+   </url>
+</urlset>
