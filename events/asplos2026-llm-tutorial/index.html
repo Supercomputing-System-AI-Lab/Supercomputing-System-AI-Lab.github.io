@@ -24,25 +24,224 @@
     </div>
 
     <nav class="navigation" aria-label="Primary">
-        <a class="current" title="Tutorial Home Page" href=".">Home</a>
-        <a title="Tutorial Schedule" href="schedule">Schedule</a>
-        <a title="Prerequisites" href="prerequisites">Prerequisites</a>
-        <a title="Organizers" href="organizers">Organizers</a>
+        <a data-section="home" title="Tutorial Home Page" href="#home">Home</a>
+        <a data-section="schedule" title="Tutorial Schedule" href="#schedule">Schedule</a>
+        <a data-section="prerequisites" title="Prerequisites" href="#prerequisites">Prerequisites</a>
+        <a data-section="organizers" title="Organizers" href="#organizers">Organizers</a>
     </nav>
 
-    <h2 class="tutorial-title">Building Efficient Large-Scale Model Systems with DeepSpeed: From Open-Source Foundations to Emerging Research</h2>
+    <main>
+        <section id="home" class="page-section">
+            <h2 class="tutorial-title">Building Efficient Large-Scale Model Systems with DeepSpeed: From Open-Source Foundations to Emerging Research</h2>
 
-    <h3>Overview</h3>
-    <p>
-        Large foundation models such as ChatGPT, Gemini, and DeepSeek have redefined the frontier of AI systems, yet their massive scale exposes significant challenges in distributed pre-training/post-training (e.g. reinforcement learning and supervised fine-tuning), efficiency, and hardware utilization. The community increasingly relies on open-source software to bridge these gaps, which enables researchers and practitioners to experiment, prototype, and optimize at unprecedented scale. Among these, <a href="https://www.deepspeed.ai" target="_blank">DeepSpeed</a> has become one of the most widely adopted open-source frameworks for large-model training, which empowers both academic research and industrial production deployments.
-    </p>
-    <p>
-        In this tutorial, we will present the system, compiler, and hardware co-design techniques that extend DeepSpeed into a powerful platform for scalable and efficient training of large foundation models. We will cover how DeepSpeed's runtime architecture supports new forms of distributed and heterogeneous execution, and how software-hardware co-design drives innovation in parallelism, offloading, and memory optimizations. Through a series of concrete systems and hands-on system insights, such as DeepSpeed-SuperOffload for training LLMs on emerging GPU-CPU Superchips, combining DeepSpeed's high-performance training with Ray's flexibility for complex distributed workloads including RL, DeepCompile for compiler-driven distributed optimizations, and DeepSpeed on TPU for heterogeneous hardware, we will connect core system design principles to real-world system implementation. By the end, participants will leave with both conceptual understanding of large-model system design and concrete techniques to apply in their own research, helping to build the next generation of efficient, scalable, and open AI infrastructures.
-    </p>
+            <h3>Overview</h3>
+            <p>
+                Large foundation models such as ChatGPT, Gemini, and DeepSeek have redefined the frontier of AI systems, yet their massive scale exposes significant challenges in distributed pre-training/post-training (e.g. reinforcement learning and supervised fine-tuning), efficiency, and hardware utilization. The community increasingly relies on open-source software to bridge these gaps, which enables researchers and practitioners to experiment, prototype, and optimize at unprecedented scale. Among these, <a href="https://www.deepspeed.ai" target="_blank">DeepSpeed</a> has become one of the most widely adopted open-source frameworks for large-model training, which empowers both academic research and industrial production deployments.
+            </p>
+            <p>
+                In this tutorial, we will present the system, compiler, and hardware co-design techniques that extend DeepSpeed into a powerful platform for scalable and efficient training of large foundation models. We will cover how DeepSpeed's runtime architecture supports new forms of distributed and heterogeneous execution, and how software-hardware co-design drives innovation in parallelism, offloading, and memory optimizations. Through a series of concrete systems and hands-on system insights, such as DeepSpeed-SuperOffload for training LLMs on emerging GPU-CPU Superchips, combining DeepSpeed's high-performance training with Ray's flexibility for complex distributed workloads including RL, DeepCompile for compiler-driven distributed optimizations, and DeepSpeed on TPU for heterogeneous hardware, we will connect core system design principles to real-world system implementation. By the end, participants will leave with both conceptual understanding of large-model system design and concrete techniques to apply in their own research, helping to build the next generation of efficient, scalable, and open AI infrastructures.
+            </p>
+        </section>
+
+        <section id="schedule" class="page-section">
+            <h2>Tutorial Content and Tentative Schedule</h2>
+
+            <table>
+                <tr>
+                    <td class="date" rowspan="3">
+                        9:00–9:45
+                    </td>
+                    <td class="title">
+                        Introduction and Motivation
+                    </td>
+                </tr>
+                <tr>
+                    <td class="speaker">
+                        Tunji Ruwase
+                    </td>
+                </tr>
+                <tr>
+                    <td class="abstract">
+                        <ul>
+                            <li>Challenges in scaling large foundation models, including the memory wall, communication bottlenecks, and heterogeneous hardware environments</li>
+                            <li>Overview of DeepSpeed, covering core components such as runtime architecture, usability, and key system optimizations</li>
+                            <li>Open challenges and future roadmap: Cross-platform runtime design; Energy-efficient training; Fine-grained scheduling; Integration with ML compilers</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td class="date" rowspan="3">
+                        9:45–10:30
+                    </td>
+                    <td class="title">
+                        Ray + DeepSpeed for LLM Training
+                    </td>
+                </tr>
+                <tr>
+                    <td class="speaker">
+                        Masahiro Tanaka
+                    </td>
+                </tr>
+                <tr>
+                    <td class="abstract">
+                        <ul>
+                            <li>Integrating Ray and DeepSpeed for reinforcement learning: Flexible orchestration of distributed training and inference within a unified controller architecture</li>
+                            <li>Disaggregated hybrid parallelism for multimodal models: Applying optimal parallelization strategies to different components (e.g., encoders and LLMs) enabled by the flexible integration of Ray and DeepSpeed</li>
+                            <li>Compiler-level optimization with DeepCompile: Automating communication scheduling and sequence parallelism via compiler analysis and distributed graph transformation</li>
+                            <li>Live demos and practical examples</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td class="date" rowspan="2">
+                        10:30–11:00
+                    </td>
+                    <td class="title-special">
+                        Coffee Break 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="abstract">
+                        <!-- Kept for spacing -->
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td class="date" rowspan="3">
+                        11:00–11:45
+                    </td>
+                    <td class="title">
+                        DeepSpeed-Based Systems Optimization for LLM Training 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="speaker">
+                        Minjia Zhang
+                    </td>
+                </tr>
+                <tr>
+                    <td class="abstract">
+                        <ul>
+                            <li>Hardware–software co-design for emerging architectures: SuperOffload — novel offloading and scheduling techniques for superchip platforms</li>
+                            <li>Resilience in large-scale training: Universal Checkpointing for flexible checkpointing, reconfigurable parallelism, and resilient training under hardware and software failures</li>
+                            <li>DeepSpeed for sparse model training (optional): X-MoE for fine-grained Mixture-of-Experts training</li>
+                            <li>DeepSpeed4Science (optional): MegaFold — system-level optimizations for scaling biomolecular modeling workloads</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td class="date" rowspan="3">
+                        11:45–12:30
+                    </td>
+                    <td class="title">
+                        Training LLMs on Alternative Accelerators and Novel Optimizers 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="speaker">
+                        Zhipeng Wang
+                    </td>
+                </tr>
+                <tr>
+                    <td class="abstract">
+                        <ul>
+                            <li>Hardware–software co-design for emerging model architectures on non-GPU accelerators (using TPU as an example)</li>
+                            <li>Scaling LLM distributed training on non-GPU accelerators with DeepSpeed</li>
+                            <li>DeepSpeed support for scalable LLM training with novel optimizers (e.g., Muon Optimizer)</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="prerequisites" class="page-section">
+            <h2>Prerequisites</h2>
+            <ul>
+                <li>Basic familiarity with deep learning and transformer models</li>
+                <li>Working knowledge of PyTorch or similar frameworks</li>
+                <li>Prior experience with distributed training is helpful but not required</li>
+            </ul>
+
+            <h2>Target Audience</h2>
+            <ul>
+                <li>Researchers and practitioners working on large-scale LLM training</li>
+                <li>Systems and architecture researchers interested in AI workloads</li>
+                <li>Engineers building distributed training and serving systems</li>
+            </ul>
+        </section>
+
+        <section id="organizers" class="page-section">
+            <h2>Organizers</h2>
+
+            <div class="organizers-wrap">
+                <div class="organizer-card">
+                    <img src="assets/Tunji_Ruwase.jpeg" alt="Olatunji Ruwase" style="width: 120px;">
+                    <p class="organizer-info"><strong><a href="https://www.linkedin.com/in/tunji-ruwase-088952/" target="_blank" rel="noopener noreferrer">Olatunji Ruwase</a></strong><br>Snowflake</p>
+                </div>
+                <div class="organizer-card">
+                    <img src="assets/Minjia_Zhang.jpg" alt="Minjia Zhang" style="width: 120px;">
+                    <p class="organizer-info"><strong><a href="https://minjiazhang.github.io/" target="_blank" rel="noopener noreferrer">Minjia Zhang</a></strong><br>University of Illinois Urbana-Champaign</p>
+                </div>
+                <div class="organizer-card">
+                    <img src="assets/Masahiro_Tanaka.jpeg" alt="Masahiro Tanaka" style="width: 120px;">
+                    <p class="organizer-info"><strong><a href="https://www.linkedin.com/in/masahiro-tanaka-77482926/" target="_blank" rel="noopener noreferrer">Masahiro Tanaka</a></strong><br>Anyscale</p>
+                </div>
+                <div class="organizer-card">
+                    <img src="assets/Zhipeng_Wang.jpeg" alt="Zhipeng Wang" style="width: 120px;">
+                    <p class="organizer-info"><strong><a href="https://www.linkedin.com/in/zhipeng-wang-phd-66806816/" target="_blank" rel="noopener noreferrer">Zhipeng Wang</a></strong><br>LinkedIn</p>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer>
         &copy; ASPLOS 2026 Tutorial Organizers
     </footer>
+
+    <script>
+        (function() {
+            var nav = document.querySelector('nav.navigation');
+            if (!nav) return;
+            var links = nav.querySelectorAll('a[data-section]');
+            var sections = {};
+            links.forEach(function(a) {
+                var id = a.getAttribute('data-section');
+                var el = document.getElementById(id);
+                if (el) sections[id] = el;
+            });
+            function setCurrent() {
+                var top = window.scrollY + 80;
+                var current = null;
+                for (var id in sections) {
+                    var rect = sections[id].getBoundingClientRect();
+                    var sectionTop = rect.top + window.scrollY;
+                    if (sectionTop <= top) current = id;
+                }
+                if (!current && window.location.hash) {
+                    current = window.location.hash.slice(1);
+                }
+                if (!current) current = 'home';
+                links.forEach(function(a) {
+                    a.classList.toggle('current', a.getAttribute('data-section') === current);
+                });
+            }
+            window.addEventListener('scroll', setCurrent);
+            window.addEventListener('load', setCurrent);
+            window.addEventListener('hashchange', setCurrent);
+            setCurrent();
+        })();
+    </script>
 
 </body>
 </html>

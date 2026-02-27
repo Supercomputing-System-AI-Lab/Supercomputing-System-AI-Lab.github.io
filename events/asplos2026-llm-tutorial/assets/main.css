@@ -15,6 +15,10 @@
 
 @import url('https://fonts.googleapis.com/css?family=Roboto%7CRoboto+Slab');
 
+html {
+    scroll-behavior: smooth;
+}
+
 *{
     border:0;
     font:inherit;
@@ -22,6 +26,11 @@
     margin:0;
     padding:0;
     vertical-align:baseline;
+}
+
+/* Single-page sections: offset for anchor jump so content isn't under banner */
+.page-section {
+    scroll-margin-top: 1em;
 }
 
 body{
