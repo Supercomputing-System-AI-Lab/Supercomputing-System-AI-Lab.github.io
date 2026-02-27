@@ -24,10 +24,10 @@
     </div>
 
     <nav class="navigation" aria-label="Primary">
-        <a data-section="home" title="Tutorial Home Page" href="#home">Home</a>
+        <a data-section="organizers" title="Organizers" href="#organizers">Organizers</a>
+        <a data-section="overview" title="Overview" href="#overview">Overview</a>
         <a data-section="schedule" title="Tutorial Schedule" href="#schedule">Schedule</a>
         <a data-section="prerequisites" title="Prerequisites" href="#prerequisites">Prerequisites</a>
-        <a data-section="organizers" title="Organizers" href="#organizers">Organizers</a>
     </nav>
 
     <main>
@@ -35,7 +35,7 @@
             <h2 class="tutorial-title">Building Efficient Large-Scale Model Systems with DeepSpeed: From Open-Source Foundations to Emerging Research</h2>
 
             <div id="organizers" class="page-section">
-                <h2>Organizers</h2>
+                <h3>Organizers</h3>
                 <div class="organizers-wrap">
                     <div class="organizer-card">
                         <img src="assets/Tunji_Ruwase.jpeg" alt="Olatunji Ruwase" style="width: 120px;">
@@ -56,17 +56,19 @@
                 </div>
             </div>
 
-            <h3>Overview</h3>
-            <p>
-                Large foundation models such as ChatGPT, Gemini, and DeepSeek have redefined the frontier of AI systems, yet their massive scale exposes significant challenges in distributed pre-training/post-training (e.g. reinforcement learning and supervised fine-tuning), efficiency, and hardware utilization. The community increasingly relies on open-source software to bridge these gaps, which enables researchers and practitioners to experiment, prototype, and optimize at unprecedented scale. Among these, <a href="https://www.deepspeed.ai" target="_blank">DeepSpeed</a> has become one of the most widely adopted open-source frameworks for large-model training, which empowers both academic research and industrial production deployments.
-            </p>
-            <p>
-                In this tutorial, we will present the system, compiler, and hardware co-design techniques that extend DeepSpeed into a powerful platform for scalable and efficient training of large foundation models. We will cover how DeepSpeed's runtime architecture supports new forms of distributed and heterogeneous execution, and how software-hardware co-design drives innovation in parallelism, offloading, and memory optimizations. Through a series of concrete systems and hands-on system insights, such as DeepSpeed-SuperOffload for training LLMs on emerging GPU-CPU Superchips, combining DeepSpeed's high-performance training with Ray's flexibility for complex distributed workloads including RL, DeepCompile for compiler-driven distributed optimizations, and DeepSpeed on TPU for heterogeneous hardware, we will connect core system design principles to real-world system implementation. By the end, participants will leave with both conceptual understanding of large-model system design and concrete techniques to apply in their own research, helping to build the next generation of efficient, scalable, and open AI infrastructures.
-            </p>
+            <div id="overview" class="page-section">
+                <h3>Overview</h3>
+                <p>
+                    Large foundation models such as ChatGPT, Gemini, and DeepSeek have redefined the frontier of AI systems, yet their massive scale exposes significant challenges in distributed pre-training/post-training (e.g. reinforcement learning and supervised fine-tuning), efficiency, and hardware utilization. The community increasingly relies on open-source software to bridge these gaps, which enables researchers and practitioners to experiment, prototype, and optimize at unprecedented scale. Among these, <a href="https://www.deepspeed.ai" target="_blank">DeepSpeed</a> has become one of the most widely adopted open-source frameworks for large-model training, which empowers both academic research and industrial production deployments.
+                </p>
+                <p>
+                    In this tutorial, we will present the system, compiler, and hardware co-design techniques that extend DeepSpeed into a powerful platform for scalable and efficient training of large foundation models. We will cover how DeepSpeed's runtime architecture supports new forms of distributed and heterogeneous execution, and how software-hardware co-design drives innovation in parallelism, offloading, and memory optimizations. Through a series of concrete systems and hands-on system insights, such as DeepSpeed-SuperOffload for training LLMs on emerging GPU-CPU Superchips, combining DeepSpeed's high-performance training with Ray's flexibility for complex distributed workloads including RL, DeepCompile for compiler-driven distributed optimizations, and DeepSpeed on TPU for heterogeneous hardware, we will connect core system design principles to real-world system implementation. By the end, participants will leave with both conceptual understanding of large-model system design and concrete techniques to apply in their own research, helping to build the next generation of efficient, scalable, and open AI infrastructures.
+                </p>
+            </div>
         </section>
 
         <section id="schedule" class="page-section">
-            <h2>Tutorial Content and Tentative Schedule</h2>
+            <h3>Tutorial Content and Tentative Schedule</h3>
 
             <table>
                 <tr>
@@ -188,14 +190,14 @@
         </section>
 
         <section id="prerequisites" class="page-section">
-            <h2>Prerequisites</h2>
+            <h3>Prerequisites</h3>
             <ul>
                 <li>Basic familiarity with deep learning and transformer models</li>
                 <li>Working knowledge of PyTorch or similar frameworks</li>
                 <li>Prior experience with distributed training is helpful but not required</li>
             </ul>
 
-            <h2>Target Audience</h2>
+            <h3>Target Audience</h3>
             <ul>
                 <li>Researchers and practitioners working on large-scale LLM training</li>
                 <li>Systems and architecture researchers interested in AI workloads</li>
@@ -230,7 +232,7 @@
                 if (!current && window.location.hash) {
                     current = window.location.hash.slice(1);
                 }
-                if (!current) current = 'home';
+                if (!current) current = 'organizers';
                 links.forEach(function(a) {
                     a.classList.toggle('current', a.getAttribute('data-section') === current);
                 });
