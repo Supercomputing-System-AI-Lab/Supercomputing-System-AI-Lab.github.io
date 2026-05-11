@@ -197,6 +197,13 @@
         <figure class="algorithm">
           <img src="./static/images/bit_packing.png" alt="Bit-packing decoding design" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
         </figure>
+        <p>
+          <strong>On-the-fly decoding.</strong> To turn the bit-packing scheme into actual inference speedup, we implement a specialized decode-GEMM kernel in Triton. Following Algorithm 1, each weight is decoded from its packed format on the fly, immediately before being used in the multiplication. This avoids materializing the decoded matrix in memory: the decoding logic is a lightweight in-place operation that piggybacks on the kernel's existing data-loading path, adding negligible overhead.
+        </p>
+
+        <p>
+          <strong>Fused two-expert computation.</strong> The kernel also exploits the merged-expert structure for additional savings. As illustrated in Figure 4, a conventional GEMM requires two separate memory transactions to load each expert's weights. Our kernel instead performs a single access to the packed $\mathbf{W}_{merged}$ to produce both outputs $O_i, O_j$ from concatenated inputs $A_i, A_j$, yielding a theoretical 2× latency reduction in memory-bound GEMM during LLM decoding.
+        </p> 
         </div>
         <p>
         </p>
