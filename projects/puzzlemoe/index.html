@@ -246,7 +246,11 @@
         </div>
         <figure class="algorithm">
           <img src="./static/images/benchmark_results.png" alt="SFPO algorithm" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
+           <figcaption class="subtitle has-text-centered">
+            Figure 5: Performance of compressed MoE LLMs with PuzzleMoE across tasks.
+        </figcaption>
         </figure>
+        
       </div>
     </div>
 </section>
@@ -258,14 +262,17 @@
         <h2 class="title is-3">More Efficient Compression and Inference</h2>
         <figure class="algorithm">
           <img src="./static/images/efficiency.png" alt="SFPO algorithm" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
+           <figcaption class="subtitle has-text-centered">
+            Figure 6: Efficiency analysis. (a): compression time comparison across Mixtral and Deepseek-MoE. (b): throughput comparison for Mixtral-8x7B across various batch sizes.
+        </figcaption>
         </figure>
         <div class="content has-text-justified">
         <p>
-        (a) PuzzleMoE only takes 2 minutes for compressing Mixtral-8x7B, while D2 takes 55 minutes due to the heavy computation cost of SVD operation. For Deepseek-MoE, PuzzleMoE takes 10 minutes for compression, indicating the efficiency of PuzzleMoE on MoE models with a large number of experts. 
+        <strong>Compression Cost.</strong> (a) PuzzleMoE only takes 2 minutes for compressing Mixtral-8x7B, while D2 takes 55 minutes due to the heavy computation cost of SVD operation. For Deepseek-MoE, PuzzleMoE takes 10 minutes for compression, indicating the efficiency of PuzzleMoE on MoE models with a large number of experts. 
 Note that NAEE’s reliance on exhaustive search makes the compression time quite expensive. For instance, applying it to DeepSeek-MoE with 64 experts requires $10^{18}$ on the order of forward passes, rendering it infeasible in practice.
         </p> 
         <p>
-        (b) and (c): For Mixtral-8x7B, the full model necessitates two A100-80G GPUs for inference, whereas the compressed model can be deployed on a single A100-80G GPU. Similarly, for Qwen3-MoE, which is evaluated on A100-40G GPUs, the full model requires two GPUs for inference, while the compressed model is capable of inference on a single GPU. Moreover, PuzzleMoE achieves an inference speedup of $1.28\times$ for Mixtral-8x7B and $1.19\times$ for Qwen3-MoE, which are marginally better than the existing compression methods and with great accuracy gains.
+        <strong>End-to-end Throughput.</strong> We evaluated the through put of Mixtral-8x7B at a 50% compression ratio, with results illustrated in Figure 6(b). Under a configuration of 16 prefill tokens and 128 decoding tokens across various batch sizes, PuzzleMoE achieves up to a 1.80× speedup compared to the uncompressed baseline. This efficiency gain is primarily driven by our specialized PuzzleMoE decode-GEMM kernel, which delivers a 2× throughput improvement over the standard cuBLAS implementation. 
         </p> 
         </div>
       </div>
