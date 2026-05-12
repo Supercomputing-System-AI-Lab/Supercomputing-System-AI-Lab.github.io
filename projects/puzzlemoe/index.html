@@ -272,7 +272,7 @@
 Note that NAEE’s reliance on exhaustive search makes the compression time quite expensive. For instance, applying it to DeepSeek-MoE with 64 experts requires $10^{18}$ on the order of forward passes, rendering it infeasible in practice.
         </p> 
         <p>
-        <strong>End-to-end Throughput.</strong> We evaluated the through put of Mixtral-8x7B at a 50% compression ratio, with results illustrated in Figure 6(b). Under a configuration of 16 prefill tokens and 128 decoding tokens across various batch sizes, PuzzleMoE achieves up to a 1.80× speedup compared to the uncompressed baseline. This efficiency gain is primarily driven by our specialized PuzzleMoE decode-GEMM kernel, which delivers a 2× throughput improvement over the standard cuBLAS implementation. 
+        <strong>End-to-end Throughput.</strong> We benchmark the end-to-end throughput of PuzzleMoE on a cluster with 8 RTX5090 GPUs, with results of Mixtral-8x7B at a 50% compression ratio illustrated in Figure 6(b). Under a configuration of 16 prefill tokens and 128 decoding tokens across various batch sizes, PuzzleMoE achieves up to a 1.80× speedup compared to the uncompressed baseline. This efficiency gain is primarily driven by our specialized PuzzleMoE decode-GEMM kernel, which delivers a 2× throughput improvement over the standard cuBLAS implementation. 
         </p> 
         </div>
       </div>
