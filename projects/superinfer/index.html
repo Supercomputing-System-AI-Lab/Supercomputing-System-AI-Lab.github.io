@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms.">
-  <meta name="keywords" content="X-MoE, Mixture of Experts, HPC, Deep Learning Training, Scalability">
+        content="SuperInfer: SLO-Aware Rotary Scheduling and Memory Management for LLM Inference on Superchips.">
+  <meta name="keywords" content="SLO-Aware, Rotary Scheduling, Memory Management, LLM Inference, Superchips">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms</title>
+  <title>SuperInfer: SLO-Aware Rotary Scheduling and Memory Management for LLM Inference on Superchips</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
@@ -209,28 +209,21 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title" style="font-size: 45px;">X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms</h1>
+          <h1 class="title is-1 publication-title" style="font-size: 45px;">SuperInfer: SLO-Aware Rotary Scheduling and Memory Management for LLM Inference on Superchips</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://yueming-yuan.github.io/">Yueming Yuan</a><sup>1</sup>,</span>
+              <a href="https://monsoon-cs.moe">Jiahuan Yu</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a href="https://github.com/spikerheado1234">Ahan Gupta</a><sup>1</sup>,</span>
+              <a href="https://www.linkedin.com/in/mingtao-hu-51a638214">Mingtao Hu</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a href="https://jpli02.github.io/">Jianping Li</a><sup>1</sup>,
+              <a href="mailto:zichaol3@illinois.edu">Zichao Lin</a><sup>1</sup>,
             </span>
-            <span class="author-block">
-              <a href="https://www.ornl.gov/staff-profile/sajal-dash">Sajal Dash</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.ornl.gov/staff-profile/feiyi-wang">Feiyi Wang</a><sup>2</sup>,
-            <span class="author-block">
               <a href="https://minjiazhang.github.io/">Minjia Zhang</a><sup>1</sup>
             </span>
           </div>
  
           <div class="is-size-5 publication-authors">
             <span class="author-block" style="margin-right: 10px;"><sup>1</sup>University of Illinois Urbana-Champaign</span>
-            <span class="author-block" style="margin-right: 10px;"><sup>2</sup>Oak Ridge National Laboratory</span>
           </div>
 
           <!-- <div class="is-size-5">
@@ -246,7 +239,7 @@
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block" style="margin-right: 20px;">
-                <a href="./2025_SC_X-MoE-2.pdf"
+                <a href="./2026_MLSys_SuperInfer.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -255,7 +248,7 @@
                 </a>
               </span>
               <span class="link-block" style="margin-right: 20px;">
-                <a href="https://arxiv.org/abs/2508.13337"
+                <a href="https://arxiv.org/abs/2601.20309"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
@@ -264,7 +257,7 @@
                 </a>
               </span>
               <span class="link-block" style="margin-right: 20px;">
-                <a href="https://github.com/Supercomputing-System-AI-Lab/X-MoE"
+                <a href="https://github.com/Supercomputing-System-AI-Lab/SuperInfer"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -273,7 +266,7 @@
                   </a>
               </span>
               <span class="link-block" style="margin-right: 20px;">
-                <a href="https://supercomputing-system-ai-lab.github.io/blogs/blog/x-moe-scaling-deepseek-style-moes-on-frontierwhat-broke-what-we-fixed-and-what-to-learn/"
+                <a href="https://supercomputing-system-ai-lab.github.io/blogs/blog/superinfer-slo-aware-rotary-scheduling-and-memory-management-for-llm-inference-on-superchips/"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-blog"></i>
@@ -300,7 +293,7 @@
           <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
           <div class="news-gentle">
             <i class="fas fa-trophy trophy-icon" style="font-size: 1.2em;"></i>
-            <strong>2025-06-26:</strong> X-MoE has been accepted at <span class="award-text">SC 2025</span> and received <span class="award-text">Best Student Paper Nomination</span>! 🎉
+            <strong>2026-01-26:</strong> SuperInfer has been accepted at <span class="award-text">MLSys 2026</span> ! 🎉
           </div>
         </div>
       </div>
@@ -334,11 +327,20 @@
         <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Abstract</h2>
         <div class="abstract-box">
           <div class="content has-text-justified" style="margin-top: -10pt;">
-            <p>
+            <!-- <p>
               <strong>Expert-specialized Mixture-of-Experts (MoEs) </strong> represent a significant advancement in large language models, employing fine-grained experts with large top-k routing to enhance expert specialization. However, training these emerging MoE architectures poses significant challenges for existing off-the-shelf MoE training solutions, especially on <strong>heterogeneous HPC platforms</strong>. These challenges include inefficient cross-platform kernels, shifted memory bottlenecks from model parameters to activations, and expensive all-to-all communication on hierarchical networks.
             </p>
             <p>
               To address these issues, we present <strong> X-MoE</strong>, a comprehensive training system designed specifically for expert-specialized MoEs on HPC platforms. X-MoE introduces three key innovations: (1) a padding-free sparse MoE training pipeline with cross-platform kernels that eliminates zero-padding overhead, (2) a hierarchical redundancy-bypassing dispatch algorithm that reduces communication redundancy on hierarchical networks, and (3) a hybrid parallelism strategy with sequence-sharded MoE blocks that addresses the shifted memory bottleneck. Our evaluation on the Frontier supercomputer demonstrates that X-MoE enables training of models up to <strong style="color: #667eea;">545B parameters</strong> on <strong>1024 AMD GPUs</strong>—<strong style="color: #667eea;">10× larger</strong> than existing solutions—while achieving up to <strong style="color: #667eea;">1.42× higher training throughput</strong>.
+            </p> -->
+            <p>
+              <strong>Large Language Model (LLM)</strong> serving faces a fundamental tension between stringent latency <strong>Service Level Objectives (SLOs)</strong> and limited GPU memory capacity. When high request rates exhaust the KV cache budget, existing LLM inference systems often suffer severe head-of-line (HOL) blocking. While prior work explored PCIe-based offloading, these approaches cannot sustain responsiveness under high request rates, often failing to meet tight <strong>Time-To-First-Token (TTFT)</strong> and <strong>Time-Between-Tokens (TBT)</strong> SLOs. 
+            </p>
+            <p>
+              To address these issues, we present <strong>SuperInfer</strong>, a high-performance LLM inference system designed for emerging <strong>Superchips</strong> (e.g., NVIDIA GH200) with tightly coupled GPU-CPU architecture via NVLink-C2C. SuperInfer introduces (1) RotaSched, the first proactive, SLO-aware rotary scheduler that rotates requests to maintain responsiveness on Superchips, (2) DuplexKV, an optimized rotation engine that enables full-duplex transfer over NVLink-C2C.
+            </p>
+            <p> 
+              Evaluations on GH200 using various models and datasets show that SuperInfer improves TTFT SLO attainment rates by up to <strong>74.7%</strong> while maintaining comparable TBT and throughput compared to state-of-the-art systems, demonstrating that SLO-aware scheduling and memory co-design unlocks the full potential of Superchips for responsive LLM serving.
             </p>
           </div>
         </div>
@@ -357,47 +359,85 @@
           <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Background</h2>
           <div style="background: linear-gradient(135deg, #fff5f5 0%, #f0f8ff 100%); border-radius: 15px; padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             <p class="has-text-justified" style="margin-bottom: 20px;">
-              <strong>Mixture-of-Experts (MoE)</strong> models have emerged as a powerful approach to scale neural networks efficiently by activating only a subset of parameters per token. Traditional MoE architectures typically employ <strong>coarse-grained experts</strong> with relatively large hidden dimensions and small routing values (e.g., top-1 or top-2).
+              <strong>The Memory Wall</strong>: During autoregressive generation, each request maintains a growing KV cache that quickly exhausts GPU memory under high loads, leading to SLO violations.
+              <!-- <strong>Mixture-of-Experts (MoE)</strong> models have emerged as a powerful approach to scale neural networks efficiently by activating only a subset of parameters per token. Traditional MoE architectures typically employ <strong>coarse-grained experts</strong> with relatively large hidden dimensions and small routing values (e.g., top-1 or top-2). -->
+            </p>
+
+            <p class="has-text-justified" style="margin-bottom: 20px;">
+              <strong>The Interconnect Bottleneck</strong>: Existing KV offloading systems are crippled by slow PCIe bandwidth (~32-64 GB/s), causing severe head-of-line (HOL) blocking and SLO violations.
+              <!-- <strong>Mixture-of-Experts (MoE)</strong> models have emerged as a powerful approach to scale neural networks efficiently by activating only a subset of parameters per token. Traditional MoE architectures typically employ <strong>coarse-grained experts</strong> with relatively large hidden dimensions and small routing values (e.g., top-1 or top-2). -->
             </p>
             
-            <p class="has-text-justified" style="margin-bottom: 20px;">
+            <!-- <p class="has-text-justified" style="margin-bottom: 20px;">
               In contrast, <strong style="color: #667eea;">expert-specialized MoEs</strong> represent a paradigm shift toward more fine-grained expertise. These architectures feature:
-            </p>
+            </p> -->
             
             <div style="background: white; border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea;">
               <ul style="margin: 0;">
-                <li><strong>Fine-grained experts</strong> with smaller hidden dimensions that encourage specialization</li>
+                <!-- <li><strong>Fine-grained experts</strong> with smaller hidden dimensions that encourage specialization</li>
                 <li><strong>Large top-k routing</strong> (e.g., top-8) that activates multiple specialized experts per token</li>
-                <li><strong>Enhanced expert specialization</strong> where each expert learns to handle specific types of linguistic patterns or knowledge domains</li>
+                <li><strong>Enhanced expert specialization</strong> where each expert learns to handle specific types of linguistic patterns or knowledge domains</li> -->
+                <li>Increasing swap bandwidth <strong>beyond the PCIe Gen5x16</strong> uni-directional limit significantly reduces both <strong>TTFT</strong> and <strong>TBT</strong>.</li>
               </ul>
-              <div class="content" style="margin-top: 20px; text-align: center;">
-                <img src="./static/images/background.jpg"
-                class="interpolation-image"
-                alt="MoE Background" style="width: 50%;"/>
+              <!-- <div class="content" style="margin-top: 20px; text-align: center; width: 600px;"> -->
+              <ul style="margin: 0;">
+                <li><strong>PCIe's Low swap bandwidth</strong> creates two major obstacles: <strong>request backlogging</strong> and <strong>HOL blocking</strong> to reducing tail latencies.</li>
+              </ul>
+              <!-- <div class="content" style="margin-top: 20px; text-align: center; width: 600px;"> -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 15px 0; gap: 20px;">
+
+                  <!-- Figure 2 -->
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig2.png" alt="Background1" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+
+                  <!-- Figure 3 -->
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig3.png" alt="Background2" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+
               </div>
             </div>
             
-
-            
             <p class="has-text-justified" style="margin-bottom: 20px;">
-              Recent models like <strong>DeepSeek-v3</strong> and <strong>Qwen3-MoE</strong> have demonstrated the effectiveness of this approach, achieving superior performance while maintaining computational efficiency. However, this architectural shift introduces significant<strong style="color: #667eea;"> new challenges for training systems</strong>:
+              <strong>Superchip Opportunity</strong>: Emerging tightly-coupled CPU-GPU Superchips provides highspeed CPU-GPU interconnects to break the PCIe bottleneck. As an example, NVIDIA GH200 integrates a Hopper GPU and a Grace CPU via NVLink-C2C with 900 GB/s interconnection bandwidth.
             </p>
             
+            <div class="content" style="margin: 20px auto 0 auto; text-align: center; width: 500px;">
+                <img src="./static/images/superchip.png"
+                class="interpolation-image"
+                alt="Background3" style="width: 100%;"/>
+            </div>
+
+            <p class="has-text-justified" style="margin-top: 20px;margin-bottom: 20px;">
+              <strong>Software Bottlenecks</strong>: Existing serving stacks fall short on two fronts:
+            </p>
             <div style="background: white; border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea;">
               <div style="margin-bottom: 20px;">
-                <h5><strong>Lack of Efficient Cross-Platform Training Pipeline</strong></h5>
-                <p>Existing MoE training frameworks rely on dense, CUDA-specific implementations that are inefficient for expert-specialized MoEs and difficult to port to non-NVIDIA platforms, leading to inflated memory usage and degraded performance.</p>
+                <h5><strong>SLO-unaware</strong></h5>
+                <p>React to memory pressure, not latency urgency. Static <i>Waiting-First</i> / <i>Swapped-First</i> policies bias one SLO (TTFT or TBT) at the expense of the other.</p>
               </div>
               
+
               <div style="margin-bottom: 20px;">
-                <h5><strong>Memory Bottleneck Shift: High Activation Memory Usage</strong></h5>
-                <p>As expert-specialized MoEs increase the number of routed experts and shrink expert hidden dimensions, per-device memory bottlenecks shift from model parameters to activations, particularly in the dispatch and combine stages.</p>
+                <h5><strong>Under-utilized C2C</strong></h5>
+                <p>Exploit &lt; 5% of NVLink-C2C bandwidth — <i>PagedAttention</i> fragments KV cache into tiny pieces. </p>
               </div>
               
-              <div>
-                <h5><strong>Expensive All-to-All Communication</strong></h5>
-                <p>Expert-specialized MoEs increase the number of routed experts per token, leading to significant communication duplication. On HPC platforms with hierarchical networks, this results in inefficient use of inter-node bandwidth.</p>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 15px 0; gap: 20px;">
+
+                  <!-- Figure 2 -->
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig4.png" alt="Background3" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+
+                  <!-- Figure 3 -->
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig5.png" alt="Background4" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+
               </div>
+
             </div>
             
           </div>
@@ -415,28 +455,49 @@
 
       <div class="column">
         <div class="content">
-          <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">X-MoE Design</h2>
+          <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">SuperInfer Design</h2>
           
           <div class="content" style="margin-top: 20px; text-align: center;">
-            <img src="./static/images/xmoe-overview.jpg"
+            <img src="./static/images/fig6.png"
             class="interpolation-image"
-            alt="X-MoE Overview" style="width: 90%;"/>
+            alt="Overview" style="width: 55%;"/>
           </div>
           
           <div class="feature-box">
-            <h4><strong>Padding-Free Sparse MoE Training</strong></h4>
-            <p>X-MoE introduces PFT (Padding-Free Token buffers), a novel sparse data structure that eliminates zero-padding through MoE computation and communication stages. Cross-platform Triton-based kernels handle sparse and irregular workloads efficiently.</p>
+            <h4><strong>RotaSched: Proactive Rotation</strong></h4>
+            <p> Rotates requests between running (HBM) and a novel transient rotary (DRAM) state by latency urgency — OS-style time-slicing for LLM serving.</p>
+            <ul>
+              <li><strong>Virtual Lag Time (VLT)</strong>: Per-request metric of deviation from TTFT/TBT SLOs, defined for <i>running</i> / <i>rotary</i> / <i>waiting</i> requests — the scheduling currency that drives RotaSched. </li>
+
+              <li><strong>Largest-VLT-First (LVF)</strong>: Prioritizes requests with the largest positive VLT — those most vulnerable to SLO violation — while preempting long-running requests with smaller VLT to the rotary state to free HBM. </li>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 15px 0; gap: 20px;">
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig8.png" alt="Design1" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig9.png" alt="Design2" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+              </div>
+            </ul>
           </div>
           
           <div class="feature-box">
-            <h4><strong>Redundancy-Bypassing Dispatch (RBD)</strong></h4>
-            <p>A hierarchical multi-stage dispatching process that eliminates redundant inter-node communication by using pilot tokens and local replicas, reducing communication overhead on repeated tokens.</p>
+            <h4><strong>DuplexKV: Full-Duplex Engine</strong></h4>
+            <ul>
+              <li><strong>Eager Block Rotation</strong>: KV cache fills its blocks incrementally; fully-written blocks are eagerly copied to DRAM in the background and marked "synced". On preemption, synced HBM blocks are simply discarded → swap-in/out data race broken, full-duplex transfers enabled. </li>
+
+              <li><strong>Block-first Layout + Batched DMA</strong>: Prioritizes requests with the largest positive VLT — those most vulnerable to SLO violation — while preempting long-running requests with smaller VLT to the rotary state to free HBM. </li>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 15px 0; gap: 20px;">
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig13.png" alt="Design3" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+                  <div style="flex: 1; text-align: center;">
+                      <img src="./static/images/fig14.png" alt="Design4" style="width: 100%; max-height: 150px; object-fit: contain;">
+                  </div>
+              </div>
+            </ul>
           </div>
             
-          <div class="feature-box">
-            <h4><strong>Sequence-Sharded MoE Blocks (SSMB)</strong></h4>
-            <p>A hybrid parallelism strategy that combines tensor-slicing with sequence-sharded execution for MoE blocks, reducing activation memory by a factor of the TP group size while maintaining compatibility with standard MoE routing.</p>
-          </div>
         </div>
       </div>
     </div>
@@ -454,33 +515,25 @@
         </div>
         
         <div class="content" style="margin-top: 20px; text-align: center;">
-          <img src="./static/images/main-result.jpg"
+          <img src="./static/images/fig16.png"
           class="interpolation-image"
-          alt="X-MoE Main Results" style="width: 65%;"/>
+          alt="SuperInfer Main Results" style="width: 100%;"/>
         </div>
         
         <p>
-          We evaluate X-MoE on the Frontier supercomputer using up to <strong> 1024 AMD MI250X GPUs </strong>, on <strong> DeepSeek-style MoE models </strong> (Small, Medium, Large, Super model configurations are created with reference to DeepSeek-MoE, v2 and v3). Our results demonstrate significant improvements in both model scale and training efficiency:
+          The system was evaluated on a <strong>GH200 Superchip (144GB HBM, 480GB DRAM)</strong> using models like LLaMA-3-8B, Qwen2.5-32B, and Mixtral-8x7B against baselines such as vLLM, TensorRT-LLM, LightLLM, LTR, and NEO.
         </p>
         <div class="results-item">
-          <strong>📊 Scale:</strong> X-MoE enables training of models up to <strong style="color: #28a745;">545B parameters</strong>, which is <strong style="color: #28a745;">10× larger</strong> than existing solutions under the same hardware budget.
+          <strong>Versatility:</strong> SuperInfer demonstrates significant performance improvements on both <strong>Dense</strong> and <strong>MoE</strong> models.
         </div>
         <div class="results-item">
-          <strong>⚡ Throughput:</strong> Up to <strong style="color: #28a745;">1.42× higher training throughput</strong> compared to state-of-the-art MoE systems like Tutel and DeepSpeed-MoE.
+          <strong>SLO Attainment :</strong> Up to <strong>74.7% higher</strong> TTFT SLO attainment with comparable TBT SLO, vs. vLLM at high request rates.
+
         </div>
-        <div class="results-item">
-          <strong>💾 Memory Efficiency:</strong> Significant reduction in activation memory usage through padding-free pipeline and sequence sharding.
-        </div>
-        <!-- <div class="results-item">
-          <strong>📡 Communication Optimization:</strong> Up to <strong style="color: #28a745;">75.1% reduction</strong> in redundant communication through hierarchical dispatch algorithm.
-        </div>
-        <div class="results-item">
-          <strong>📈 Scalability:</strong> Excellent weak and strong scaling performance across different GPU configurations.
-        </div> -->
         
-        <p style="margin-top: 25px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #28a745;">
-          <strong>🔧 Integration:</strong> X-MoE is built on top of DeepSpeed, which is compatible with the DeepSpeed-Megatron training options.
-        </p>
+        <div class="results-item">
+          <strong>Integration:</strong> SuperInfer is built on top of <strong>vLLM</strong>, a wildly used open-source inference engine.
+        </div>
       </div>
     </div>
   </div>
@@ -489,14 +542,14 @@
 <section class="section" id="BibTeX" style="margin-top: -40px;">
 <div class="container is-max-desktop content">
 <h2 class="title gradient-header">BibTeX</h2>
-<pre style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;"><code>@misc{yuan2025xmoeenablingscalabletraining,
-title={X-MoE: Enabling Scalable Training for Emerging Mixture-of-Experts Architectures on HPC Platforms},
-author={Yueming Yuan and Ahan Gupta and Jianping Li and Sajal Dash and Feiyi Wang and Minjia Zhang},
-year={2025},
-eprint={2508.13337},
+<pre style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;"><code>@misc{yu2026superinfer,
+title={SuperInfer: SLO-Aware Rotary Scheduling and Memory Management for LLM Inference on Superchips},
+author={Jiahuan Yu and Mingtao Hu and Zichao Lin and Minjia Zhang},
+year={2026},
+eprint={2601.20309},
 archivePrefix={arXiv},
 primaryClass={cs.LG},
-url={https://arxiv.org/abs/2508.13337},
+url={https://arxiv.org/abs/2601.20309},
 }</code></pre>
 </div>
 </section>
