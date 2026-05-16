@@ -132,7 +132,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-           Mixture-of-Experts (MoE) models have shown strong potential in scaling language models efficiently by activating only a small subset of experts per input. However, their widespread deployment remains limited due to the high memory overhead associated with storing all expert parameters, particularly as the number of experts increases. To address this challenge, prior works have explored expert dropping and merging strategies, yet they often suffer from performance drop at high compression ratios. In this paper, we introduce PuzzleMoE, a training-free MoE compression method that achieves both high accuracy and efficient inference through two key innovations: First, PuzzleMoE performs sparse expert merging by identifying element-wise weight redundancy and specialization. It uses a dual-mask to capture both shared and expert-specific parameters. Second, to avoid the overhead of storing binary masks and signs, PuzzleMoE introduces a bit-packed encoding scheme that reuses underutilized exponent bits, enabling efficient MoE inference on GPUs. Extensive experiments demonstrate that PuzzleMoE can compress MoE models by up to 50% while maintaining accuracy across various tasks. Specifically, it outperforms prior MoE compression methods by up to 16.7% on MMLU at 50% compression ratio, and achieves up to 1.28× inference speedup. 
+           Mixture-of-Experts (MoE) have shown strong po- tential in scaling language models efficiently by activating only a small subset of experts per in- put. However, their deployment remains limited due to the high memory overhead associated with storing all expert parameters, particularly as the number of experts increases. To address this chal- lenge, prior works have explored expert dropping and merging strategies; however, they often suffer from notable performance drop especially at high compression ratios due to their reliance on coarse- grained tensor- or expert-level operations. In this paper, we introduce PuzzleMoE, the first MoE merging method to enable fine-grained element- wise merging while achieving both high accu- racy and inference speed, via two key innovations: First, PuzzleMoE performs sparse expert merging by identifying element-wise weight redundancy and specialization. It introduces a dual-mask ap- proach to capture both shared and expert-specific salient parameters. Second, to avoid the overhead of storing masks and signs, we introduce a bit- packed encoding scheme that reuses underutilized exponent bits, enabling efficient MoE inference on GPUs. Extensive experiments demonstrate that PuzzleMoE outperforms prior MoE compres- sion methods by up to 16.7% on MMLU at 50% compression ratio, and achieves up to 1.80× end- to-end inference throughput gain.
           </p>
         </div>
       </div>
@@ -156,6 +156,9 @@
         <h3 class="title is-4">Algorithm Design: Pairwise Dual-Mask Expert Merging</h3>
         <figure class="algorithm">
           <img src="./static/images/PuzzleMoE_algorithm.png" alt="SFPO algorithm" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
+           <figcaption class="subtitle has-text-centered">
+            Figure 2: Overview of the fine-grained sparse expert merging algorithm
+            </figcaption>
         </figure>
        <p>
           We merge a pair of experts <em>i</em> and <em>j</em> by (i) computing per-expert saliency masks
@@ -183,20 +186,36 @@
 
         <h3 class="title is-4">Kernel Design:Efficient Inference with Bit-Packing</h3>
         <figure class="algorithm">
-          <img src="./static/images/exponent_observation.png" alt="Bit-packing kernel design" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
+          <img src="./static/images/kernel_observation.png" alt="Bit-packing kernel design" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
           <figcaption class="subtitle has-text-centered">
-            Figure 2: Illustration of the mask packing procedure. (a): the distribution of Bfloat16 weight exponents in Mixtral-8x7B. After shifting, the exponents can be encoded in 5 bits. (b): bit-level organization of masks and signs within the packed Bfloat16 format.
+            Figure 3: Illustration of the mask packing procedure. (a): the distribution of Bfloat16 weight exponents in Mixtral-8x7B. After shifting, the exponents can be encoded in 5 bits. (b): bit-level organization of masks and signs within the packed Bfloat16 format.
           </figcaption>
         </figure>
        <p>
-         The Bfloat16 data format, which allocates 1 sign, 8 exponent, and 7 mantissa bits, is standard for LLM inference. We found that MoE LLMs underutilize the available 8-bit exponent range: expert-weight exponents concentrate in a narrow band, leaving much of the dynamic range unused. For Mixtral-8×7B (Figure 2(a)), most exponents fall between 112 and 128.
+         <strong>Observation.</strong> The Bfloat16 data format, which allocates 1 sign, 8 exponent, and 7 mantissa bits, is standard for LLM inference. We found that MoE LLMs underutilize the available 8-bit exponent range: expert-weight exponents concentrate in a narrow band, leaving much of the dynamic range unused. For Mixtral-8×7B (Figure 3(a)), most exponents fall between 112 and 128.
         </p>
         <p>
-        Leveraging the concentrated exponent distribution, we apply a fixed shift to map all exponents into a 5-bit range, as illustrated in Figure 3(b). Specifically, any exponent smaller than 112 is rounded up to 112, and then all exponents are shifted down by 112, resulting in values that fall within the range of 0 to 31. This shift operation frees 3 bits within the original 8-bit exponent field, which can be used to pack the binary mask bits and a sign bit. Hence, the resultant $\mathbf{W}_{merged}$ is stored in a standard Bfloat16 data format, effectively embedding the masks and signs without additional storage. 
+        <strong>Bit-Packing Operation.</strong> Leveraging the concentrated exponent distribution, we apply a fixed shift to map all exponents into a 5-bit range, as illustrated in Figure 3(b). Specifically, any exponent smaller than 112 is rounded up to 112, and then all exponents are shifted down by 112, resulting in values that fall within the range of 0 to 31. This shift operation frees 3 bits within the original 8-bit exponent field, which can be used to pack the binary mask bits and a sign bit. Hence, the resultant $\mathbf{W}_{merged}$ is stored in a standard Bfloat16 data format, effectively embedding the masks and signs without additional storage. 
         </p>
         <figure class="algorithm">
           <img src="./static/images/bit_packing.png" alt="Bit-packing decoding design" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
         </figure>
+        <p>
+          <strong>On-the-fly decoding.</strong> To turn the bit-packing scheme into actual inference speedup, we implement a specialized decode-GEMM kernel in Triton. Following Algorithm 1, each weight is decoded from its packed format on the fly, immediately before being used in the multiplication. This avoids materializing the decoded matrix in memory: the decoding logic is a lightweight in-place operation that piggybacks on the kernel's existing data-loading path, adding negligible overhead.
+        </p>
+
+        <p>
+          <strong>Fused two-expert computation.</strong> The kernel also exploits the merged-expert structure for additional savings. As illustrated in Figure 4, a conventional GEMM requires two separate memory transactions to load each expert's weights. Our kernel instead performs a single access to the packed $\mathbf{W}_{merged}$ to produce both outputs $O_i, O_j$ from concatenated inputs $A_i, A_j$, yielding a theoretical 2× latency reduction in memory-bound GEMM during LLM decoding.
+        </p> 
+
+        </p>
+        <figure class="algorithm">
+          <img src="./static/images/decode-GEMM.png" alt="Bit-packing decoding GEMM design" style="width:80%;max-width:80%;height:auto;display:block;margin:0 auto;">
+        </figure>
+         <figcaption class="subtitle has-text-centered">
+            Figure 4: Overview of the PuzzleMoE decode-GEMM kernel. (a): the original workflow requires independent access for two experts. (b): PuzzleMoE decode-GEMM workflow only requires accessing the merged expert once to compute the 2 outputs.
+        </figcaption>
+        <p>
         </div>
         <p>
         </p>
@@ -227,7 +246,11 @@
         </div>
         <figure class="algorithm">
           <img src="./static/images/benchmark_results.png" alt="SFPO algorithm" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
+           <figcaption class="subtitle has-text-centered">
+            Figure 5: Performance of compressed MoE LLMs with PuzzleMoE across tasks.
+        </figcaption>
         </figure>
+        
       </div>
     </div>
 </section>
@@ -238,35 +261,38 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">More Efficient Compression and Inference</h2>
         <figure class="algorithm">
-          <img src="./static/images/efficiency.png" alt="SFPO algorithm" style="width:100%;max-width:100%;height:auto;display:block;margin:0 auto;">
+          <img src="./static/images/efficiency.png" alt="efficiency" style="width:80%;max-width:80%;height:auto;display:block;margin:0 auto;">
+           <figcaption class="subtitle has-text-centered">
+            Figure 6: Efficiency analysis. (a): compression time comparison across Mixtral and Deepseek-MoE. (b): throughput comparison for Mixtral-8x7B across various batch sizes.
+        </figcaption>
         </figure>
         <div class="content has-text-justified">
         <p>
-        (a) PuzzleMoE only takes 2 minutes for compressing Mixtral-8x7B, while D2 takes 55 minutes due to the heavy computation cost of SVD operation. For Deepseek-MoE, PuzzleMoE takes 10 minutes for compression, indicating the efficiency of PuzzleMoE on MoE models with a large number of experts. 
+        <strong>Compression Cost.</strong> (a) PuzzleMoE only takes 2 minutes for compressing Mixtral-8x7B, while D2 takes 55 minutes due to the heavy computation cost of SVD operation. For Deepseek-MoE, PuzzleMoE takes 10 minutes for compression, indicating the efficiency of PuzzleMoE on MoE models with a large number of experts. 
 Note that NAEE’s reliance on exhaustive search makes the compression time quite expensive. For instance, applying it to DeepSeek-MoE with 64 experts requires $10^{18}$ on the order of forward passes, rendering it infeasible in practice.
         </p> 
         <p>
-        (b) and (c): For Mixtral-8x7B, the full model necessitates two A100-80G GPUs for inference, whereas the compressed model can be deployed on a single A100-80G GPU. Similarly, for Qwen3-MoE, which is evaluated on A100-40G GPUs, the full model requires two GPUs for inference, while the compressed model is capable of inference on a single GPU. Moreover, PuzzleMoE achieves an inference speedup of $1.28\times$ for Mixtral-8x7B and $1.19\times$ for Qwen3-MoE, which are marginally better than the existing compression methods and with great accuracy gains.
+        <strong>End-to-end Throughput.</strong> We benchmark the end-to-end throughput of PuzzleMoE on a cluster with 8 RTX5090 GPUs, with results of Mixtral-8x7B at a 50% compression ratio illustrated in Figure 6(b). Under a configuration of 16 prefill tokens and 128 decoding tokens across various batch sizes, PuzzleMoE achieves up to a 1.80× speedup compared to the uncompressed baseline. This efficiency gain is primarily driven by our specialized PuzzleMoE decode-GEMM kernel, which delivers a 2× throughput improvement over the standard cuBLAS implementation. 
         </p> 
         </div>
       </div>
     </div>
 </section>
 
-<!-- <section class="section" id="BibTeX">
+<section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@misc{wang2025slowfastpolicyoptimizationrepositionbeforeupdate,
-      title={Slow-Fast Policy Optimization: Reposition-Before-Update for LLM Reasoning}, 
-      author={Ziyan Wang and Zheng Wang and Jie Fu and Xingwei Qu and Qi Cheng and Shengpu Tang and Minjia Zhang and Xiaoming Huo},
+    <pre><code>@misc{zhao2025puzzlemoeefficientcompressionlarge,
+      title={PuzzleMoE: Efficient Compression of Large Mixture-of-Experts Models via Sparse Expert Merging and Bit-packed inference},
+      author={Yushu Zhao and Zheng Wang and Minjia Zhang},
       year={2025},
-      eprint={2510.04072},
+      eprint={2511.04805},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2510.04072}, 
+      url={https://arxiv.org/abs/2511.04805},
 }</code></pre>
   </div>
-</section> -->
+</section>
 
 
 <footer class="footer">
