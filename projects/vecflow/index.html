@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="VecFlow: a GPU vector data management system for large-scale and high-performance vector search.">
+        content="VecFlow: a GPU-based vector data management system for large-scale and high-performance vector search.">
   <meta name="keywords" content="Vector Search, Filtered Search, Multi-Vector Search, Chamfer, GPU, ANNS">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VecFlow</title>
@@ -247,15 +247,7 @@
           <div class="column has-text-centered">
             <h1 class="title publication-title vecflow-wordmark">Vec<span class="flow">Flow</span></h1>
             <p class="vecflow-tagline">
-              A GPU vector data management system for large-scale and high&#8209;performance vector search.
-            </p>
-
-            <p class="vecflow-intro">
-              VecFlow is a line of work on vector search on GPUs. Currently it has two parts.
-              <a href="#filtered">Filtered Search</a> accelerates approximate nearest neighbor search.
-              <a href="#chamfer">Multi-Vector Search</a> targets ColBERT-style token embeddings,
-              scoring a query and a document as sets of token vectors with Chamfer (MaxSim)
-              similarity. Both co-design the algorithm with GPU and modern superchip architectures.
+              VecFlow is a high-performance GPU-based vector search library built for modern AI retrieval. It powers advanced retrieval applications by efficiently indexing, searching, and scoring large-scale vector data on modern GPUs. The current library is built on NVIDIA cuVS with workload-aware indexing, GPU-friendly retrieval operators, and architecture-aware memory management, supporting filtered vector search and ColBERT-style multi-vector search, with up to 100X higher thoughput over CPU-based filtered-search solutions and up to 10x faster multi-vector search over prior GPU-based methods. 
             </p>
 
             <div class="vecflow-pills">
