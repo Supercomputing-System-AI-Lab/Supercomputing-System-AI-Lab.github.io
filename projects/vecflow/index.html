@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="VecFlow: A High-Performance Vector Data Management System for Filtered-Search on GPUs.">
-  <meta name="keywords" content="Universal Checkpointing, DNN, Training">
+        content="VecFlow: a GPU vector data management system for large-scale and high-performance vector search.">
+  <meta name="keywords" content="Vector Search, Filtered Search, Multi-Vector Search, Chamfer, GPU, ANNS">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VecFlow: A High-Performance Vector Data Management System for Filtered-Search on GPUs</title>
+  <title>VecFlow</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
@@ -18,21 +18,195 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
   <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
+
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     /* Custom style to increase the max width of is-max-desktop */
     .is-max-desktop {
       max-width: 1020px; /* Adjust this value as needed */
     }
+    /* Offset jump targets so they don't sit flush under the top edge */
+    #filtered, #chamfer {
+      scroll-margin-top: 1.5rem;
+    }
+    /* Hero band */
+    .vecflow-hero {
+      background: #ffffff;
+      border-bottom: 1px solid #ebebeb;
+    }
+    .vecflow-hero .hero-body {
+      padding-top: 4.5rem;
+      padding-bottom: 4.5rem;
+    }
+    /* Accent strip across the very top */
+    .accent-strip {
+      height: 4px;
+      background: #333333;
+    }
+    .vecflow-wordmark {
+      font-size: 72px;
+      letter-spacing: -0.02em;
+      color: #111111;
+      margin-bottom: 0.75rem !important;
+    }
+    .vecflow-wordmark .flow {
+      color: #111111;
+    }
+    .vecflow-tagline {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #2b2b2b;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.45;
+    }
+    .vecflow-intro {
+      font-size: 1.05rem;
+      color: #595959;
+      max-width: 680px;
+      margin: 1.5rem auto 0;
+      line-height: 1.7;
+    }
+    /* Inline quick-jump links inside the intro */
+    .vecflow-intro a {
+      color: #3a3a3a;
+      font-weight: 400;
+      border-bottom: 1px solid rgba(58, 58, 58, 0.4);
+    }
+    .vecflow-intro a:hover {
+      color: #1a1a1a;
+      border-bottom-color: #1a1a1a;
+    }
+    /* Pill labels under the intro */
+    .vecflow-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .vecflow-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.95rem;
+      border: 1px solid #999999;
+      border-radius: 999px;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 0.9rem;
+      color: #4a4a4a;
+      background: #fff;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .vecflow-pill:hover {
+      background: #333333;
+      border-color: #333333;
+      color: #fff;
+    }
+    /* Self-contained project cards, in the same Bulma idiom as the sub-pages */
+    .project-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .project-card:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+    .project-card h3.title {
+      color: #111111;
+    }
+    .project-card .paper-title {
+      font-style: italic;
+      color: #363636;
+    }
+    .project-card .authors {
+      font-size: 0.95rem;
+    }
+    .project-card .affil {
+      font-size: 0.85rem;
+      color: #7a7a7a;
+    }
+    .project-card .note {
+      font-size: 0.9rem;
+      color: #7a7a7a;
+    }
+    .project-card .card-links {
+      margin-top: auto;
+    }
+    /* Project row: poster left, details right; stack on narrow screens */
+    .project-row {
+      display: flex;
+      gap: 1.75rem;
+      align-items: flex-start;
+    }
+    .project-row .poster {
+      flex: 0 0 auto;
+    }
+    .project-row .details {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    /* A0 portrait thumbnail: aspect ratio 1 : 1.414, framed */
+    .poster-thumb {
+      display: block;
+      width: 260px;
+      aspect-ratio: 1 / 1.414;
+      border: 1px solid #dcdcdc;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      object-fit: cover;
+      background: #f5f5f5;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .poster-thumb:hover {
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+      transform: translateY(-2px);
+    }
+    /* Placeholder shares the exact A0 portrait footprint */
+    .poster-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 260px;
+      aspect-ratio: 1 / 1.414;
+      border: 1px dashed #cfcfcf;
+      border-radius: 4px;
+      background: #f7f7f7;
+      color: #9a9a9a;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 1rem;
+    }
+    @media (max-width: 768px) {
+      .project-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .poster-thumb,
+      .poster-placeholder {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <div class="accent-strip"></div>
 
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
@@ -49,7 +223,7 @@
             <i class="fas fa-home"></i>
         </span>
         </a>
-  
+
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">
             More Research
@@ -61,228 +235,176 @@
           </div>
         </div>
       </div>
-  
+
     </div>
   </nav>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title" style="font-size: 45px;">VecFlow: A High-Performance Vector Data Management System for Filtered-Search on GPUs</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://github.com/jing-4369">Jingyi Xi</a><sup>*† 1</sup>,</span>
-            <span class="author-block">
-              <a href="https://github.com/moccch">Chenghao Mo</a><sup>* 1</sup>,</span>
-            <span class="author-block">
-              <a href="https://github.com/bkarsin">Ben Karsin</a><sup> 2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://github.com/achirkin">Artem Chirkin</a><sup> 2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.linkedin.com/in/mingqin-%E6%9D%8E%E6%98%8E%E7%90%B4-b017b41a/">Mingqin Li</a><sup> 3</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://minjiazhang.github.io/">Minjia Zhang</a><sup> 1</sup>
-            </span>
-          </div>
- 
-          <div class="is-size-5 publication-authors">
-            <span class="author-block" style="margin-right: 10px;"><sup>1 </sup>University of Illinois Urbana-Champaign</span>
-            <span class="author-block" style="margin-right: 10px;"><sup>2 </sup>Nvidia</span>
-            <span class="author-block" style="margin-right: 10px;"><sup>3 </sup>Microsoft</span>
-          </div>
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>*</sup>Both authors contributed equally to this research.</span>
-            <span class="author-block"><sup>†</sup>Work done while intern at UIUC.</span>
-          </div>
-
-          <!-- <div class="is-size-5">
-            <sup>1</sup> <a href="https://illinois.edu/"><img style="width:15%; padding-right: 15px;"
-                    src="static/logo/uiuc.png"> </a>
-            <sup>2</sup> <a href="https://www.microsoft.com/en-us/research/"><img style="width:20%; padding-right: 15px;"
-                    src="static/logo/microsoft.jpg"> </a>
-            <sup>3</sup> <a href="https://stasosphere.com/machine-learning/"><img style="width:12%; padding-right: 15px;"
-                    src="static/logo/s-logo.png"> </a>
-        </div> -->
-        <div class="column has-text-centered">
-          <div class="publication-links">
-            <!-- PDF Link. -->
-            <span class="link-block" style="margin-right: 20px;">
-              <a href="https://arxiv.org/abs/2506.00812"
-                 class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                    <i class="fas fa-file-pdf"></i>
-                </span>
-                <span>Paper</span>
-              </a>
-            </span>
-            <span class="link-block" style="margin-right: 20px;">
-              <a href="https://arxiv.org/abs/2506.00812"
-                 class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                    <i class="ai ai-arxiv"></i>
-                </span>
-                <span>arXiv</span>
-              </a>
-            </span>
-            <!-- Code Link. -->
-            <span class="link-block" style="margin-right: 20px;">
-              <a href="https://github.com/Supercomputing-System-AI-Lab/VecFlow/tree/main"
-                 class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                    <i class="fab fa-github"></i>
-                </span>
-                <span>Code</span>
-                </a>
-            </span>
-          </div>
-        </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="section" style="margin-top: -50px;">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column">
-        <div class="content">
-          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
-          <ul>
-            <li style="margin-top: 10px;">🎉 2025-6-2 The Arxiv version is available at <a href="https://arxiv.org/abs/2506.00812">arXiv</a>.</li>
-            <li style="margin-top: 10px;">🎉 2025-5-31 VecFlow is open-sourced at <a href="https://github.com/Supercomputing-System-AI-Lab/VecFlow">GitHub</a>.</li>
-            <li style="margin-top: 10px;">🎉 2025-5-23 VecFlow is accepted by <a href="https://2026.sigmod.org/">SIGMOD 2026</a>.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- <section class="hero teaser">
-  <div class="container is-max-desktop">
+  <!-- Hero -->
+  <section class="hero vecflow-hero">
     <div class="hero-body">
-      <img src="./static/images/ucp.jpg"
-      class="interpolation-image"
-      alt="UCP main results image."/>
-      <h2 class="subtitle">
-        UCP boosts large-scale training efficiency: 
-        <ul>
-          <li>🚀 Flexible change of parallelism (PP, SP, TP, ZeRO-DP) or GPU count mid-stream </li>
-          <li>🚀 Improve resilience by scaling down to healthy nodes</li>
-          <li>🚀 Increase throughput by scaling up to elastic nodes</li>
-        </ul>
-      </h2>
-    </div>
-  </div>
-</section> -->
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title publication-title vecflow-wordmark">Vec<span class="flow">Flow</span></h1>
+            <p class="vecflow-tagline">
+              A GPU vector data management system for large-scale and high&#8209;performance vector search.
+            </p>
 
-<section class="section" style="margin-top: -40px;">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered">
-      <div class="column">
-        <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Abstract</h2>
-        <div class="content has-text-justified" style="margin-top: -10pt;">
-          <p>
-            Vector search and database systems have become a keystone component in many AI applications. While many prior research has investigated how to accelerate the performance of generic vector search, emerging AI applications require running more sophisticated vector queries efficiently, such as vector search with attribute filters. Unfortunately, recent filtered-ANNS solutions are primarily designed for CPUs, with few exploration and limited performance of filtered-ANNS that take advantage of the massive parallelism offered by GPUs. In this paper, we present VecFlow, a novel high-performance vector data management system that achieves unprecedented high throughput and recall while obtaining low latency for filtered-ANNS on GPUs. We propose a novel label-centric indexing and search algorithm that significantly improves the selectivity of ANNS with filters. In addition to algorithmic level optimization, we provide architecture-aware optimizations for VecFlow's functional modules, effectively supporting both small batch and large batch queries, and single-label and multi-label query processing. Experimental results on NVIDIA A100 GPU over several public available datasets validate that VecFlow achieves 5 million QPS for recall 90%, outperforming state-of-the-art CPU-based solutions such as Filtered-DiskANN by up to 135 times. Alternatively, VecFlow can easily extend its support to high recall 99% regime, whereas strong GPU-based baselines plateau at around 80% recall. 
-          </p>
+            <p class="vecflow-intro">
+              VecFlow is a line of work on vector search on GPUs. Currently it has two parts.
+              <a href="#filtered">Filtered Search</a> accelerates approximate nearest neighbor search.
+              <a href="#chamfer">Multi-Vector Search</a> targets ColBERT-style token embeddings,
+              scoring a query and a document as sets of token vectors with Chamfer (MaxSim)
+              similarity. Both co-design the algorithm with GPU and modern superchip architectures.
+            </p>
+
+            <div class="vecflow-pills">
+              <a class="vecflow-pill" href="#filtered">Filtered Search</a>
+              <a class="vecflow-pill" href="#chamfer">Multi-Vector Search</a>
+            </div>
+
+            <div class="publication-links" style="margin-top: 1.75rem;">
+              <span class="link-block">
+                <a href="https://github.com/Supercomputing-System-AI-Lab/VecFlow"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <!--/ Abstract. -->
-  </div>
-</section>
+  </section>
 
+  <!-- Projects -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Projects</h2>
+      <div style="margin-top: 0.5rem;">
 
-<section class="section" style="margin-top: -40px;">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-
-    <div class="column">
-      <div class="content">
-        <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Method</h2>
-        <ul>
-        <li style="margin-top: 10px;"> VecFlow introduces the concept of "label specificity" - the number of data points associated with a particular label. Using a configurable specificity threshold T, it builds a dual-structured index: an IVF-CAGRA index for data points with labels that appear frequently (high specificity, ≥ T points), and an IVF-BFS index with interleaved vector storage for rare data points (low specificity, < T points). This dual-index approach optimizes GPU memory access patterns and achieves high performance across varying label distributions.</li>
-          <div class="content" style="margin-top: 10px; text-align: center;">
-            <img src="./static/images/vecflow_overview_updated.png"
-            class="interpolation-image"
-            alt="System overview." style="width: 50%;"/>
+        <!-- Project 1: Filtered Search -->
+        <div id="filtered" style="margin-bottom: 1.5rem;">
+          <div class="box project-card">
+            <div class="project-row">
+              <div class="poster">
+                <!-- Filtered Search poster: docs/VecFlow-Poster.pdf (page-1 preview docs/VecFlow-Poster.png) -->
+                <a href="./docs/VecFlow-Poster.pdf" target="_blank" rel="noopener">
+                  <img class="poster-thumb" src="./docs/VecFlow-Poster.png"
+                       alt="VecFlow Filtered Search poster (A0)">
+                </a>
+              </div>
+              <div class="details">
+                <h3 class="title is-4">Filtered Search</h3>
+                <p class="paper-title">
+                  VecFlow: A High-Performance Vector Data Management System for Filtered-Search on GPUs.
+                </p>
+                <p class="authors" style="margin-top: 0.75rem;">
+                  Jingyi Xi<sup>*1</sup>,
+                  Chenghao Mo<sup>*1</sup>,
+                  Ben Karsin<sup>2</sup>,
+                  Artem Chirkin<sup>2</sup>,
+                  Mingqin Li<sup>3</sup>,
+                  Minjia Zhang<sup>1</sup>
+                </p>
+                <p class="affil">
+                  <sup>*</sup> Equal contribution &nbsp;
+                  <sup>1</sup> University of Illinois Urbana-Champaign &nbsp;
+                  <sup>2</sup> NVIDIA &nbsp;
+                  <sup>3</sup> Microsoft
+                </p>
+                <p class="note" style="margin-top: 0.5rem;">2025. Accepted by SIGMOD 2026.</p>
+                <div class="card-links" style="padding-top: 1rem;">
+                  <span class="link-block" style="margin-right: 12px;">
+                    <a href="./filtered/"
+                       class="external-link button is-small is-rounded is-dark">
+                      <span class="icon"><i class="fas fa-diagram-project"></i></span>
+                      <span>Project page</span>
+                    </a>
+                  </span>
+                  <span class="link-block">
+                    <a href="https://doi.org/10.1145/3749189"
+                       class="external-link button is-small is-rounded is-dark">
+                      <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        <li style="margin-top: 30px;">For high-specificity data, VecFlow employs a redundancy-bypassing IVF-Graph approach. When building separate graph indices for each label's posting list, memory consumption can increase dramatically (10.8× for the YFCC dataset) due to data points with multiple labels being replicated across different inverted lists. To solve this problem, VecFlow maintains a single global embedding table shared across all label-specific graphs rather than duplicating vector embeddings. For each posting list, it builds a local virtual graph that uses local vertex IDs and a local-global mapping table to reference vectors in the global embedding table. All virtual graphs are compacted into a single continuous memory space organized by label IDs, making the structure compatible with existing graph-based algorithms while enabling efficient filtered search.</li>
-          <div class="content" style="margin-top: 10px; text-align: center;">
-            <img src="./static/images/ivf_cagra.jpg"
-            class="interpolation-image"
-            alt="Redundancy Bypassing layout." style="width: 50%;"/>
-          </div>
-        <li style="margin-top: 30px;">For low-specificity data, VecFlow implements an interleaved scan-based IVF-BFS method that maximizes GPU memory bandwidth utilization. Vectors are organized in groups of 32 (matching GPU warp size) with components interleaved to enable both coalesced memory access and vectorized loading with 128-bit instructions. During search, each CUDA block processes one query for its corresponding label-specific posting list, with the query vector loaded into shared memory. Each warp handles 32 interleaved vectors, with each thread computing one distance. The approach also fuses an optimized block-select-k operation for efficient nearest neighbor identification.</li>
-          <div class="content" style="margin-top: 10px; text-align: center;">
-            <img src="./static/images/ivf_bfs.png"
-            class="interpolation-image"
-            alt="Interleaved memory layout." style="width: 50%;"/>
-          </div>
-        <li style="margin-top: 30px;"> The persistent kernel design in VecFlow addresses the challenge of efficiently processing streaming small batch queries on GPUs, which is common in real-world scenarios. Unlike traditional approaches that suffer from launch overhead, VecFlow implements a continuously running kernel that remains active on the GPU. This design uses atomic ring buffers to manage job and worker queues, allowing queries to be processed immediately as they arrive in the stream. Each thread block handles individual queries independently, maximizing GPU utilization even with small batch sizes. This approach eliminates kernel launch overhead and avoids costly synchronization, resulting in significantly higher throughput and lower latency for practical vector search applications.</li>
-          <div class="content" style="margin-top: 10px; text-align: center;">
-            <img src="./static/images/persistent_kernel.png"
-            class="interpolation-image"
-            alt="Persistent kernel design." style="width: 50%;"/>
-          </div>
-    </div>
-  </div>
-  </div>
-</section>
-
-<section class="section" style="margin-top: -40px;">
-  <div class="container is-max-desktop">
-
-    <div class="columns is-centered">
-
-      <div class="column">
-        <div class="content">
-          <h2 class="title is-3">Evaluation</h2>
         </div>
-        <p>
-          We evaluate VecFlow on several public datasets, including semi-synthetic SIFT-1M and DEEP-50M with Zipf-distributed labels, real-world YFCC-10M, and WIKI-ANN for multi-label AND queries. VecFlow achieves million-scale QPS at 90% recall, which is one to two orders of magnitude higher than both CPU and GPU baselines. For multi-label search, VecFlow delivers 150K QPS at 90% recall where competing methods fail to achieve meaningful recall.  For small batch queries, VecFlow's persistent kernel achieves up to 7.08× higher throughput and 1.82× lower latency. Our IVF-BFS approach delivers 26M QPS for low-specificity labels in YFCC dataset, which is thousands of times faster than baseline methods. With carefully designed redundancy-bypassing optimization, VecFlow maintains a memory footprint comparable to single-index methods while substantially outperforming them.
-        </p>
+
+        <!-- Project 2: Multi-Vector Search -->
+        <div id="chamfer" style="margin-bottom: 1.5rem;">
+          <div class="box project-card">
+            <div class="project-row">
+              <div class="poster">
+                <!-- Chamfer poster: docs/VecFlow-Chamfer-Poster.pdf (page-1 preview docs/VecFlow-Chamfer-Poster.png) -->
+                <a href="./docs/VecFlow-Chamfer-Poster.pdf" target="_blank" rel="noopener">
+                  <img class="poster-thumb" src="./docs/VecFlow-Chamfer-Poster.png"
+                       alt="VecFlow-Chamfer poster (A0)">
+                </a>
+              </div>
+              <div class="details">
+                <h3 class="title is-4">Multi-Vector Search</h3>
+                <p class="paper-title">
+                  VecFlow-Chamfer: A GPU-based Data Management System for High-Performance Multi-Vector
+                  Search on Superchips.
+                </p>
+                <p class="authors" style="margin-top: 0.75rem;">
+                  Chenghao Mo<sup>1</sup>,
+                  Ben Karsin<sup>2</sup>,
+                  Philip Adams<sup>3</sup>,
+                  Minjia Zhang<sup>1</sup>
+                </p>
+                <p class="affil">
+                  <sup>1</sup> University of Illinois Urbana-Champaign &nbsp;
+                  <sup>2</sup> NVIDIA &nbsp;
+                  <sup>3</sup> Microsoft
+                </p>
+                <p class="note" style="margin-top: 0.5rem;">2026. Accepted by SIGMOD 2026.</p>
+                <div class="card-links" style="padding-top: 1rem;">
+                  <span class="link-block" style="margin-right: 12px;">
+                    <a href="./chamfer/"
+                       class="external-link button is-small is-rounded is-dark">
+                      <span class="icon"><i class="fas fa-diagram-project"></i></span>
+                      <span>Project page</span>
+                    </a>
+                  </span>
+                  <span class="link-block">
+                    <a href="https://doi.org/10.1145/3786706"
+                       class="external-link button is-small is-rounded is-dark">
+                      <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section" id="BibTeX" style="margin-top: -40px;">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@article{vecflow2025,
-  author    = {Xi, Jingyi and Mo, Chenghao and Karsin, Ben and Chirkin, Artem and Li, Mingqin and Zhang, Minjia},
-  title     = {VecFlow: A High-Performance Vector Data Management System for Filtered-Search on GPUs},
-  journal   = {arXiv preprint arXiv:2506.00812},
-  year      = {2025},
-}</code></pre>
-  </div>
-</section>
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</footer>
+  </footer>
 
 </body>
 </html>
