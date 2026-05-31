@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="VecFlow-Chamfer: GPU multi-vector search for ColBERT-style token embeddings using Chamfer (MaxSim) scoring on the Grace-Hopper Superchip.">
+  <meta name="keywords" content="Multi-Vector Search, Chamfer, MaxSim, ColBERT, Grace-Hopper, GH200, GPU, ANNS">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VecFlow-Chamfer: GPU Multi-Vector Search</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="../static/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="../static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="../static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="../static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="../static/js/fontawesome.all.min.js"></script>
+  <script src="../static/js/bulma-carousel.min.js"></script>
+  <script src="../static/js/bulma-slider.min.js"></script>
+  <script src="../static/js/index.js"></script>
+
+  <!-- MathJax for rendering the Chamfer (MaxSim) formula -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* Custom style to increase the max width of is-max-desktop */
+    .is-max-desktop {
+      max-width: 1020px; /* Adjust this value as needed */
+    }
+
+    .component-box {
+      height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+    .component-box .icon {
+      color: hsl(204, 86%, 53%);
+    }
+    .formula-panel {
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      font-size: 1.15rem;
+    }
+
+    /* ===== Figures in the Background / System / Results sections ===== */
+    /* Single centered figure with an italic caption, matching the page style */
+    .fig {
+      margin: 1.75rem 0 0;
+      text-align: center;
+    }
+    .fig img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      border: 1px solid #e2e2e2;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    /* Diagram figures are large; cap their width so they stay proportional to the text */
+    .fig.fig-diagram img {
+      max-width: 620px;
+    }
+    /* Taller, near-square diagrams get a smaller cap */
+    .fig.fig-diagram-sm img {
+      max-width: 460px;
+    }
+    .fig figcaption {
+      margin-top: 0.75rem;
+      font-style: italic;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #6a6a6a;
+    }
+    /* Two figures side by side, stacking on narrow screens */
+    .fig-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+      margin-top: 1.75rem;
+    }
+    .fig-pair .fig {
+      margin-top: 0;
+    }
+    /* Placeholder keeps a figure's footprint when an image is missing */
+    .fig-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border: 1px dashed #cfcfcf;
+      border-radius: 8px;
+      background: #f7f7f7;
+      color: #9a9a9a;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 1rem;
+    }
+    /* Axis note + legend for the recall/latency plot (fig 07 has none built in) */
+    .fig-axis-note {
+      font-size: 0.85rem;
+      color: #6a6a6a;
+      margin-top: 0.5rem;
+    }
+    .fig-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 0.4rem;
+      font-size: 0.88rem;
+      color: #4a4a4a;
+    }
+    .fig-legend .swatch {
+      display: inline-block;
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 2px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    @media (max-width: 768px) {
+      .fig-pair {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://minjiazhang.github.io">
+        <span class="icon">
+            <i class="fas fa-home"></i>
+        </span>
+        </a>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://minjiazhang.github.io/">
+              Publications
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Breadcrumb back to the VecFlow umbrella page and across to the sibling sub-page -->
+  <section class="section" style="padding-top: 1.5rem; padding-bottom: 0;">
+    <div class="container is-max-desktop">
+      <nav class="breadcrumb is-small" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="../">VecFlow</a></li>
+          <li class="is-active"><a href="#" aria-current="page">Multi-Vector Search</a></li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title" style="font-size: 45px;">VecFlow-Chamfer: A GPU-based Data Management System for High-Performance Multi-Vector Search on Superchips</h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><a href="https://moccch.github.io/">Chenghao Mo</a><sup> 1</sup>,</span>
+              <span class="author-block"><a href="https://github.com/bkarsin">Ben Karsin</a><sup> 2</sup>,</span>
+              <span class="author-block"><a href="https://www.linkedin.com/in/pbadams">Philip Adams</a><sup> 3</sup>,</span>
+              <span class="author-block">
+                <a href="https://minjiazhang.github.io/">Minjia Zhang</a><sup> 1</sup>
+              </span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block" style="margin-right: 10px;"><sup>1 </sup>University of Illinois Urbana-Champaign</span>
+              <span class="author-block" style="margin-right: 10px;"><sup>2 </sup>Nvidia</span>
+              <span class="author-block" style="margin-right: 10px;"><sup>3 </sup>Microsoft</span>
+            </div>
+
+            <div class="publication-links" style="margin-top: 1.25rem;">
+              <!-- Paper: published in PACMMOD (SIGMOD 2026), linked by DOI. -->
+              <span class="link-block" style="margin-right: 16px;">
+                <a href="https://doi.org/10.1145/3786706"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Code. -->
+              <span class="link-block" style="margin-right: 16px;">
+                <a href="https://github.com/Supercomputing-System-AI-Lab/VecFlow"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News -->
+  <section class="section" style="margin-top: -50px;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+          <div class="content">
+            <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
+            <ul>
+              <li style="margin-top: 10px;">🎉 2026-05-31 We release the code at <a href="https://github.com/Supercomputing-System-AI-Lab/VecFlow">GitHub</a>.</li>
+              <li style="margin-top: 10px;">🎉 2025-11-24 Our work on VecFlow-Chamfer has been accepted at <a href="https://2026.sigmod.org/">SIGMOD 2026</a>!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abstract -->
+  <section class="section" style="margin-top: -40px;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Abstract</h2>
+          <div class="content has-text-justified" style="margin-top: -10pt;">
+            <p>
+              Many emerging AI applications demand retrieval systems that go beyond document-level relevance and capture token-level semantics. Multi-vector search addresses this need through fine-grained semantic matching between token-level embeddings of queries and documents. However, it introduces significant system challenges, including compute-intensive set-to-set scoring, complex candidate filtering, and high memory overhead from storing dense token-level embeddings. Prior systems mitigate these challenges through GPU-based similarity calculation and indexing structures (e.g., IVFPQ-GPU) but often at the cost of reduced retrieval accuracy and suffer from low GPU utilization. We present VecFlow-Chamfer, a GPU-based vector data management system that enables low-latency and high-recall multi-vector search on modern Superchip architectures. VecFlow-Chamfer achieves this through a combination of three novel optimizations: (1) MaxIVF-CAGRA, a GPU-native, compression-free index tailored for multi-vector search with fine-grained anchor vectors enabling scalable index construction and low-latency, high-accuracy candidate generation via CAGRA-based GPU routing; (2) ChamferCore, a highly-optimized GPU kernel that enables single-digit millisecond Chamfer scoring over tens of thousands of candidate documents; and (3) GraceStore, a tiered vector storage layer that supports on-demand, low-latency access to full-precision embeddings across Grace-Hopper NVLink-C2C interconnects. Together, these techniques enable VecFlow-Chamfer to perform multi-vector search over hundreds of millions of document token embeddings with unprecedented high recall and low latency. Compared to state-of-the-art systems like PLAID and MUVERA, VecFlow-Chamfer achieves an order-of-magnitude lower latency while significantly improving recall.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Background ===== -->
+  <section class="section" style="margin-top: -40px;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Background</h2>
+
+          <h3 class="title is-4">What is multi-vector search</h3>
+          <div class="content has-text-justified">
+            <p>
+              Most retrieval systems represent a query and a document as one dense vector each and rank by
+              a single similarity. Multi-vector search instead represents each query and each document as a
+              set of token-level vectors, produced by models such as ColBERT. Relevance is then a
+              set-to-set score: for every query token, take its best-matching document token, and sum those
+              maxima. This is the Chamfer (MaxSim) score:
+            </p>
+          </div>
+          <div class="formula-panel">
+            $$\mathrm{Score}(Q, D_i) = \sum_{i} \max_{j} \langle q_i, d_j \rangle$$
+          </div>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              Token-level matching captures fine-grained relevance that a single fixed-size vector cannot,
+              since a fixed embedding dimension caps how many distinct top-k results it can represent
+              (Weller et al., <a href="https://arxiv.org/abs/2508.21038" target="_blank" rel="noopener">On the
+              Theoretical Limitations of Embedding-Based Retrieval</a>, 2025).
+            </p>
+          </div>
+          <h3 class="title is-4" style="margin-top: 2.5rem;">Why it is hard</h3>
+          <div class="content has-text-justified">
+            <p>
+              This expressiveness is expensive on two axes. Scoring cost grows because
+              every query token must be compared against every document token, turning one similarity per
+              pair into hundreds. Storage and memory cost grow because each document now
+              holds many token vectors instead of one.
+            </p>
+            <p>
+              On MS MARCO, multi-vector scoring needs roughly <strong>360 times more compute</strong> per pair
+              than single-vector, and the full-precision corpus is about <strong>11 times larger</strong>,
+              exceeding a single GPU's memory. These two pressures, heavy set-to-set compute and a corpus
+              too large for GPU memory, motivate the VecFlow-Chamfer design: run scoring on the
+              GPU for its bandwidth and Tensor Cores, and keep full-precision document
+              vectors in large CPU memory, fetched to the GPU on demand.
+            </p>
+          </div>
+          <div class="fig-pair">
+            <figure class="fig">
+              <!-- FIGURE: compute cost chart — about 360x more FLOPs per query-document pair -->
+              <img src="../static/images/vecflow-chamfer/compute_cost.png"
+                   alt="Compute cost: about 360x more FLOPs per query-document pair than single-vector">
+              <figcaption>Scoring cost: about 360&times; more FLOPs per query-document pair than single-vector.</figcaption>
+            </figure>
+            <figure class="fig">
+              <!-- FIGURE: memory and storage cost chart — about 11x larger; 153 GB on MS MARCO exceeds a single GPU's memory -->
+              <img src="../static/images/vecflow-chamfer/memory_cost.png"
+                   alt="Memory and storage cost: about 11x larger; 153 GB on MS MARCO exceeds a single GPU's memory">
+              <figcaption>Storage cost: about 11&times; larger; 153 GB on MS MARCO exceeds a single GPU's memory.</figcaption>
+            </figure>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How VecFlow-Chamfer works ===== -->
+  <section class="section" style="margin-top: -40px;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">How VecFlow-Chamfer works</h2>
+
+          <h3 class="title is-4">System Overview</h3>
+          <div class="content has-text-justified">
+            <p>
+              VecFlow-Chamfer is built for Superchip architectures such as the NVIDIA GH200, where a CPU and
+              a GPU sit on the same package and share a coherent address space over a high-bandwidth
+              NVLink-C2C link (900 GB/s), far faster than PCIe. VecFlow-Chamfer matches each stage of the work to the right
+              place in this hierarchy: the compact index stays in GPU memory, the full-precision corpus
+              stays in the larger CPU memory, and the GPU reads it directly over C2C.
+            </p>
+          </div>
+          <figure class="fig">
+            <!-- static/images/vecflow-chamfer/pipeline.png -->
+            <img src="../static/images/vecflow-chamfer/pipeline.png"
+                 alt="Three-stage VecFlow-Chamfer pipeline across the Grace-Hopper memory hierarchy">
+            <figcaption>VecFlow-Chamfer runs a three-stage pipeline across the Grace-Hopper memory hierarchy.</figcaption>
+          </figure>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              Search runs in three stages. <strong>Candidate Generation</strong> routes query tokens to
+              nearest anchors with MaxIVF-CAGRA to form a small candidate set. <strong>Proxy-based
+              Filtering</strong> scores those on anchor vectors with ChamferCore and prunes on the GPU.
+              <strong>Final Reranking</strong> computes exact full-precision Chamfer on the survivors,
+              fetched from CPU memory over C2C. Each stage passes fewer documents on, so the costly
+              full-precision step runs on only a few.
+            </p>
+          </div>
+
+          <h3 class="title is-4" style="margin-top: 2.5rem;">MaxIVF-CAGRA</h3>
+          <figure class="fig fig-diagram">
+            <!-- static/images/vecflow-chamfer/maxivf_cagra.png -->
+            <img src="../static/images/vecflow-chamfer/maxivf_cagra.png"
+                 alt="MaxIVF-CAGRA: a CAGRA graph over fine-grained anchor vectors, then aggregate and dedup doc IDs">
+            <figcaption>Fine-grained anchors and one reused CAGRA graph give high selectivity at low candidate-generation cost.</figcaption>
+          </figure>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              MaxIVF-CAGRA generates candidates with fine-grained anchors. Traditional IVF sets its number
+              of centroids on the order of the square root of N, which is typically under 0.1% of the
+              tokens; MaxIVF-CAGRA instead uses more than 1% of the tokens as anchors,
+              making each anchor far more selective. One GPU CAGRA graph is used twice: at
+              build time it assigns each document token to its nearest anchor, and at search time it routes
+              query tokens to nearest anchors. The matched anchors map to document IDs, which are aggregated
+              across query tokens and deduplicated. This reaches the same coverage as prior methods with
+              fewer candidates, at lower candidate-generation cost, while keeping index construction time
+              comparable even with far more anchors.
+            </p>
+          </div>
+
+          <h3 class="title is-4" style="margin-top: 2.5rem;">ChamferCore</h3>
+          <figure class="fig fig-diagram fig-diagram-sm">
+            <!-- static/images/vecflow-chamfer/chamfercore_kernel.png -->
+            <img src="../static/images/vecflow-chamfer/chamfercore_kernel.png"
+                 alt="ChamferCore kernel: one CTA per query-document pair, Tensor Core GEMM and warp reduction in GPU shared memory">
+            <figcaption>A single fused kernel scores 30K candidate documents in 0.12 ms on MS MARCO.</figcaption>
+          </figure>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              ChamferCore is a fused GPU kernel for set-to-set scoring. It launches one CTA per
+              query-document pair for massive parallelism, computes the query-by-document
+              similarity matrix with a Tensor Core GEMM, and uses shared-memory tiling
+              with a running per-query max so the matrix never goes to global memory.
+              Similarity, max, and sum are fused into a single kernel, scoring 30K candidate documents in
+              0.12 ms on MS MARCO.
+            </p>
+          </div>
+
+          <h3 class="title is-4" style="margin-top: 2.5rem;">GraceStore</h3>
+          <figure class="fig fig-diagram fig-diagram-sm">
+            <!-- static/images/vecflow-chamfer/gracestore.png -->
+            <img src="../static/images/vecflow-chamfer/gracestore.png"
+                 alt="GraceStore: full-precision doc vectors in CPU memory, read by the GPU over NVLink-C2C via the system page table">
+            <figcaption>GraceStore serves full-precision vectors from CPU memory over C2C, removing the need for compression.</figcaption>
+          </figure>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              GraceStore keeps full-precision document vectors in CPU memory and lets the GPU read them on
+              demand. On a Superchip, the CPU and GPU share a page table and coherent memory, so the GPU
+              accesses these vectors directly over C2C with no explicit copy. The vectors
+              are small and scattered, so a naive cudaMemcpy wastes bandwidth; GraceStore's direct access
+              reaches about 380 GB/s, matching a contiguous transfer, so final reranking
+              runs on full precision with no compression and no accuracy loss.
+            </p>
+          </div>
+
+          <h3 class="title is-4" style="margin-top: 2.5rem;">Adapting to PCIe GPUs</h3>
+          <figure class="fig fig-diagram">
+            <!-- static/images/vecflow-chamfer/pcie_pipeline.png -->
+            <img src="../static/images/vecflow-chamfer/pcie_pipeline.png"
+                 alt="PCIe retrieval pipeline: proxy-based filtering, an added PQ-vector second filtering stage, then full-precision reranking over PCIe">
+            <figcaption>On PCIe GPUs, an extra PQ-vector filtering stage shrinks the candidate list before full-precision reranking.</figcaption>
+          </figure>
+          <div class="content has-text-justified" style="margin-top: 1rem;">
+            <p>
+              On conventional PCIe GPUs such as the A100, the CPU-GPU link is PCIe 4.0 at about 64 GB/s,
+              over 10 times slower than C2C, so fetching full-precision vectors is the
+              bottleneck. VecFlow-Chamfer inserts one extra stage: a PQ-approximate Chamfer
+              filter that shrinks the candidate list before final full-precision reranking, cutting
+              how much data crosses PCIe. It reuses the same MaxIVF-CAGRA index and ChamferCore kernel,
+              adapted to PQ-compressed vectors, with the PQ vectors kept in GPU memory. Even with this added
+              step, VecFlow-Chamfer still beats prior systems in both recall and latency.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Results ===== -->
+  <section class="section" style="margin-top: -40px;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Results</h2>
+          <div class="content has-text-justified">
+            <p>
+              On GH200, VecFlow-Chamfer is up to <strong>16.9 times faster</strong> than PLAID while
+              improving recall by 7.5 points, reaching <strong>98.45% Recall@100 in 0.97 ms</strong> versus
+              PLAID's 91% in 16.35 ms on MS MARCO. PLAID plateaus near 90% recall, while VecFlow-Chamfer
+              reaches 98% in under 1.2 ms. The design also generalizes to PCIe GPUs: on the A100 it still
+              beats PLAID, reaching 98% recall at 2.23 ms on LoTTE: Lifestyle and 4.76 ms on Pooled.
+            </p>
+          </div>
+          <figure class="fig fig-diagram">
+            <!-- static/images/vecflow-chamfer/vecflow_chamfer_results.png -->
+            <img src="../static/images/vecflow-chamfer/vecflow_chamfer_results.png"
+                 alt="Recall@100 versus query latency on LoTTE: Pooled and MS MARCO, for GH200 and PCIe A100; VecFlow-Chamfer (orange) sits up and to the left of PLAID (gray)">
+            <figcaption>Recall@100 versus query latency on LoTTE: Pooled and MS MARCO. VecFlow-Chamfer (orange) sits up and to the left of PLAID (gray) on both GH200 and PCIe A100.</figcaption>
+          </figure>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
