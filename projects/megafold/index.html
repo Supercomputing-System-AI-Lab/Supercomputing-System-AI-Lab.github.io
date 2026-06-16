@@ -183,7 +183,7 @@
           <ul>
           <li style="margin-top: 10px;">MegaFold introduces a series of optimizations that reduce memory consumption and increase performance: </li>  
             <div class="content" style="margin-top: 10px; text-align: center;">
-              <img src="./static/images/overview-figure.png"
+              <img src="./static/images/overview_figure.svg"
               class="interpolation-image"
               alt="megafold-overview" style="width: 90%;"/>
             </div>
@@ -205,9 +205,9 @@
         </div>
         <p>We evaluate MegaFold through extensive experiments, demonstrating its ability to significantly reduce memory consumption, accelerate training speeds, and support longer sequence lengths—all while maintaining computational precision. Our results show that MegaFold reduces peak memory usage by up to <b>1.23x</b>, while improving per-iteration training time by up to <b>1.73x</b> on NVIDIA and <b>1.62x</b> on AMD. Moreover, MegaFold enables scalable training with up to <b>3.36x</b> longer input sequence lengths on 32 GPUs.  Indeed, our results show robust scalability across multi-GPU systems on both NVIDIA and AMD hardware.</p>
         <div class="content" style="margin-top: 10px; text-align: center;">
-          <img src="./static/images/seq_length_scaling.png" class="interpolation-image" alt="megafold-seq-length-scaling" style="width: 30%;"/> 
-          <img src="./static/images/memory_usage.png" class="interpolation-image" alt="megafold-e2e-mem-reductions" style="width: 30%;"/> 
-          <img src="./static/images/combined-speed.png" class="interpolation-image" alt="megafold-e2e-speed-amd" style="width: 60%;"/> 
+          <img src="./static/images/sequence_length_scaling.svg" class="interpolation-image" alt="megafold-seq-length-scaling" style="width: 30%;"/> 
+          <img src="./static/images/memory_usage.svg" class="interpolation-image" alt="megafold-e2e-mem-reductions" style="width: 30%;"/> 
+          <img src="./static/images/combined_speed_e2e.svg" class="interpolation-image" alt="megafold-e2e-speed-amd" style="width: 60%;"/> 
         </div>
         <p>First figure: Maximum trainable sequence length before OOMs for different systems as GPU count increases. Second figure: Per-device peak memory consumption prior to OOMs across sequence lengths on NVIDIA GPUs. Third and fourth figure:  Average per-iteration execution time of AF3 training on a single GPU across sequence lengths.</p>
       </div>
