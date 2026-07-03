@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="MegaFold: System-Level Optimizations for Accelerating Protein Structure Prediction Models">
+        content="MegaFold: Efficient Training of Next-Generation 3D Attention Protein Models on Cross-Platform GPUs">
   <meta name="keywords" content="DNN, Training">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MegaFold</title>
@@ -70,7 +70,7 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title" style="font-size: 45px;">MegaFold: System-Level Optimizations for Accelerating Protein Structure Prediction Models</h1>
+          <h1 class="title is-1 publication-title" style="font-size: 45px;">MegaFold: Efficient Training of Next-Generation 3D Attention Protein Models on Cross-Platform GPUs</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
               <a href="https://github.com/lvhoaa">Hoa La</a><sup>*§1</sup>,</span>
@@ -110,7 +110,7 @@
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block" style="margin-right: 20px;">
-                <a href="https://arxiv.org/abs/2506.20686"
+                <a href="https://ieeexplore.ieee.org/abstract/document/11520503"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -146,6 +146,7 @@
         <div class="content">
           <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
           <ul>
+            <li style="margin-top: 10px;">2026-03 Officially accepted to ISC High Performance 2026 🎉🥳</li>
             <li style="margin-top: 10px;">2025-06 MegaFold paper and code are released!</li>
           </ul>
         </div>
@@ -162,7 +163,7 @@
         <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Abstract</h2>
         <div class="content has-text-justified" style="margin-top: -10pt;">
           <p>
-            Protein structure prediction models such as AlphaFold3 (AF3) push the frontier of biomolecular modeling by incorporating science-informed architectural changes to the transformer architecture. However, these advances come at a steep system cost, introducing: compute- and memory-intensive operators, 2D attention mechanisms, and retrieval-augmented data pipelines, which collectively hinder the scalability of AF3 training. In this work, we present MegaFold, a cross-platform system to accelerate AF3 training. MegaFold tackles key bottlenecks through ahead-of-time caching to eliminate GPU idle time from the retrieval-augmented data pipeline, Triton-based kernels for memory-efficient EvoAttention on heterogeneous devices, and deep fusion for common and critical small operators in AF3. Evaluation on both <b>NVIDIA H200</b> and <b>AMD MI250 GPUs</b> shows that MegaFold reduces peak memory usage of AF3 training by up to <b>1.23x</b> and improves per-iteration training time by up to <b>1.73x</b> and <b>1.62x</b> respectively. More importantly, MegaFold enables training on <b>1.35x</b> longer sequence lengths compared to PyTorch baselines without running out-of-memory, significantly improving the scalability of modern protein folding models. </p>
+          Recent advances in biomolecular modeling have been catalyzed by models such as AlphaFold3 (AF3), which introduce science-informed changes to the transformer architecture. Unlike transformers, a defining characteristic of AF3-style models is their 3D attention over 2D pairwise representations which produces tensors whose computation and memory costs scale cubically with sequence length. As a result, despite moderate parameter counts, AF3-style models are far more expensive to train than size-equivalent transformers, and are severely constrained by GPU memory capacity. Our characterization shows 3D attention fundamentally changes the training workload, causing massive 3D attention maps, complex inter-operator dependencies, kernel fragmentation, and heavy host-side data pipelines which differ substantially from LLM training, leading to poor utilization on modern GPU systems. Moreover, existing GPU optimizations do not adequately address these challenges due to complex cross-layer inter-operator dependencies introduced by 3D attention. Motivated by these challenges, we introduce MegaFold, a novel cross-platform system for efficient training of next-generation 3D-attention protein models. MegaFold combines a memory-efficient 3D-attention kernel, a communication-efficient sharding strategy for quadratic representations, fused operator implementations for critical execution paths, and a determinism-aware host-device pipeline that eliminates preprocessing stalls. Evaluation on both NVIDIA H200 and AMD MI250 GPUs shows that MegaFold enables training with up to <b>3.36x</b> longer sequence lengths on 32 GPUs while reducing end-to-end execution time by up to <b>1.73x (NVIDIA)</b> and <b>1.62x (AMD)</b>. </p>
         </div>
       </div>
     </div>
@@ -180,15 +181,17 @@
         <div class="content">
           <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">Method</h2>
           <ul>
-          <li style="margin-top: 10px;">MegaFold introduces a series of optimizations that reduce memory consumption and increase performance. First, we introduce an ahead-of-the-time cache-based dataloader in Section IV-A. Next, we introduce memory-efficient optimizations to the EvoAttention operation in Section IV-B. Finally, we introduce deep fusion optimizations to small but common AF3 operators in Section IV-C.</li>  
+          <li style="margin-top: 10px;">MegaFold introduces a series of optimizations that reduce memory consumption and increase performance: </li>  
             <div class="content" style="margin-top: 10px; text-align: center;">
-              <img src="./static/images/overview-figure.png"
+              <img src="./static/images/overview_figure.svg"
               class="interpolation-image"
               alt="megafold-overview" style="width: 90%;"/>
             </div>
-          <li style="margin-top: 30px;">Ahead-of-Time Cache-based Data-Loading: avoids repeating expensive deterministic preprocessing steps by precomputing the deterministic features for each protein complex and memoizing them in storage once prior to training.</li>
-          <li style="margin-top: 30px;">Memory-Efficient EvoAttention for Heterogeneous Devices: avoids materializing large intermediate attention logits in memory and instead incrementally materializes them in fast scratchpad memory during the forward pass, recomputing them on-the-fly to calculate gradients in the backward pass.</li>
-          <li style="margin-top: 30px;">DeepFusion for Common AlphaFold Operators: a set of fused Triton kernels for frequent operators in AF3, including LayerNorm, linear-layers, and Swiglu activations, which are commonly composed in the transition layer. </li>      </div>
+          <li style="margin-top: 30px;"> (1) EvoFlash-3D, a Triton-based kernel for 3D attention over 2D pairwise representations to achieve high memory and bandwidth efficiency on cross-platform GPUs (§4.1). Instead of explicitly materializing the enormous cubic-sized attention tensors in GPU memory, EvoFlash-3D computes attention incrementally using a FlashAttention-style online softmax algorithm and GPU scratchpad/shared memory. This reduces memory complexity from O(N<sup>3</sup>) to O(N<sup>2</sup>), significantly lowering memory bandwidth demands and enabling training on much longer protein sequences.</li>
+          <li style="margin-top: 30px;"> (2) EvoSP-3D, a communication-efficient sharding strategy that supports alternating attention axes from 2D pairwise representations (§4.2). Standard sequence parallelism used in transformers cannot directly handle AF3 because attention alternates between row-wise and column-wise operations over a 2D matrix. EvoSP-3D dynamically repartitions these tensors across GPUs using efficient communication primitives (e.g., <code>all_to_all</code>) so that each attention layer receives the appropriate data layout while minimizing communication overhead and avoiding repeated tensor reshaping.</li>
+          <li style="margin-top: 30px;"> (3) EvoFusion, a fused operator stack that aligns attention and transition layers with GPU shared-memory hierarchies (§4.3). AF3 repeatedly executes small operations such as layer normalization, linear projections, and SwiGLU activations, resulting in thousands of inefficient GPU kernel launches. EvoFusion combines these operators into larger fused kernels and restructures their computations to better match GPU shared-memory hierarchies, reducing intermediate memory accesses, kernel launch overhead, and overall execution time.</li>      
+          <li style="margin-top: 30px;"> (4) EvoPipe, a determinism-aware host-device pipeline that eliminates CPUside preprocessing stalls (§4.4). AlphaFold3 requires expensive biological preprocessing steps, such as multiple sequence alignment (MSA) processing and feature generation, which can leave GPUs idle while waiting for the CPU. EvoPipe identifies deterministic preprocessing stages, computes and caches them offline, and only performs stochastic operations (e.g., random cropping and augmentation) during training, thereby improving GPU utilization and reducing data pipeline stalls.</li>      
+        </div>
     </div>
   </div>
 </section>
@@ -200,13 +203,13 @@
         <div class="content">
           <h2 class="title is-3">Evaluation</h2>
         </div>
-        <p>We evaluate MegaFold through extensive experiments, demonstrating its ability to significantly reduce memory consumption, accelerate training speeds, and support longer sequence lengths—all while maintaining computational precision. Our evaluation suggests that MegaFold reduces peak memory usage of AF3 training by up to <b>1.23x</b> and improves per-iteration training time by up to <b>1.73x</b> and <b>1.62x</b> respectively. More importantly, MegaFold enables training on <b>1.35x</b> longer sequence lengths compared to PyTorch baselines without running out-of-memory, significantly improving the scalability of modern protein folding models. Indeed, our results show robust scalability across multi-GPU systems on both NVIDIA and AMD hardware.</p>
+        <p>We evaluate MegaFold through extensive experiments, demonstrating its ability to significantly reduce memory consumption, accelerate training speeds, and support longer sequence lengths—all while maintaining computational precision. Our results show that MegaFold reduces peak memory usage by up to <b>1.23x</b>, while improving per-iteration training time by up to <b>1.73x</b> on NVIDIA and <b>1.62x</b> on AMD. Moreover, MegaFold enables scalable training with up to <b>3.36x</b> longer input sequence lengths on 32 GPUs.  Indeed, our results show robust scalability across multi-GPU systems on both NVIDIA and AMD hardware.</p>
         <div class="content" style="margin-top: 10px; text-align: center;">
-          <img src="./static/images/memory_e2e.png" class="interpolation-image" alt="megafold-e2e-memory" style="width: 30%;"/> 
-          <img src="./static/images/speed_e2e_nvidia.png" class="interpolation-image" alt="megafold-e2e-speed-nvidia" style="width: 30%;"/> 
-          <img src="./static/images/speed_e2e_amd.png" class="interpolation-image" alt="megafold-e2e-speed-amd" style="width: 30%;"/> 
+          <img src="./static/images/sequence_length_scaling.svg" class="interpolation-image" alt="megafold-seq-length-scaling" style="width: 30%;"/> 
+          <img src="./static/images/memory_usage.svg" class="interpolation-image" alt="megafold-e2e-mem-reductions" style="width: 30%;"/> 
+          <img src="./static/images/combined_speed_e2e.svg" class="interpolation-image" alt="megafold-e2e-speed-amd" style="width: 60%;"/> 
         </div>
-        <p>The attached figures demonstrate end-to-End comparison of a training iteration (averaged over 100 iterations of training) between MegaFold and different compiler backends. The first figure shows the peak memory consumption of AF3 training on NVIDIA H200, whilst the second figure and the third figure show the per-iteration end-to-end execution time on NVIDIA H200 and AMD MI250 hardware respectively.</p>
+        <p>First figure: Maximum trainable sequence length before OOMs for different systems as GPU count increases. Second figure: Per-device peak memory consumption prior to OOMs across sequence lengths on NVIDIA GPUs. Third and fourth figure:  Average per-iteration execution time of AF3 training on a single GPU across sequence lengths.</p>
       </div>
     </div>
   </div>
@@ -215,15 +218,17 @@
 <section class="section" id="BibTeX" style="margin-top: -40px;">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@misc{la2025megafoldsystemleveloptimizationsaccelerating,
-    title={MegaFold: System-Level Optimizations for Accelerating Protein Structure Prediction Models}, 
-    author={Hoa La and Ahan Gupta and Alex Morehead and Jianlin Cheng and Minjia Zhang},
-    year={2025},
-    eprint={2506.20686},
-    archivePrefix={arXiv},
-    primaryClass={q-bio.BM},
-    url={https://arxiv.org/abs/2506.20686}, 
-}</code></pre>
+    <pre><code>@INPROCEEDINGS{11520503,
+  author={La, Hoa and Gupta, Ahan and Morehead, Alex and Cheng, Jianlin and Zhang, Minjia},
+  booktitle={ISC High Performance 2026 Research Paper Proceedings (41st International Conference)}, 
+  title={MegaFold: Efficient Training of Next-Generation 3D Attention Protein Models on Cross-Platform GPUs}, 
+  year={2026},
+  volume={},
+  number={},
+  pages={1-16},
+  keywords={Modeling;Training;Kernel;Optimization;Memory;Sequences;Sequential analysis;Tensors;Timing;Graphics processing units;High performance computing;Bioinformatics;Parallel algorithms;Performance analysis},
+  doi={10.23919/ISC.2026.11520503}}
+  </code></pre>
   </div>
 </section>
 
