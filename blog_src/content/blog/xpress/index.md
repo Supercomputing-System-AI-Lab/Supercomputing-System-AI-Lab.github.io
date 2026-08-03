@@ -30,7 +30,7 @@ time-to-read: 12
 </script>
 
 <style>
-.xpress-wrap{
+.xpress-wrap{background:#ffffff;color:#1a1a1a;border-radius:10px;padding:14px 18px;margin:1.2em 0;
   --bg:#ffffff; --surface:#f4f4f4; --surface2:#eaecef;
   --ink:#161616; --muted:#525252; --faint:#8d8d8d;
   --line:#e0e0e0; --line-strong:#c6c6c6;
