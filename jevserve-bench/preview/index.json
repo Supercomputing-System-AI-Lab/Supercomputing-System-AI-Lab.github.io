@@ -5235,6 +5235,7 @@
  ],
  "archives": [],
  "repo": null,
+ "blog": "https://supercomputing-system-ai-lab.github.io/blogs/rethinking-llm-serving-with-jev/",
  "submit": {
   "url": "https://docs.google.com/forms/d/e/1FAIpQLSf94vKIh3c5fhHgcNfLtKucKLEeIv3zB6GH4A3Q0hw5UAl-3A/formResponse",
   "field": "entry.501359801"
