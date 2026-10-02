@@ -1,12 +1,12 @@
 {
  "version": "0.1.0",
- "generated": "2026-09-30",
+ "generated": "2026-10-02",
  "tasks": [
   {
    "name": "routing_cost",
    "label": "Routing: cost",
    "title": "Model routing, performance and cost (13 flagship models)",
-   "family": "Model and mode selection",
+   "family": "Route",
    "component": "model router",
    "decision": "Which task type and difficulty is the request? Avengers-Pro's lookup sends each bucket to the model with the best balance of accuracy and cost.",
    "data": "LLMRouterBench: 13 flagship models, 10 datasets, 12,446 requests",
@@ -15,13 +15,14 @@
     "per-request oracle"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "routing_perf",
    "label": "Routing: per request",
    "title": "Model routing per request: which requests need the stronger model?",
-   "family": "Model and mode selection",
+   "family": "Route",
    "component": "model router",
    "decision": "How hard is the request, and what does it need? A ridge regression on the answers predicts how much Qwen3-8B gains over Llama-3.1-8B on it, and within each benchmark requests go to Qwen3-8B in that order.",
    "data": "LLMRouterBench lightweight setting: 11,467 requests from 15 datasets, Llama-3.1-8B-Instruct and Qwen3-8B",
@@ -30,13 +31,14 @@
     "routing in hindsight order"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "reasoning_budget",
    "label": "Thinking",
    "title": "Reasoning budget: turn thinking on only where it pays",
-   "family": "Model and mode selection",
+   "family": "Route",
    "component": "reasoning-mode switch",
    "decision": "Does the request need thinking? Thinking is switched on first for the requests rated most likely to need it.",
    "data": "LLMRouterBench: Qwen3-235B-A22B with and without thinking, 7 datasets, 3,713 requests",
@@ -45,58 +47,14 @@
     "acting in hindsight order"
    ],
    "tier": "A",
-   "version": "0.1"
-  },
-  {
-   "name": "length_scheduling",
-   "label": "Length",
-   "title": "Output-length prediction for shortest-predicted-first scheduling",
-   "family": "Scheduling and caching",
-   "component": "request scheduler",
-   "decision": "How long will the answer be, and in what form? A ridge regression turns the answers into a predicted length, and the scheduler serves the shortest predicted request first.",
-   "data": "ShareGPT: 20,000 requests answered by Qwen3-8B with thinking off and on",
-   "anchors": [
-    "first-come, first-served",
-    "scheduling by the true length"
-   ],
-   "tier": "A+B",
-   "version": "0.1"
-  },
-  {
-   "name": "semantic_cache",
-   "label": "Semantic cache",
-   "title": "Semantic cache: return the cached answer to a similar earlier request?",
-   "family": "Scheduling and caching",
-   "component": "semantic cache",
-   "decision": "Would the cached answer to the most similar earlier request (by embedding) correctly answer this one? The cache returns it when the model says yes.",
-   "data": "vCache SemBenchmarkLmArena: 10,000 LM Arena requests in known equivalence classes, GPT-4o-mini answers",
-   "anchors": [
-    "the best embedding-similarity threshold",
-    "a cache that knows which requests are equivalent"
-   ],
-   "tier": "A",
-   "version": "0.1"
-  },
-  {
-   "name": "context_filter",
-   "label": "Context filter",
-   "title": "Context filter: which retrieved passages are worth the prefill?",
-   "family": "Scheduling and caching",
-   "component": "RAG context filter",
-   "decision": "Does this retrieved passage contain information needed to answer the question? Passages the model rules out are dropped before prefill.",
-   "data": "HotpotQA distractor: 500 questions \u00d7 10 retrieved passages, 2 of them needed",
-   "anchors": [
-    "dropping passages at random",
-    "dropping exactly the passages that are not needed"
-   ],
-   "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "cascade_verifier",
    "label": "Cascade",
    "title": "Cascade verifier: keep the cheap model's answer or escalate to GPT-5",
-   "family": "Answer checks",
+   "family": "Route",
    "component": "model cascade",
    "decision": "Is the cheap model's answer correct? The answers it doubts most are escalated to GPT-5 first.",
    "data": "LLMRouterBench: Qwen3-235B-A22B-2507 answers, 10 datasets, 12,446 requests",
@@ -105,13 +63,78 @@
     "acting in hindsight order"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
+  },
+  {
+   "name": "semantic_cache",
+   "label": "Semantic cache",
+   "title": "Semantic cache: return the cached answer to a similar earlier request?",
+   "family": "Cache",
+   "component": "semantic cache",
+   "decision": "Would the cached answer to the most similar earlier request (by embedding) correctly answer this one? The cache returns it when the model says yes.",
+   "data": "vCache SemBenchmarkLmArena: 10,000 LM Arena requests in known equivalence classes, GPT-4o-mini answers",
+   "anchors": [
+    "the best embedding-similarity threshold",
+    "a cache that knows which requests are equivalent"
+   ],
+   "tier": "A",
+   "version": "0.1",
+   "averaged": true
+  },
+  {
+   "name": "context_filter",
+   "label": "Context filter",
+   "title": "Context filter: which retrieved passages are worth the prefill?",
+   "family": "Cache",
+   "component": "RAG context filter",
+   "decision": "Does this retrieved passage contain information needed to answer the question? Passages the model rules out are dropped before prefill.",
+   "data": "HotpotQA distractor: 500 questions \u00d7 10 retrieved passages, 2 of them needed",
+   "anchors": [
+    "dropping passages at random",
+    "dropping exactly the passages that are not needed"
+   ],
+   "tier": "A",
+   "version": "0.1",
+   "averaged": true
+  },
+  {
+   "name": "prefix_cache",
+   "label": "Prefix cache",
+   "title": "Prefix cache: which conversations keep their KV in GPU memory?",
+   "family": "Cache",
+   "component": "prefix (KV) cache",
+   "decision": "Will the user send another message in this conversation, and how soon? When the cache is full, the conversation least likely to be back within ten minutes, given how long it has been idle, goes first.",
+   "data": "WildChat-1M: 8,000 conversations with their real reply times, in one H200's KV cache for Qwen3-8B",
+   "anchors": [
+    "vLLM's LRU eviction",
+    "evicting by the true next-message times (Belady)"
+   ],
+   "tier": "A+B",
+   "version": "0.1",
+   "averaged": false
+  },
+  {
+   "name": "length_scheduling",
+   "label": "Length",
+   "title": "Output-length prediction for shortest-predicted-first scheduling",
+   "family": "Schedule",
+   "component": "request scheduler",
+   "decision": "How long will the answer be, and in what form? A ridge regression turns the answers into a predicted length, and the scheduler serves the shortest predicted request first.",
+   "data": "ShareGPT: 20,000 requests answered by Qwen3-8B with thinking off and on",
+   "anchors": [
+    "first-come, first-served",
+    "scheduling by the true length"
+   ],
+   "tier": "A+B",
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "response_select",
    "label": "Best-of-N",
    "title": "Best-of-N: pick the right response out of four",
-   "family": "Answer checks",
+   "family": "Verify",
    "component": "best-of-N selector",
    "decision": "Is this a good response to the request? Each candidate is rated on its own and the highest-rated one is returned.",
    "data": "RewardBench 2, five subsets (Ties left out): 1,763 prompts, each with one correct and three wrong responses",
@@ -120,13 +143,14 @@
     "always picking a correct one"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "step_verifier",
    "label": "Step check",
    "title": "Reasoning check: is every step of this solution correct?",
-   "family": "Answer checks",
+   "family": "Verify",
    "component": "reasoning verifier",
    "decision": "Is every step of this solution correct? Solutions the model doubts go back for another attempt.",
    "data": "ProcessBench: 3,400 solutions to GSM8K, MATH, OlympiadBench and Omni-MATH problems, 65% with a wrong step",
@@ -135,13 +159,14 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "grounding",
    "label": "Grounding",
    "title": "Grounding check: is the claim supported by the document?",
-   "family": "Answer checks",
+   "family": "Verify",
    "component": "RAG answer verifier",
    "decision": "Is every part of the claim supported by the document?",
    "data": "LLM-AggreFact test: 29,320 claims from 11 datasets",
@@ -150,13 +175,14 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "safety",
    "label": "Safety",
    "title": "Guardrail: harmful requests and responses",
-   "family": "Guardrails",
+   "family": "Guard",
    "component": "input/output guardrail",
    "decision": "Is this request harmful, or an attempt to jailbreak the assistant? Is this response harmful?",
    "data": "ToxicChat test (5,083 requests), WildGuardTest (1,699 requests, 1,709 responses)",
@@ -165,13 +191,14 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "over_refusal",
    "label": "Over-refusal",
    "title": "Over-refusal: let borderline but harmless requests through",
-   "family": "Guardrails",
+   "family": "Guard",
    "component": "input guardrail",
    "decision": "Is this request harmful? The safety task's question, asked about requests that only look harmful, mixed with ones that are.",
    "data": "OR-Bench-Hard-1K (1,319 harmless) with OR-Bench-Toxic (655), XSTest (250 safe, 200 unsafe)",
@@ -180,13 +207,14 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "prompt_injection",
    "label": "Injection",
    "title": "Prompt injection: is the user trying to override the assistant's instructions?",
-   "family": "Guardrails",
+   "family": "Guard",
    "component": "prompt-injection filter",
    "decision": "Does the user's message try to make the assistant ignore, override or reveal its instructions?",
    "data": "deepset prompt-injections: 662 messages in English and German, 40% of them injection attempts",
@@ -195,13 +223,14 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "tool_gate",
    "label": "Tool gate",
    "title": "Tool gate: call a tool, ask for details, or decline?",
-   "family": "Agents and tools",
+   "family": "Act",
    "component": "tool-call gate",
    "decision": "With the tools it has, should the assistant call one, ask the user for missing details, say no tool fits, or answer directly?",
    "data": "When2Call: 3,652 requests with tool specifications, built from BFCL v2 Live",
@@ -210,13 +239,14 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
   },
   {
    "name": "agent_risk",
    "label": "Agent risk",
    "title": "Risky-action check: does the agent's behaviour create a safety risk?",
-   "family": "Agents and tools",
+   "family": "Act",
    "component": "agent action approval",
    "decision": "Do the agent's actions in this interaction create a safety risk or cause harm?",
    "data": "R-Judge: 571 agent interactions from 27 scenarios in 5 application areas",
@@ -225,7 +255,74 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.1"
+   "version": "0.1",
+   "averaged": true
+  }
+ ],
+ "categories": [
+  {
+   "name": "Route",
+   "blurb": "Which model, or which mode, serves the request.",
+   "hint": "model, mode, escalation",
+   "topic": "Efficient inference and serving",
+   "tasks": [
+    "routing_cost",
+    "routing_perf",
+    "reasoning_budget",
+    "cascade_verifier"
+   ]
+  },
+  {
+   "name": "Cache",
+   "blurb": "What to reuse, and what to keep in memory or in the context.",
+   "hint": "reuse, memory, context",
+   "topic": "Efficient serving; storage systems",
+   "tasks": [
+    "semantic_cache",
+    "context_filter",
+    "prefix_cache"
+   ]
+  },
+  {
+   "name": "Schedule",
+   "blurb": "Which request runs next.",
+   "hint": "queue order",
+   "topic": "ML for job scheduling",
+   "tasks": [
+    "length_scheduling"
+   ]
+  },
+  {
+   "name": "Verify",
+   "blurb": "Whether a finished answer is good enough to return.",
+   "hint": "answers, steps, claims",
+   "topic": "Testing, debugging and monitoring",
+   "tasks": [
+    "response_select",
+    "step_verifier",
+    "grounding"
+   ]
+  },
+  {
+   "name": "Guard",
+   "blurb": "Whether a request or a response is let through.",
+   "hint": "harm, injection, over-refusal",
+   "topic": "Privacy and security",
+   "tasks": [
+    "safety",
+    "over_refusal",
+    "prompt_injection"
+   ]
+  },
+  {
+   "name": "Act",
+   "blurb": "Whether an agent's next step goes ahead.",
+   "hint": "tool calls, agent actions",
+   "topic": "Autonomous and agentic systems",
+   "tasks": [
+    "tool_gate",
+    "agent_risk"
+   ]
   }
  ],
  "entries": [
@@ -233,15 +330,16 @@
    "name": "jev-1.13",
    "model": "typesafe/jev-1.13",
    "partial": false,
-   "average": 63.630978465509195,
+   "average": 63.63097846550919,
    "latency_p50_s": 0.09214627859182656,
    "routing_cost": 23.341282340023987,
    "routing_perf": 17.451177640199322,
    "reasoning_budget": 43.65212663249279,
-   "length_scheduling": 78.89725939035857,
+   "cascade_verifier": 32.45721985299178,
    "semantic_cache": 27.275308817265373,
    "context_filter": 58.274291961724245,
-   "cascade_verifier": 32.45721985299178,
+   "prefix_cache": 1.281837323872057,
+   "length_scheduling": 78.89725939035857,
    "response_select": 68.46939425895422,
    "step_verifier": 90.69972036260813,
    "grounding": 73.07903837265063,
@@ -263,9 +361,9 @@
      36.04792508930249,
      49.23217356700457
     ],
-    "length_scheduling": [
-     71.06187264399442,
-     86.73264613672272
+    "cascade_verifier": [
+     28.809072799983763,
+     35.43325868285213
     ],
     "semantic_cache": [
      21.466738105073627,
@@ -275,9 +373,13 @@
      53.85181478080938,
      65.83918064659777
     ],
-    "cascade_verifier": [
-     28.809072799983763,
-     35.43325868285213
+    "prefix_cache": [
+     0.2991831327736838,
+     2.2644915149704303
+    ],
+    "length_scheduling": [
+     71.06187264399442,
+     86.73264613672272
     ],
     "response_select": [
      66.08378425018064,
@@ -322,7 +424,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T08:50:43",
+    "finished": "2026-09-30T22:49:29",
     "latency_p95_s": 0.14307557796128093,
     "latency_requests": 50
    },
@@ -466,6 +568,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "66.3% escalating the half it doubts (random 60.3%), AUROC 0.816",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.8158873759704904,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 66.34622487381273,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 37% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.3689,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7663684310049398,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 60% of unneeded text, keeps 95% of needed (AUROC 0.885)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.6036057736363803,
+      "needed_kept": 0.951,
+      "auroc": 0.8853791457286433,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 68% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.60, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       3.003592482114197,
+       2.384595416244196,
+       0.7622212768557843,
+       1.1633545108608057,
+       -0.7284778072638648,
+       -0.5479085882482065,
+       0.7416936909281793,
+       0.44583007929807145,
+       2.624066353566119,
+       2.8111325938740204
+      ],
+      "reused": 0.6766725538688335,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5953266657068252,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221230% / \u221234% vs FCFS, \u03c4 0.61 / 0.56 (thinking off / on)",
      "items": 20000,
@@ -493,44 +661,6 @@
        73.72221818595976,
        77.6157172115582
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 37% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.3689,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7663684310049398,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 60% of unneeded text, keeps 95% of needed (AUROC 0.885)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.6036057736363803,
-      "needed_kept": 0.951,
-      "auroc": 0.8853791457286433,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "66.3% escalating the half it doubts (random 60.3%), AUROC 0.816",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.8158873759704904,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 66.34622487381273,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -644,10 +774,49 @@
    "rank": 1,
    "top": [
     "routing_perf",
-    "context_filter",
     "cascade_verifier",
+    "context_filter",
     "response_select",
     "step_verifier"
+   ],
+   "categories": {
+    "Route": 29.225451616426973,
+    "Cache": 42.77480038949481,
+    "Schedule": 78.89725939035857,
+    "Verify": 77.416050998071,
+    "Guard": 90.87684039473369,
+    "Act": 84.1186680845839
+   },
+   "category_ci": {
+    "Route": [
+     26.988368750000003,
+     31.13569375
+    ],
+    "Cache": [
+     38.977962500000004,
+     47.1135125
+    ],
+    "Schedule": [
+     75.518,
+     81.763
+    ],
+    "Verify": [
+     76.28861666666666,
+     78.623075
+    ],
+    "Guard": [
+     89.89194166666667,
+     92.02832500000001
+    ],
+    "Act": [
+     82.171,
+     86.606375
+    ]
+   },
+   "category_top": [
+    "Route",
+    "Cache",
+    "Verify"
    ]
   },
   {
@@ -659,10 +828,11 @@
    "routing_cost": 21.96990309770314,
    "routing_perf": 12.276436535218092,
    "reasoning_budget": 47.68094401233704,
-   "length_scheduling": 76.48125354917462,
+   "cascade_verifier": 30.058504817283993,
    "semantic_cache": 25.27332102797104,
    "context_filter": 49.92120391253385,
-   "cascade_verifier": 30.058504817283993,
+   "prefix_cache": 5.314550688510721,
+   "length_scheduling": 76.48125354917462,
    "response_select": 68.91151985776662,
    "step_verifier": 89.70727904789797,
    "grounding": 74.47257749060533,
@@ -684,9 +854,9 @@
      40.37301992499606,
      53.70107221502134
     ],
-    "length_scheduling": [
-     70.09340107496705,
-     82.8691060233822
+    "cascade_verifier": [
+     26.47358754060864,
+     33.46249735907502
     ],
     "semantic_cache": [
      19.333474149516398,
@@ -696,9 +866,13 @@
      44.13300508097077,
      56.12405979146181
     ],
-    "cascade_verifier": [
-     26.47358754060864,
-     33.46249735907502
+    "prefix_cache": [
+     4.314667791104929,
+     6.314433585916513
+    ],
+    "length_scheduling": [
+     70.09340107496705,
+     82.8691060233822
     ],
     "response_select": [
      66.00080259154143,
@@ -746,7 +920,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T10:09:45",
+    "finished": "2026-09-30T22:38:07",
     "latency_p95_s": 0.415141429612413,
     "latency_requests": 50
    },
@@ -890,6 +1064,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "65.4% escalating the half it doubts (random 60.3%), AUROC 0.806",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.8055025486007518,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 65.37429181231023,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 35% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.3548,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7679764924168209,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 52% of unneeded text, keeps 95% of needed (AUROC 0.866)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.5242514371690715,
+      "needed_kept": 0.951,
+      "auroc": 0.866246608040201,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 69% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.62, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       7.286695756666751,
+       5.020104236452571,
+       6.053936027941062,
+       5.0726073339991595,
+       4.522538582894596,
+       4.042257528814318,
+       3.1809465733720366,
+       4.246038452285029,
+       6.091167745631444,
+       7.427076078495637
+      ],
+      "reused": 0.6873111652449747,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.6221243521779335,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221228% / \u221234% vs FCFS, \u03c4 0.58 / 0.55 (thinking off / on)",
      "items": 20000,
@@ -917,44 +1157,6 @@
        72.37229407245735,
        76.21768637044508
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 35% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.3548,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7679764924168209,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 52% of unneeded text, keeps 95% of needed (AUROC 0.866)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.5242514371690715,
-      "needed_kept": 0.951,
-      "auroc": 0.866246608040201,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "65.4% escalating the half it doubts (random 60.3%), AUROC 0.806",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.8055025486007518,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 65.37429181231023,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -1070,6 +1272,43 @@
     "response_select",
     "grounding",
     "tool_gate"
+   ],
+   "categories": {
+    "Route": 27.996447115635565,
+    "Cache": 37.597262470252446,
+    "Schedule": 76.48125354917462,
+    "Verify": 77.69712546542331,
+    "Guard": 90.76897351512928,
+    "Act": 80.8656130320596
+   },
+   "category_ci": {
+    "Route": [
+     25.845875,
+     29.658318750000003
+    ],
+    "Cache": [
+     34.026512499999995,
+     41.66665
+    ],
+    "Schedule": [
+     73.573,
+     78.453
+    ],
+    "Verify": [
+     76.33010833333334,
+     78.87873333333334
+    ],
+    "Guard": [
+     89.612925,
+     91.931225
+    ],
+    "Act": [
+     78.2041625,
+     83.82747499999999
+    ]
+   },
+   "category_top": [
+    "Verify"
    ]
   },
   {
@@ -1081,10 +1320,11 @@
    "routing_cost": 26.65438635904995,
    "routing_perf": 10.982397299288822,
    "reasoning_budget": 50.579326909012835,
-   "length_scheduling": 73.1789255546109,
+   "cascade_verifier": 22.486730135190143,
    "semantic_cache": 38.91807468408349,
    "context_filter": 32.83263402351164,
-   "cascade_verifier": 22.486730135190143,
+   "prefix_cache": 0.28317427684019314,
+   "length_scheduling": 73.1789255546109,
    "response_select": 59.12483796841001,
    "step_verifier": 88.27074238853754,
    "grounding": 68.14909337911335,
@@ -1106,9 +1346,9 @@
      43.31473673580235,
      55.44195424650556
     ],
-    "length_scheduling": [
-     64.37731440657032,
-     81.98053670265148
+    "cascade_verifier": [
+     18.45473290582729,
+     25.994247049502533
     ],
     "semantic_cache": [
      32.774614366489295,
@@ -1118,9 +1358,13 @@
      27.493679057799117,
      38.17537853336576
     ],
-    "cascade_verifier": [
-     18.45473290582729,
-     25.994247049502533
+    "prefix_cache": [
+     -0.5407982797745104,
+     1.1071468334548968
+    ],
+    "length_scheduling": [
+     64.37731440657032,
+     81.98053670265148
     ],
     "response_select": [
      56.00636660522804,
@@ -1168,7 +1412,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T10:18:00",
+    "finished": "2026-09-30T22:50:15",
     "latency_p95_s": 0.4876414231490339,
     "latency_requests": 50
    },
@@ -1312,6 +1556,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "63.5% escalating the half it doubts (random 60.3%), AUROC 0.731",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.7305380264886299,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 63.46673147968775,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 45% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.4509,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7964298678948891,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 36% of unneeded text, keeps 95% of needed (AUROC 0.805)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.3619100232233606,
+      "needed_kept": 0.951,
+      "auroc": 0.8047185929648241,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 67% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.54, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       0.19941027015610477,
+       0.45708521672803193,
+       -0.6387099352006148,
+       2.3059478475916277,
+       1.7886233336243589,
+       0.5352943495892009,
+       -1.1721460150146694,
+       -1.0311433977187736,
+       -0.4411310549355802,
+       0.7949540029523748
+      ],
+      "reused": 0.6740380031104667,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5398895007671826,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221226% / \u221234% vs FCFS, \u03c4 0.57 / 0.54 (thinking off / on)",
      "items": 20000,
@@ -1339,44 +1649,6 @@
        68.38441772895754,
        68.3726062954683
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 45% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.4509,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7964298678948891,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 36% of unneeded text, keeps 95% of needed (AUROC 0.805)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.3619100232233606,
-      "needed_kept": 0.951,
-      "auroc": 0.8047185929648241,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "63.5% escalating the half it doubts (random 60.3%), AUROC 0.731",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.7305380264886299,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 63.46673147968775,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -1495,7 +1767,41 @@
     "over_refusal",
     "prompt_injection",
     "agent_risk"
-   ]
+   ],
+   "categories": {
+    "Route": 27.675710175635437,
+    "Cache": 35.87535435379756,
+    "Schedule": 73.1789255546109,
+    "Verify": 71.84822457868698,
+    "Guard": 90.75744960400209,
+    "Act": 81.12695541079933
+   },
+   "category_ci": {
+    "Route": [
+     25.39693125,
+     29.1537125
+    ],
+    "Cache": [
+     31.716475,
+     39.8076625
+    ],
+    "Schedule": [
+     71.127,
+     77.27
+    ],
+    "Verify": [
+     70.51634166666666,
+     73.04980833333335
+    ],
+    "Guard": [
+     89.90289166666666,
+     91.77464166666668
+    ],
+    "Act": [
+     78.6897125,
+     83.592475
+    ]
+   }
   },
   {
    "name": "xor",
@@ -1506,10 +1812,11 @@
    "routing_cost": 22.64456837705598,
    "routing_perf": 17.503755452817092,
    "reasoning_budget": 17.453783478693392,
-   "length_scheduling": 77.43410076011081,
+   "cascade_verifier": 31.892799037874994,
    "semantic_cache": 32.7559278716456,
    "context_filter": 50.28802635242119,
-   "cascade_verifier": 31.892799037874994,
+   "prefix_cache": 3.971717392486344,
+   "length_scheduling": 77.43410076011081,
    "response_select": 62.4364638620894,
    "step_verifier": 89.34418023637411,
    "grounding": 71.41302624969595,
@@ -1531,9 +1838,9 @@
      12.414273939597525,
      21.573577301779416
     ],
-    "length_scheduling": [
-     67.15868699248614,
-     87.70951452773548
+    "cascade_verifier": [
+     27.774221474644403,
+     34.849992488828626
     ],
     "semantic_cache": [
      25.722238761945242,
@@ -1543,9 +1850,13 @@
      45.86053730085036,
      55.18914873802028
     ],
-    "cascade_verifier": [
-     27.774221474644403,
-     34.849992488828626
+    "prefix_cache": [
+     3.2743526267933722,
+     4.669082158179315
+    ],
+    "length_scheduling": [
+     67.15868699248614,
+     87.70951452773548
     ],
     "response_select": [
      59.141177657212985,
@@ -1593,7 +1904,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T09:54:30",
+    "finished": "2026-09-30T22:29:32",
     "latency_p95_s": 0.26475061550736423,
     "latency_requests": 50
    },
@@ -1737,6 +2048,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "66.3% escalating the half it doubts (random 60.3%), AUROC 0.809",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.8088641409199606,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 66.27877052983942,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 41% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.4075,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7821357182259083,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 53% of unneeded text, keeps 95% of needed (AUROC 0.846)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.5277362503480013,
+      "needed_kept": 0.951,
+      "auroc": 0.8458704773869347,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 68% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.57, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       6.338887407992688,
+       4.4454038880375375,
+       3.6998169070691733,
+       3.4146623377217655,
+       2.8757902530772577,
+       4.2479088784269035,
+       2.9531718895135493,
+       3.8337841656492966,
+       3.8939395166147466,
+       3.930431530411178
+      ],
+      "reused": 0.6837686666125121,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5747230529725592,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221229% / \u221234% vs FCFS, \u03c4 0.53 / 0.54 (thinking off / on)",
      "items": 20000,
@@ -1764,44 +2141,6 @@
        71.0407826201547,
        73.44916638120317
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 41% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.4075,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7821357182259083,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 53% of unneeded text, keeps 95% of needed (AUROC 0.846)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.5277362503480013,
-      "needed_kept": 0.951,
-      "auroc": 0.8458704773869347,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "66.3% escalating the half it doubts (random 60.3%), AUROC 0.809",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.8088641409199606,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 66.27877052983942,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -1917,6 +2256,43 @@
     "routing_perf",
     "cascade_verifier",
     "over_refusal"
+   ],
+   "categories": {
+    "Route": 22.373726586610363,
+    "Cache": 41.5219771120334,
+    "Schedule": 77.43410076011081,
+    "Verify": 74.39789011605315,
+    "Guard": 90.8014304168533,
+    "Act": 68.0754447099678
+   },
+   "category_ci": {
+    "Route": [
+     20.723737500000002,
+     23.73211875
+    ],
+    "Cache": [
+     37.409850000000006,
+     44.641075
+    ],
+    "Schedule": [
+     73.945,
+     82.004
+    ],
+    "Verify": [
+     72.969925,
+     75.58453333333334
+    ],
+    "Guard": [
+     89.83459166666667,
+     91.88109166666668
+    ],
+    "Act": [
+     64.3688375,
+     72.3108
+    ]
+   },
+   "category_top": [
+    "Cache"
    ]
   },
   {
@@ -1928,10 +2304,11 @@
    "routing_cost": 22.763927432778917,
    "routing_perf": 15.705790554392092,
    "reasoning_budget": 38.84430664792989,
-   "length_scheduling": 77.74220394620521,
+   "cascade_verifier": 22.761971383440795,
    "semantic_cache": -4.273746982819824,
    "context_filter": 2.3955581504744554,
-   "cascade_verifier": 22.761971383440795,
+   "prefix_cache": 4.040086948628266,
+   "length_scheduling": 77.74220394620521,
    "response_select": 57.621750144528406,
    "step_verifier": 91.38408216152709,
    "grounding": 72.43745679021248,
@@ -1953,9 +2330,9 @@
      32.46893905481831,
      43.52600527384022
     ],
-    "length_scheduling": [
-     70.43497507351735,
-     85.04943281889307
+    "cascade_verifier": [
+     18.238806494045004,
+     26.823488417217515
     ],
     "semantic_cache": [
      -10.25790029537562,
@@ -1965,9 +2342,13 @@
      0.3083436377659651,
      4.013080518021061
     ],
-    "cascade_verifier": [
-     18.238806494045004,
-     26.823488417217515
+    "prefix_cache": [
+     3.060541967040268,
+     5.019631930216264
+    ],
+    "length_scheduling": [
+     70.43497507351735,
+     85.04943281889307
     ],
     "response_select": [
      54.24043495165347,
@@ -2016,7 +2397,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T10:03:33",
+    "finished": "2026-09-30T22:57:37",
     "latency_p95_s": 0.556737183406949,
     "latency_requests": 50
    },
@@ -2160,6 +2541,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "63.5% escalating the half it doubts (random 60.3%), AUROC 0.706",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.705632736526364,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 63.47058488845272,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 15% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.1467,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7003644614657552,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 7% of unneeded text, keeps 95% of needed (AUROC 0.658)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.07275780242950737,
+      "needed_kept": 0.951,
+      "auroc": 0.6576006281407036,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 68% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.63, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       5.392611210270749,
+       3.818162491823626,
+       4.148836119235703,
+       4.28319122803955,
+       3.4001778640477065,
+       3.172694389429029,
+       2.5661208578210997,
+       1.7613953762123684,
+       5.806779739994247,
+       5.851573124138505
+      ],
+      "reused": 0.6839490308169535,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.6297538373192703,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221229% / \u221235% vs FCFS, \u03c4 0.57 / 0.56 (thinking off / on)",
      "items": 20000,
@@ -2187,44 +2634,6 @@
        73.59021968850399,
        74.20143386765649
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 15% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.1467,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7003644614657552,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 7% of unneeded text, keeps 95% of needed (AUROC 0.658)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.07275780242950737,
-      "needed_kept": 0.951,
-      "auroc": 0.6576006281407036,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "63.5% escalating the half it doubts (random 60.3%), AUROC 0.706",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.705632736526364,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 63.47058488845272,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -2340,6 +2749,44 @@
     "step_verifier",
     "safety",
     "agent_risk"
+   ],
+   "categories": {
+    "Route": 25.018999004635425,
+    "Cache": -0.9390944161726842,
+    "Schedule": 77.74220394620521,
+    "Verify": 73.81442969875599,
+    "Guard": 91.70193020600851,
+    "Act": 86.01556053995043
+   },
+   "category_ci": {
+    "Route": [
+     22.956593750000003,
+     26.631937499999996
+    ],
+    "Cache": [
+     -4.0399375,
+     2.457625
+    ],
+    "Schedule": [
+     75.747,
+     81.12
+    ],
+    "Verify": [
+     72.232,
+     74.99977500000001
+    ],
+    "Guard": [
+     90.61865833333333,
+     92.78958333333333
+    ],
+    "Act": [
+     84.008875,
+     87.9254
+    ]
+   },
+   "category_top": [
+    "Guard",
+    "Act"
    ]
   },
   {
@@ -2351,10 +2798,11 @@
    "routing_cost": 21.35300551818083,
    "routing_perf": 14.105885533994362,
    "reasoning_budget": 43.87429674100707,
-   "length_scheduling": 80.47144492483801,
+   "cascade_verifier": 13.216185321185947,
    "semantic_cache": 7.440011358795965,
    "context_filter": 45.55879124243348,
-   "cascade_verifier": 13.216185321185947,
+   "prefix_cache": 0.6498293221767015,
+   "length_scheduling": 80.47144492483801,
    "response_select": 58.91762171615493,
    "step_verifier": 77.5745805936544,
    "grounding": 67.81827430673444,
@@ -2376,9 +2824,9 @@
      37.47795104614703,
      49.46142402594197
     ],
-    "length_scheduling": [
-     70.22381668263807,
-     90.71907316703795
+    "cascade_verifier": [
+     9.559922528679092,
+     16.600540119292834
     ],
     "semantic_cache": [
      2.2806643771177666,
@@ -2388,9 +2836,13 @@
      37.91403975129984,
      52.56216161474277
     ],
-    "cascade_verifier": [
-     9.559922528679092,
-     16.600540119292834
+    "prefix_cache": [
+     -0.3087176972153981,
+     1.608376341568801
+    ],
+    "length_scheduling": [
+     70.22381668263807,
+     90.71907316703795
     ],
     "response_select": [
      55.40138503901419,
@@ -2438,7 +2890,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T08:23:49",
+    "finished": "2026-09-30T21:22:51",
     "latency_p95_s": 0.13910552766174075,
     "latency_requests": 50
    },
@@ -2582,6 +3034,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "62.3% escalating the half it doubts (random 60.3%), AUROC 0.673",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.6728852618671921,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 62.31168800274568,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 23% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.2292,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7082973830689312,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 48% of unneeded text, keeps 95% of needed (AUROC 0.875)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.4828085168031181,
+      "needed_kept": 0.951,
+      "auroc": 0.8746355527638191,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 68% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.59, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       1.110479945462016,
+       -0.2824649854092887,
+       2.685234275345847,
+       1.59701730566736,
+       -0.07356857681012878,
+       -1.1248350462126644,
+       0.3223034246402498,
+       -0.6728409870422566,
+       0.12478637026158376,
+       2.7074723892165635
+      ],
+      "reused": 0.6750052676253812,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5890590336915235,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221231% / \u221235% vs FCFS, \u03c4 0.57 / 0.55 (thinking off / on)",
      "items": 20000,
@@ -2609,44 +3127,6 @@
        73.7196253877141,
        78.58966115951702
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 23% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.2292,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7082973830689312,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 48% of unneeded text, keeps 95% of needed (AUROC 0.875)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.4828085168031181,
-      "needed_kept": 0.951,
-      "auroc": 0.8746355527638191,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "62.3% escalating the half it doubts (random 60.3%), AUROC 0.673",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.6728852618671921,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 62.31168800274568,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -2760,6 +3240,43 @@
    "rank": 6,
    "top": [
     "length_scheduling"
+   ],
+   "categories": {
+    "Route": 23.137343278592052,
+    "Cache": 26.49940130061472,
+    "Schedule": 80.47144492483801,
+    "Verify": 68.1034922055146,
+    "Guard": 87.36374568110892,
+    "Act": 65.39870647786896
+   },
+   "category_ci": {
+    "Route": [
+     20.943606250000002,
+     24.809231250000003
+    ],
+    "Cache": [
+     22.1235125,
+     30.579
+    ],
+    "Schedule": [
+     76.114,
+     84.316
+    ],
+    "Verify": [
+     66.27403333333334,
+     69.51935833333334
+    ],
+    "Guard": [
+     86.22095,
+     88.54045833333335
+    ],
+    "Act": [
+     62.09477499999999,
+     68.9563875
+    ]
+   },
+   "category_top": [
+    "Schedule"
    ]
   },
   {
@@ -2771,10 +3288,11 @@
    "routing_cost": 22.386343362694028,
    "routing_perf": 11.867510810387273,
    "reasoning_budget": 42.85814018002358,
-   "length_scheduling": 76.36790689835068,
+   "cascade_verifier": 29.137002953335305,
    "semantic_cache": 12.508874059349711,
    "context_filter": 18.4989989550659,
-   "cascade_verifier": 29.137002953335305,
+   "prefix_cache": 3.816192916282985,
+   "length_scheduling": 76.36790689835068,
    "response_select": 59.942473919523096,
    "step_verifier": 85.01827517606601,
    "grounding": 68.64131214231475,
@@ -2796,9 +3314,9 @@
      35.582093033072994,
      48.837012075385836
     ],
-    "length_scheduling": [
-     71.26643704097837,
-     81.46937675572299
+    "cascade_verifier": [
+     25.23838613206855,
+     32.73307797497261
     ],
     "semantic_cache": [
      4.333402318994722,
@@ -2808,9 +3326,13 @@
      14.596578655641215,
      25.552527237199985
     ],
-    "cascade_verifier": [
-     25.23838613206855,
-     32.73307797497261
+    "prefix_cache": [
+     2.9341524678518924,
+     4.698233364714078
+    ],
+    "length_scheduling": [
+     71.26643704097837,
+     81.46937675572299
     ],
     "response_select": [
      57.00877033173913,
@@ -2858,7 +3380,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T09:56:37",
+    "finished": "2026-09-30T22:52:53",
     "latency_p95_s": 0.2887614442035554,
     "latency_requests": 50
    },
@@ -3002,6 +3524,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "65.4% escalating the half it doubts (random 60.3%), AUROC 0.757",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.7565685737930702,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 65.43171063064811,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 26% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.2649,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7274707937808834,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 23% of unneeded text, keeps 95% of needed (AUROC 0.801)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.2257404900731261,
+      "needed_kept": 0.951,
+      "auroc": 0.800583417085427,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 68% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.60, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       3.3475027092712266,
+       3.4921856351528753,
+       6.2681208446920005,
+       4.327526927242847,
+       4.84623693683999,
+       2.8083152924685484,
+       3.5061537881844087,
+       1.6277289581660424,
+       4.153740377263963,
+       3.722136467379166
+      ],
+      "reused": 0.6833583809531558,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5984503355570338,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221228% / \u221234% vs FCFS, \u03c4 0.53 / 0.51 (thinking off / on)",
      "items": 20000,
@@ -3029,44 +3617,6 @@
        73.50826314829094,
        77.35116817277343
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 26% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.2649,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7274707937808834,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 23% of unneeded text, keeps 95% of needed (AUROC 0.801)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.2257404900731261,
-      "needed_kept": 0.951,
-      "auroc": 0.800583417085427,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "65.4% escalating the half it doubts (random 60.3%), AUROC 0.757",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.7565685737930702,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 65.43171063064811,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -3177,7 +3727,41 @@
     52.48089666666667,
     54.56201666666666
    ],
-   "rank": 7
+   "rank": 7,
+   "categories": {
+    "Route": 26.562249326610043,
+    "Cache": 15.503936507207806,
+    "Schedule": 76.36790689835068,
+    "Verify": 71.20068707930129,
+    "Guard": 85.48979433641573,
+    "Act": 59.45677183539931
+   },
+   "category_ci": {
+    "Route": [
+     24.1907875,
+     28.369450000000004
+    ],
+    "Cache": [
+     10.5401875,
+     20.4578625
+    ],
+    "Schedule": [
+     74.028,
+     77.871
+    ],
+    "Verify": [
+     69.70855833333333,
+     72.4788
+    ],
+    "Guard": [
+     84.05297499999999,
+     86.94098333333334
+    ],
+    "Act": [
+     55.64028750000001,
+     63.71585
+    ]
+   }
   },
   {
    "name": "jevify-gemma4-e4b",
@@ -3188,10 +3772,11 @@
    "routing_cost": 22.502238873811848,
    "routing_perf": 7.908413912437597,
    "reasoning_budget": 51.050460291238785,
-   "length_scheduling": 77.92703852258617,
+   "cascade_verifier": 32.12378499808245,
    "semantic_cache": 21.04216953002982,
    "context_filter": 26.16579924137665,
-   "cascade_verifier": 32.12378499808245,
+   "prefix_cache": 0.9403097673813868,
+   "length_scheduling": 77.92703852258617,
    "response_select": 41.430597897293325,
    "step_verifier": 80.1961303656404,
    "grounding": 67.91617092779548,
@@ -3213,9 +3798,9 @@
      43.41322506949459,
      56.35079004036781
     ],
-    "length_scheduling": [
-     73.45571899492197,
-     82.39835805025038
+    "cascade_verifier": [
+     28.538192217236972,
+     35.807679585172046
     ],
     "semantic_cache": [
      15.139064115584167,
@@ -3225,9 +3810,13 @@
      16.54902557700004,
      32.86260378557911
     ],
-    "cascade_verifier": [
-     28.538192217236972,
-     35.807679585172046
+    "prefix_cache": [
+     0.3977520683303295,
+     1.4828674664324442
+    ],
+    "length_scheduling": [
+     73.45571899492197,
+     82.39835805025038
     ],
     "response_select": [
      38.16701615831693,
@@ -3275,7 +3864,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T08:30:46",
+    "finished": "2026-09-30T22:47:52",
     "latency_p95_s": 0.07869548380840569,
     "latency_requests": 50
    },
@@ -3419,6 +4008,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "66.2% escalating the half it doubts (random 60.3%), AUROC 0.758",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.7576859997739573,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 66.19790409412118,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 32% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.325,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7521697828016989,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 30% of unneeded text, keeps 95% of needed (AUROC 0.802)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.2985750927930782,
+      "needed_kept": 0.951,
+      "auroc": 0.8021193467336682,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 68% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.58, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       1.1514361526338663,
+       0.8174100042939125,
+       1.4127837344444039,
+       1.2357728758056394,
+       0.9539042444398873,
+       1.8967615886703313,
+       0.2508840139782928,
+       0.6141736999146752,
+       -0.68627546558188,
+       1.7554669813751935
+      ],
+      "reused": 0.6757715776230118,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5804312942344658,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221229% / \u221235% vs FCFS, \u03c4 0.51 / 0.52 (thinking off / on)",
      "items": 20000,
@@ -3446,44 +4101,6 @@
        74.97785284927329,
        77.54993566768076
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 32% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.325,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7521697828016989,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 30% of unneeded text, keeps 95% of needed (AUROC 0.802)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.2985750927930782,
-      "needed_kept": 0.951,
-      "auroc": 0.8021193467336682,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "66.2% escalating the half it doubts (random 60.3%), AUROC 0.758",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.7576859997739573,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 66.19790409412118,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -3598,6 +4215,43 @@
    "top": [
     "reasoning_budget",
     "cascade_verifier"
+   ],
+   "categories": {
+    "Route": 28.396224518892666,
+    "Cache": 23.603984385703235,
+    "Schedule": 77.92703852258617,
+    "Verify": 63.18096639690973,
+    "Guard": 89.6645934332687,
+    "Act": 37.30660295661578
+   },
+   "category_ci": {
+    "Route": [
+     26.2626875,
+     29.9616625
+    ],
+    "Cache": [
+     18.4898,
+     27.730112500000004
+    ],
+    "Schedule": [
+     75.914,
+     79.381
+    ],
+    "Verify": [
+     61.755633333333336,
+     64.54713333333333
+    ],
+    "Guard": [
+     88.57627500000002,
+     90.791775
+    ],
+    "Act": [
+     33.382675,
+     42.2225125
+    ]
+   },
+   "category_top": [
+    "Route"
    ]
   },
   {
@@ -3609,10 +4263,11 @@
    "routing_cost": 26.373100277092398,
    "routing_perf": 13.11060685830105,
    "reasoning_budget": 48.54113582304273,
-   "length_scheduling": 78.3381640434368,
+   "cascade_verifier": 28.449049870791125,
    "semantic_cache": -3.7200056793979845,
    "context_filter": 44.71587130825207,
-   "cascade_verifier": 28.449049870791125,
+   "prefix_cache": -5.302400707486528,
+   "length_scheduling": 78.3381640434368,
    "response_select": 49.86448523195719,
    "step_verifier": 80.07581876985427,
    "grounding": 66.18807090932708,
@@ -3634,9 +4289,9 @@
      40.96181348980578,
      54.52322493425165
     ],
-    "length_scheduling": [
-     69.73502829476267,
-     86.94129979211094
+    "cascade_verifier": [
+     23.96049077233475,
+     32.231802822112776
     ],
     "semantic_cache": [
      -9.993344812786134,
@@ -3646,9 +4301,13 @@
      38.577906479219344,
      49.4565698560592
     ],
-    "cascade_verifier": [
-     23.96049077233475,
-     32.231802822112776
+    "prefix_cache": [
+     -6.839474430712547,
+     -3.7653269842605086
+    ],
+    "length_scheduling": [
+     69.73502829476267,
+     86.94129979211094
     ],
     "response_select": [
      46.774968340027485,
@@ -3696,7 +4355,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T08:47:41",
+    "finished": "2026-09-30T22:49:24",
     "latency_p95_s": 0.18132521461229759,
     "latency_requests": 50
    },
@@ -3840,6 +4499,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "65.3% escalating the half it doubts (random 60.3%), AUROC 0.716",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.7159614825032298,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 65.30640506494751,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 15% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.1506,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.6910765263124435,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 47% of unneeded text, keeps 95% of needed (AUROC 0.836)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.47480077742839466,
+      "needed_kept": 0.951,
+      "auroc": 0.835609296482412,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 66% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.56, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       -6.57090119142035,
+       -7.122470503988083,
+       -5.085571518220819,
+       -0.2586249120192284,
+       -5.1159094246964365,
+       -4.310724031695024,
+       -8.194858839500258,
+       -6.2531342856169285,
+       -5.682736932585122,
+       -4.45975109656803
+      ],
+      "reused": 0.6593028220555464,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.561199642619732,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221230% / \u221234% vs FCFS, \u03c4 0.51 / 0.51 (thinking off / on)",
      "items": 20000,
@@ -3867,44 +4592,6 @@
        72.81750509660398,
        76.24008281495426
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 15% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.1506,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.6910765263124435,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 47% of unneeded text, keeps 95% of needed (AUROC 0.836)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.47480077742839466,
-      "needed_kept": 0.951,
-      "auroc": 0.835609296482412,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "65.3% escalating the half it doubts (random 60.3%), AUROC 0.716",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.7159614825032298,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 65.30640506494751,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -4012,13 +4699,50 @@
     }
    },
    "average_ci": [
-    50.12763499999999,
+    50.127635,
     52.056913333333334
    ],
    "rank": 8,
    "top": [
     "routing_cost",
     "reasoning_budget"
+   ],
+   "categories": {
+    "Route": 29.118473207306828,
+    "Cache": 20.497932814427042,
+    "Schedule": 78.3381640434368,
+    "Verify": 65.37612497037951,
+    "Guard": 87.07356134959649,
+    "Act": 37.09326110986544
+   },
+   "category_ci": {
+    "Route": [
+     26.651475,
+     30.8363875
+    ],
+    "Cache": [
+     15.870225,
+     24.606787500000003
+    ],
+    "Schedule": [
+     74.889,
+     81.815
+    ],
+    "Verify": [
+     64.04430833333333,
+     66.73456666666668
+    ],
+    "Guard": [
+     85.52275000000002,
+     88.46050833333332
+    ],
+    "Act": [
+     33.4491375,
+     42.0723875
+    ]
+   },
+   "category_top": [
+    "Route"
    ]
   },
   {
@@ -4030,10 +4754,11 @@
    "routing_cost": 22.833063200441444,
    "routing_perf": 3.7232976401599758,
    "reasoning_budget": 22.290111452325522,
-   "length_scheduling": 69.11485374543412,
+   "cascade_verifier": 29.857535920936563,
    "semantic_cache": 15.618344455487717,
    "context_filter": 30.154683226132157,
-   "cascade_verifier": 29.857535920936563,
+   "prefix_cache": -0.42376450670484633,
+   "length_scheduling": 69.11485374543412,
    "response_select": 47.95268561368648,
    "step_verifier": 78.19696710331509,
    "grounding": 63.57388312085029,
@@ -4055,9 +4780,9 @@
      17.142014535982277,
      27.407268248368357
     ],
-    "length_scheduling": [
-     65.15543982727185,
-     73.07426766359639
+    "cascade_verifier": [
+     25.854794400921804,
+     33.78130537804916
     ],
     "semantic_cache": [
      12.040479318517429,
@@ -4067,9 +4792,13 @@
      25.14218533005759,
      37.12613260253169
     ],
-    "cascade_verifier": [
-     25.854794400921804,
-     33.78130537804916
+    "prefix_cache": [
+     -1.6623202565513895,
+     0.8147912431416968
+    ],
+    "length_scheduling": [
+     65.15543982727185,
+     73.07426766359639
     ],
     "response_select": [
      45.22137589025639,
@@ -4117,7 +4846,7 @@
    },
    "run": {
     "gpu": "NVIDIA H200",
-    "finished": "2026-09-30T08:25:13",
+    "finished": "2026-09-30T22:21:32",
     "latency_p95_s": 0.05775058204308151,
     "latency_requests": 50
    },
@@ -4261,6 +4990,72 @@
       "items": 3713
      }
     },
+    "cascade_verifier": {
+     "summary": "64.7% escalating the half it doubts (random 60.3%), AUROC 0.699",
+     "items": 12446,
+     "failed": 0,
+     "metrics": {
+      "failure_auroc": 0.6987561898975545,
+      "items": 12446,
+      "accuracy_cheap": 55.07667186581546,
+      "accuracy_strong": 65.62271510934154,
+      "accuracy_half_escalated": 64.70940315437946,
+      "accuracy_half_escalated_random": 60.349693487578506,
+      "accuracy_half_escalated_hindsight": 73.46520864566537
+     }
+    },
+    "semantic_cache": {
+     "summary": "serves 29% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
+     "items": 10000,
+     "failed": 0,
+     "metrics": {
+      "hit_rate": 0.2868,
+      "embedding_hit_rate": 0.1768,
+      "oracle_hit_rate": 0.8811,
+      "max_error": 0.02,
+      "auroc": 0.7439511204312141,
+      "requests": 10000
+     }
+    },
+    "context_filter": {
+     "summary": "drops 34% of unneeded text, keeps 95% of needed (AUROC 0.810)",
+     "items": 4980,
+     "failed": 0,
+     "metrics": {
+      "unneeded_text_dropped": 0.33646949064825554,
+      "needed_kept": 0.951,
+      "auroc": 0.8102849246231156,
+      "passages": 4980
+     }
+    },
+    "prefix_cache": {
+     "summary": "reuses 67% (LRU 67%, oracle 94%); 'is it over?' AUROC 0.52, turn count 0.68",
+     "items": 19465,
+     "failed": 0,
+     "metrics": {
+      "seed_scores": [
+       2.1409420718437113,
+       -0.8083808277564972,
+       -1.504817059842479,
+       2.3034226109015314,
+       -0.027444395488967082,
+       -1.7918363856433919,
+       -2.5723778342634103,
+       -2.3381039297272945,
+       -0.5367697613807665,
+       0.7283801982082231
+      ],
+      "reused": 0.6721730436390584,
+      "reused_lru": 0.6732909673529941,
+      "reused_oracle": 0.9370987417767133,
+      "turns": 19465,
+      "window_s": 1800.0,
+      "horizon_s": 600.0,
+      "capacity_tokens": 779792,
+      "auroc_over": 0.5160320627734528,
+      "auroc_over_turn_count": 0.6753118561333538
+     }
+    },
     "length_scheduling": {
      "summary": "latency \u221224% / \u221233% vs FCFS, \u03c4 0.39 / 0.44 (thinking off / on)",
      "items": 20000,
@@ -4288,44 +5083,6 @@
        66.87011642870877,
        66.94183984515331
       ]
-     }
-    },
-    "semantic_cache": {
-     "summary": "serves 29% from cache at \u22642% wrong (embedding 18%, oracle 88%)",
-     "items": 10000,
-     "failed": 0,
-     "metrics": {
-      "hit_rate": 0.2868,
-      "embedding_hit_rate": 0.1768,
-      "oracle_hit_rate": 0.8811,
-      "max_error": 0.02,
-      "auroc": 0.7439511204312141,
-      "requests": 10000
-     }
-    },
-    "context_filter": {
-     "summary": "drops 34% of unneeded text, keeps 95% of needed (AUROC 0.810)",
-     "items": 4980,
-     "failed": 0,
-     "metrics": {
-      "unneeded_text_dropped": 0.33646949064825554,
-      "needed_kept": 0.951,
-      "auroc": 0.8102849246231156,
-      "passages": 4980
-     }
-    },
-    "cascade_verifier": {
-     "summary": "64.7% escalating the half it doubts (random 60.3%), AUROC 0.699",
-     "items": 12446,
-     "failed": 0,
-     "metrics": {
-      "failure_auroc": 0.6987561898975545,
-      "items": 12446,
-      "accuracy_cheap": 55.07667186581546,
-      "accuracy_strong": 65.62271510934154,
-      "accuracy_half_escalated": 64.70940315437946,
-      "accuracy_half_escalated_random": 60.349693487578506,
-      "accuracy_half_escalated_hindsight": 73.46520864566537
      }
     },
     "response_select": {
@@ -4439,9 +5196,48 @@
    "rank": 10,
    "top": [
     "cascade_verifier"
-   ]
+   ],
+   "categories": {
+    "Route": 19.67600205346588,
+    "Cache": 22.886513840809936,
+    "Schedule": 69.11485374543412,
+    "Verify": 63.24117861261729,
+    "Guard": 85.76272161998294,
+    "Act": 28.118520575496326
+   },
+   "category_ci": {
+    "Route": [
+     17.621656249999997,
+     21.37011875
+    ],
+    "Cache": [
+     20.385525,
+     28.45015
+    ],
+    "Schedule": [
+     68.159,
+     70.955
+    ],
+    "Verify": [
+     61.86955833333333,
+     64.67992500000001
+    ],
+    "Guard": [
+     84.502175,
+     87.27544166666665
+    ],
+    "Act": [
+     24.377675000000004,
+     32.8549125
+    ]
+   }
   }
  ],
  "archives": [],
- "repo": null
+ "repo": null,
+ "blog": "https://supercomputing-system-ai-lab.github.io/blogs/rethinking-llm-serving-with-jev/",
+ "submit": {
+  "url": "https://docs.google.com/forms/d/e/1FAIpQLSf94vKIh3c5fhHgcNfLtKucKLEeIv3zB6GH4A3Q0hw5UAl-3A/formResponse",
+  "field": "entry.501359801"
+ }
 }
