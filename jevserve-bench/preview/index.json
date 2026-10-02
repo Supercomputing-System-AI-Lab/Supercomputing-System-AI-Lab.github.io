@@ -1,6 +1,6 @@
 {
- "version": "0.2.0",
- "generated": "2026-10-01",
+ "version": "0.1.0",
+ "generated": "2026-10-02",
  "tasks": [
   {
    "name": "routing_cost",
@@ -31,7 +31,7 @@
     "routing in hindsight order"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -79,7 +79,7 @@
     "a cache that knows which requests are equivalent"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -95,7 +95,7 @@
     "dropping exactly the passages that are not needed"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -111,7 +111,7 @@
     "evicting by the true next-message times (Belady)"
    ],
    "tier": "A+B",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": false
   },
   {
@@ -143,7 +143,7 @@
     "always picking a correct one"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -159,7 +159,7 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -207,7 +207,7 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -223,7 +223,7 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -239,7 +239,7 @@
     "perfect ranking (AUROC 1)"
    ],
    "tier": "A",
-   "version": "0.2",
+   "version": "0.1",
    "averaged": true
   },
   {
@@ -425,7 +425,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:49:29",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.14307557796128093,
     "latency_requests": 50
    },
@@ -922,7 +921,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:38:07",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.415141429612413,
     "latency_requests": 50
    },
@@ -1415,7 +1413,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:50:15",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.4876414231490339,
     "latency_requests": 50
    },
@@ -1908,7 +1905,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:29:32",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.26475061550736423,
     "latency_requests": 50
    },
@@ -2402,7 +2398,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:57:37",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.556737183406949,
     "latency_requests": 50
    },
@@ -2896,7 +2891,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T21:22:51",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.13910552766174075,
     "latency_requests": 50
    },
@@ -3387,7 +3381,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:52:53",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.2887614442035554,
     "latency_requests": 50
    },
@@ -3872,7 +3865,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:47:52",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.07869548380840569,
     "latency_requests": 50
    },
@@ -4364,7 +4356,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:49:24",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.18132521461229759,
     "latency_requests": 50
    },
@@ -4856,7 +4847,6 @@
    "run": {
     "gpu": "NVIDIA H200",
     "finished": "2026-09-30T22:21:32",
-    "jevserve_bench": "0.2.0",
     "latency_p95_s": 0.05775058204308151,
     "latency_requests": 50
    },
@@ -5243,12 +5233,7 @@
    }
   }
  ],
- "archives": [
-  {
-   "version": "0.1",
-   "href": "v0.1/"
-  }
- ],
+ "archives": [],
  "repo": null,
  "submit": {
   "url": "https://docs.google.com/forms/d/e/1FAIpQLSf94vKIh3c5fhHgcNfLtKucKLEeIv3zB6GH4A3Q0hw5UAl-3A/formResponse",

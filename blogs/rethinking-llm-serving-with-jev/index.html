@@ -55,6 +55,10 @@ header.col .draft { justify-self: start; }
 h1 { margin: 0; font: 600 clamp(34px, 5.6vw, 52px)/1.08 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
 .deck { margin: 0; font-size: 21px; line-height: 1.45; color: var(--ink-2); text-wrap: balance; }
 .meta { font: 400 13.5px var(--sans); color: var(--ink-3); }
+.byline { display: grid; gap: 4px; }
+.byline p { margin: 0; }
+.authors { font: 500 16px/1.5 var(--sans); color: var(--ink); }
+.authors a { color: inherit; }
 
 .tldr { margin-block: 30px 10px; padding: 18px 22px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
 .tldr h2 { margin: 0 0 6px; font: 600 12px var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
@@ -148,10 +152,12 @@ table.t .hi { color: var(--jev); font-weight: 600; }
 <div class="page">
 <nav class="col back-row"><a class="back" href="/blogs/">&larr; SSAIL Blog</a></nav>
   <header class="col">
-    <span class="draft">Draft for review</span>
     <h1>Rethinking LLM Serving with System One Models</h1>
     <p class="deck">Opportunities and open problems for fast decision models like Jev, measured with JevServe-Bench.</p>
-    <p class="meta">About 12 minutes to read</p>
+    <div class="byline">
+      <p class="authors"><a href="https://xinyulian.tech/" target="_blank" rel="noopener">Xinyu Lian</a>, Banghao Chi, Jiahuan Yu and <a href="https://minjiazhang.github.io/" target="_blank" rel="noopener">Minjia Zhang</a></p>
+      <p class="meta">SSAIL Lab, University of Illinois Urbana-Champaign · About 12 minutes to read</p>
+    </div>
   </header>
 
   <section class="col tldr" aria-labelledby="tldr-h">
@@ -257,7 +263,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
           <div class="tablewrap"><table class="t"><thead><tr><th>Category</th><th class="r">Jev 1.13</th><th class="r">Best other</th><th>Which</th><th class="r">Qwen3-8B</th></tr></thead><tbody id="tbl-cats"></tbody></table></div>
         </details>
       </div>
-      <figcaption><b>Figure 2.</b> Category scores on JevServe-Bench v0.2, where 0 is the serving default and 100 an oracle. Jev and the strongest open models are close; the untrained baseline shows how much decision training adds, most of all for agent decisions (Act).</figcaption>
+      <figcaption><b>Figure 2.</b> Category scores on JevServe-Bench v0.1, where 0 is the serving default and 100 an oracle. Jev and the strongest open models are close; the untrained baseline shows how much decision training adds, most of all for agent decisions (Act).</figcaption>
     </figure>
 
     <div class="col">
@@ -357,7 +363,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
         <h2 id="notes-h">Notes for the authors</h2>
         <ul>
           <li>The highlighted TODO still needs the playground's human time and accuracy, from the submitted rounds.</li>
-          <li>Figures 2 and 3 come from JevServe-Bench v0.2 results. Figure 4 and the real-hardware numbers come from the queue-order experiment report (47 runs on one H200, arrival draws 0 and 1).</li>
+          <li>Figures 2 and 3 come from JevServe-Bench v0.1 results. Figure 4 and the real-hardware numbers come from the queue-order experiment report (47 runs on one H200, arrival draws 0 and 1).</li>
           <li>The deployment table was simulated before the simulator was recalibrated on the real H200; rerun it with the calibrated profile before publishing. The B200 row uses step times from NVIDIA AISimulate, and no B200 run has checked it.</li>
           <li>Links point at the preview pages until the redesign replaces the live leaderboard.</li>
         </ul>
