@@ -159,7 +159,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
 <nav class="col back-row"><a class="back" href="/blogs/">&larr; SSAIL Blog</a></nav>
   <header class="col">
     <h1>Rethinking LLM Serving with System One Models</h1>
-    <p class="deck">Opportunities and open problems for fast decision models like Jev, measured with <a class="boxed" href="/jevserve-bench/preview/" target="_blank" rel="noopener">JevServe-Bench</a>.</p>
+    <p class="deck">Opportunities and open problems for fast decision models like Jev, measured with <a class="boxed" href="/jevserve-bench/" target="_blank" rel="noopener">JevServe-Bench</a>.</p>
     <div class="byline">
       <p class="authors"><a href="https://xinyulian.tech/" target="_blank" rel="noopener">Xinyu Lian</a>, Banghao Chi, Jiahuan Yu and <a href="https://minjiazhang.github.io/" target="_blank" rel="noopener">Minjia Zhang</a></p>
       <p class="meta">SSAIL Lab, University of Illinois <span class="nowrap">Urbana-Champaign</span> · About 12 minutes to read</p>
@@ -251,7 +251,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
       <h2 class="sec" id="bench">JevServe-Bench: one decision per task</h2>
       <p>To measure the opportunity and understand the space, we built JevServe-Bench. Each task is one decision a serving system makes, built from public data. The questions the decision model answers and the rule that turns its answers into an action are fixed, so the model is the only thing that changes between entries.</p>
       <p>Every task is scored from 0 to 100. Zero is what the system does without a decision model: its default rule, or chance. One hundred is an oracle that knows the outcome in advance. In the semantic-cache task, for example, 0 is the best embedding-similarity threshold and 100 is a cache that knows which requests are equivalent. A score is the share of that gap the decision model closes.</p>
-      <p>Version 0.2 has 16 tasks in six categories and 10 models: hosted Jev 1.13, eight open-weight Jev-style models, and Qwen3-8B with no decision training as a baseline. Each score comes with a 95% interval, and ranks compare models on the same resamples. A full run takes about ten minutes per model. The <a href="/jevserve-bench/preview/" target="_blank" rel="noopener">leaderboard</a> lists every task and score.</p>
+      <p>Version 0.2 has 16 tasks in six categories and 10 models: hosted Jev 1.13, eight open-weight Jev-style models, and Qwen3-8B with no decision training as a baseline. Each score comes with a 95% interval, and ranks compare models on the same resamples. A full run takes about ten minutes per model. The <a href="/jevserve-bench/" target="_blank" rel="noopener">leaderboard</a> lists every task and score.</p>
 
       <h2 class="sec" id="results">What Jev is good at, and where it falls short</h2>
       <p>Jev 1.13 ranks first, with an average of <span class="num">63.6</span> (95% interval 62.8 to 64.6). The best open model, Kev-27B, scores <span class="num">62.1</span>, and untrained Qwen3-8B scores <span class="num">46.5</span>. The averages hide a sharp split between categories.</p>
@@ -332,10 +332,10 @@ table.t .hi { color: var(--jev); font-weight: 600; }
       <p>In goodput, the highest rate that meets the target while the server keeps up, vLLM's default reaches 1.13 requests per second and Jev 1.30 to 1.36: a real gain of 15% to 21%, and 16% to 26% on a second arrival draw. For every shortest-first policy the limit comes from starvation before the target is missed: from about 1.36 requests per second, the long requests they defer pile up. Length-aware scheduling that avoids both head-of-line blocking and starvation would push goodput further, and would show more clearly how much a better predictor is worth.</p>
 
       <h2 class="sec" id="playground">Can you beat Jev?</h2>
-      <p>To get a feel for the benchmark's decisions, try the <a href="/jevserve-bench/preview/playground.html" target="_blank" rel="noopener">playground</a>. It draws on four of them: spotting prompt injections, telling harmful requests from ones that only sound harmful, deciding whether a cached answer can be reused, and guessing how long a reply will be. Each round is five questions against Jev. After each answer you see the right answer, what Jev and two other models said, and how long you took next to Jev's 92 ms.</p>
+      <p>To get a feel for the benchmark's decisions, try the <a href="/jevserve-bench/playground.html" target="_blank" rel="noopener">playground</a>. It draws on four of them: spotting prompt injections, telling harmful requests from ones that only sound harmful, deciding whether a cached answer can be reused, and guessing how long a reply will be. Each round is five questions against Jev. After each answer you see the right answer, what Jev and two other models said, and how long you took next to Jev's 92 ms.</p>
     </div>
 
-    <a class="play wide" href="/jevserve-bench/preview/playground.html" target="_blank" rel="noopener">
+    <a class="play wide" href="/jevserve-bench/playground.html" target="_blank" rel="noopener">
       <span class="play-text">
         <span class="play-eyebrow">Playground · five questions</span>
         <span class="play-title">Can you beat <em>Jev</em>?</span>
@@ -363,7 +363,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
       </ul>
 
       <h2 class="sec" id="try">Try it</h2>
-      <p>Play against Jev in the <a href="/jevserve-bench/preview/playground.html" target="_blank" rel="noopener">playground</a>, browse the <a href="/jevserve-bench/preview/" target="_blank" rel="noopener">leaderboard</a>, or read how the scores work on the <a href="/jevserve-bench/preview/methodology.html" target="_blank" rel="noopener">methodology page</a>. Any decision model that speaks the System One API can take part once the benchmark code is public.</p>
+      <p>Play against Jev in the <a href="/jevserve-bench/playground.html" target="_blank" rel="noopener">playground</a>, browse the <a href="/jevserve-bench/" target="_blank" rel="noopener">leaderboard</a>, or read how the scores work on the <a href="/jevserve-bench/methodology.html" target="_blank" rel="noopener">methodology page</a>. Any decision model that speaks the System One API can take part once the benchmark code is public.</p>
 
       <section class="notes" aria-labelledby="notes-h">
         <h2 id="notes-h">Notes for the authors</h2>
