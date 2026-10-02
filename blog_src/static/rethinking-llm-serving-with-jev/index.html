@@ -68,6 +68,7 @@ h1 { margin: 0; font: 600 clamp(34px, 5.6vw, 52px)/1.08 var(--serif); letter-spa
 
 h2.sec { margin: 52px 0 6px; font: 600 28px/1.2 var(--serif); letter-spacing: -0.01em; text-wrap: balance; }
 h3 { margin: 28px 0 4px; font: 600 18px/1.35 var(--sans); letter-spacing: 0.01em; }
+h3.lead { font-size: 20.7px; }
 p { margin: 14px 0; }
 ul.prose { margin: 14px 0; padding-left: 1.2em; display: grid; gap: 6px; }
 strong { font-weight: 600; }
@@ -277,7 +278,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
 
       <h2 class="sec" id="engine">Inside the engine: predicting output length as the first step</h2>
       <p>The gateway is where a decision model can help today. Its low latency also makes it a candidate for decisions inside the engine, and output length is the clearest example. A request's output length decides how long it occupies a slot in the batch and how much KV memory it grows into. A scheduler that knows which requests are short can serve them first, so they stop waiting behind long ones. vLLM serves defaultly requests first come, first served.</p>
-      <h3>How well Jev predicts length</h3>
+      <h3 class="lead">How well Jev predicts length</h3>
       <p>We fit a small regression from Jev's answers about a request to the length of Qwen3-8B's reply, on 14,000 ShareGPT requests, and test it on 6,000 others. Ranking quality, measured by Kendall's τ, is 0.61 with thinking off and 0.56 with thinking on. The median prediction is off by a factor of 1.3, and 81% to 85% of predictions are within a factor of two.</p>
       <p>Reply length is partly random: the same model asked the same question twice gives replies of different lengths. Using one reply's length to predict another's gives τ = 0.79 and 0.73, which is about as well as any prediction from the prompt can do. Jev reaches about three quarters of that. Prompt length alone reaches almost nothing.</p>
     </div>
@@ -296,7 +297,7 @@ table.t .hi { color: var(--jev); font-weight: 600; }
     </figure>
 
     <div class="col">
-      <h3>A performance benefit check on real hardware</h3>
+      <h3 class="lead">A performance benefit check on real hardware</h3>
       <p>We ran the eval on a real server: Qwen3-8B with vLLM 0.30 on H200. Each run replays 2,000 ShareGPT requests, at Poisson arrivals between 1.05 and 1.54 requests per second. Every policy sees the same arrival times.</p>
       <p>We compared four ways to order the queue: vLLM's default (first come, first served), shortest prompt first, which uses no prediction at all, Jev, and the true length. The last three use vLLM's priority scheduler, smallest predicted length first. Each request waits Jev's 92 ms for its prediction before it is sent.</p>
     </div>
