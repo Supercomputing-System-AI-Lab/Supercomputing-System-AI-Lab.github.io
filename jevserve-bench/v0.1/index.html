@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JevServe-bench Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #f5f3ee; --surface: #fffdf8; --sunk: #efece5; --hover: #faf7f1;
+  --ink: #1b1916; --ink-2: #4d4841; --ink-3: #736c62;
+  --rule: #e4dfd6; --rule-2: #cbc4b8; --grid: #d6d0c5;
+  --track: #ebe7df; --fill: #a39c91; --fill-best: #1b1916;
+  --hosted: #c1291b; --open: #c88100; --baseline: #286099;
+  --focus: #286099; --code: #f0ede6;
+  --gutter: clamp(16px, 4vw, 40px);
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cond: "IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141311; --surface: #1c1a18; --sunk: #25221f; --hover: #211f1c;
+    --ink: #ede8df; --ink-2: #c0b9ae; --ink-3: #978f84;
+    --rule: #2f2c28; --rule-2: #48433d; --grid: #3d3934;
+    --track: #2a2724; --fill: #6f685f; --fill-best: #ede8df;
+    --hosted: #c52b30; --open: #bf8900; --baseline: #4984bf;
+    --focus: #6ea6e0; --code: #211f1c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141311; --surface: #1c1a18; --sunk: #25221f; --hover: #211f1c;
+  --ink: #ede8df; --ink-2: #c0b9ae; --ink-3: #978f84;
+  --rule: #2f2c28; --rule-2: #48433d; --grid: #3d3934;
+  --track: #2a2724; --fill: #6f685f; --fill-best: #ede8df;
+  --hosted: #c52b30; --open: #bf8900; --baseline: #4984bf;
+  --focus: #6ea6e0; --code: #211f1c;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule-2); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+code, pre { font-family: var(--mono); }
+code { font-size: 0.88em; }
+h1, h2, h3 { text-wrap: balance; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: var(--gutter); padding-block: 0 56px; }
+
+/* header */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-block: 18px; border-bottom: 1px solid var(--rule); }
+.mark { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; text-decoration: none; }
+.mark .v { font: 500 11px/1 var(--mono); color: var(--ink-2); border: 1px solid var(--rule-2); border-radius: 4px; padding: 4px 5px 3px; }
+.nav { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 13.5px; }
+.nav a { color: var(--ink-2); text-decoration: none; }
+.nav a:hover { color: var(--ink); text-decoration: underline; }
+
+/* intro */
+.intro { display: grid; gap: 14px; max-width: 800px; padding-block: 44px 8px; }
+.eyebrow { margin: 0; font: 600 12px/1.2 var(--cond); letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font-size: clamp(29px, 4.4vw, 44px); line-height: 1.08; letter-spacing: -0.022em; font-weight: 600; }
+.lede { margin: 0; max-width: 66ch; font-size: 16.5px; color: var(--ink-2); }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 4px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--ink-2); }
+.facts b { font: 600 13.5px var(--mono); color: var(--ink); }
+
+/* sections */
+section { padding-block: 40px 4px; scroll-margin-top: 12px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+h2 { display: flex; align-items: baseline; gap: 12px; margin: 0; font-size: 23px; line-height: 1.25; letter-spacing: -0.012em; font-weight: 600; }
+.sec-no { font: 500 13px var(--mono); color: var(--ink-3); }
+.sec-note { margin: 8px 0 18px; max-width: 72ch; color: var(--ink-2); }
+.fine { margin: 12px 0 0; max-width: 90ch; font-size: 13px; color: var(--ink-3); }
+
+/* model kinds */
+.k-hosted { --c: var(--hosted); } .k-open { --c: var(--open); } .k-baseline { --c: var(--baseline); }
+.dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.who .dot { align-self: center; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--ink-2); }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+
+/* leaderboard table */
+.table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+.board { width: 100%; min-width: 1000px; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+.board th, .board td { padding: 11px 10px; border-bottom: 1px solid var(--rule); text-align: right; vertical-align: middle; background: var(--surface); }
+.board thead th { padding-block: 12px 10px; vertical-align: bottom; border-bottom-color: var(--rule-2); }
+.board tbody tr:last-child > * { border-bottom: 0; }
+.board .c-rank { position: sticky; left: 0; z-index: 1; width: 34px; min-width: 34px; padding-inline: 14px 0; text-align: left; font: 500 12px var(--mono); color: var(--ink-3); }
+.board .c-model { position: sticky; left: 34px; z-index: 1; min-width: 222px; text-align: left; box-shadow: 1px 0 0 var(--rule); }
+.board thead .c-model, .board thead .c-rank { font: 600 13px var(--cond); color: var(--ink); }
+.board .c-num { min-width: 76px; }
+.board .c-avg { min-width: 90px; }
+.board .c-avg { box-shadow: inset 1px 0 0 var(--rule), inset -1px 0 0 var(--rule); }
+.board thead th button { all: unset; box-sizing: border-box; display: grid; justify-items: end; gap: 2px; width: 100%; cursor: pointer; }
+.board thead th button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+.th-label { font: 600 13px/1.15 var(--cond); color: var(--ink); text-align: right; }
+.th-sub { font: 500 11px/1.2 var(--cond); color: var(--ink-3); text-align: right; }
+th[aria-sort] .th-label::after { content: " ↓"; color: var(--ink-2); }
+th[aria-sort="ascending"] .th-label::after { content: " ↑"; }
+.board thead th button:hover .th-label { text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+.row:hover > *, .row.open > * { background: var(--hover); }
+.who { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.name { all: unset; cursor: pointer; font-weight: 600; font-size: 14.5px; color: var(--ink); }
+.name::after { content: "›"; display: inline-block; margin-left: 6px; color: var(--ink-3); transition: transform 0.15s; }
+.name[aria-expanded="true"]::after { transform: rotate(90deg); }
+.name:hover { text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+.name:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+.ext { font-size: 12px; color: var(--ink-3); text-decoration: none; }
+.ext:hover { color: var(--ink); }
+.tag { font: 500 10.5px var(--mono); color: var(--ink-2); border: 1px solid var(--rule-2); border-radius: 4px; padding: 1px 4px; }
+.who-sub { margin: 3px 0 0 17px; line-height: 1.35; font-size: 12px; color: var(--ink-3); }
+.v { display: block; font: 400 14px/1.2 var(--mono); color: var(--ink-2); }
+.c-avg .v { font-size: 15.5px; font-weight: 600; color: var(--ink); }
+.best .v { font-weight: 600; color: var(--ink); }
+.track { display: block; height: 3px; margin-top: 7px; border-radius: 2px; background: var(--track); overflow: hidden; }
+.track i { display: block; height: 100%; border-radius: 2px; background: var(--fill); }
+.best .track i, .c-avg .track i { background: var(--fill-best); }
+.c-lat { font: 400 13.5px var(--mono); color: var(--ink-2); white-space: nowrap; }
+
+/* details row */
+.details td { padding: 0; text-align: left; background: var(--hover); }
+.details .inner { position: sticky; left: 0; width: min(1098px, calc(100vw - 2 * var(--gutter) - 2px)); padding: 6px 16px 18px; }
+.d-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px 22px; margin: 0; }
+.d-item { min-width: 0; padding-top: 10px; border-top: 1px solid var(--rule); }
+.d-item dt { display: flex; justify-content: space-between; gap: 8px; font: 600 12.5px var(--cond); color: var(--ink); }
+.d-item dt b { font: 600 12.5px var(--mono); }
+.d-item dd { margin: 3px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+.d-facts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 16px 0 0; font-size: 12.5px; }
+.d-facts div { display: flex; gap: 6px; }
+.d-facts dt { color: var(--ink-3); }
+.d-facts dd { margin: 0; color: var(--ink-2); }
+
+/* request path */
+.path { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 0; margin: 0 0 22px; padding: 0; list-style: none; font-size: 13px; }
+.path li { display: inline-flex; align-items: center; }
+.path li + li::before { content: "→"; margin: 0 8px; color: var(--ink-3); }
+.path a, .path .gen { display: inline-block; padding: 5px 11px; border-radius: 999px; }
+.path a { border: 1px solid var(--rule-2); background: var(--surface); color: var(--ink); text-decoration: none; }
+.path a:hover { border-color: var(--ink-2); }
+.path .gen { border: 1px dashed var(--rule-2); color: var(--ink-3); }
+
+/* task cards */
+.task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 16px; }
+.task { display: grid; align-content: start; gap: 12px; min-width: 0; padding: 18px 20px 16px; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); scroll-margin-top: 12px; }
+.task-top { display: flex; justify-content: space-between; gap: 12px; font: 600 11.5px/1.2 var(--cond); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.task-tier { letter-spacing: 0.04em; cursor: help; }
+.task h3 { margin: 0; font-size: 16.5px; line-height: 1.3; font-weight: 600; }
+.task-q { margin: 0; font-size: 14px; color: var(--ink-2); }
+.task-anchors { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; font-size: 12.5px; color: var(--ink-2); }
+.task-anchors div { display: flex; gap: 6px; }
+.task-anchors dt { font: 600 12px var(--mono); color: var(--ink); }
+.task-anchors dd { margin: 0; }
+.bars-wrap { display: grid; gap: 8px; margin-top: 2px; }
+.bar-scale, .bar-row { display: grid; grid-template-columns: minmax(0, 8.8rem) minmax(0, 1fr) 2.9rem; column-gap: 12px; align-items: center; }
+.ticks { position: relative; height: 13px; grid-column: 2; }
+.ticks b { position: absolute; top: 0; transform: translateX(-50%); font: 500 10.5px/1 var(--mono); color: var(--ink-3); }
+.ticks b:first-child { transform: none; }
+.ticks b:last-child { transform: translateX(-100%); }
+.bars { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.bar-who { font-size: 13px; line-height: 1.25; color: var(--ink); }
+.bar-track { position: relative; height: 9px; border-radius: 0 4px 4px 0; background: linear-gradient(to right, transparent calc(50% - 0.5px), var(--grid) calc(50% - 0.5px), var(--grid) calc(50% + 0.5px), transparent calc(50% + 0.5px)), var(--track); }
+.bar-track i { position: absolute; inset: 0 auto 0 0; border-radius: 0 4px 4px 0; background: var(--c); }
+.bar-val { font: 500 13px var(--mono); text-align: right; color: var(--ink); }
+.bar-sum { grid-column: 1 / -1; margin-top: 3px; font-size: 12px; line-height: 1.4; color: var(--ink-3); }
+.task-data { margin: 2px 0 0; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-3); }
+.task-data code { margin-right: 6px; color: var(--ink-2); }
+
+/* scoring */
+.scoring { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px 40px; align-items: start; margin-top: 18px; }
+.anchor-wrap { overflow-x: auto; }
+.anchors-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.anchors-table th, .anchors-table td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+.anchors-table thead th { font: 600 12px var(--cond); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); border-bottom-color: var(--rule-2); }
+.anchors-table tbody th { font-weight: 600; }
+.anchors-table td { color: var(--ink-2); }
+.notes { display: grid; gap: 18px; }
+.note h3 { margin: 0 0 3px; font-size: 14.5px; font-weight: 600; }
+.note p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+/* submit */
+.steps { display: grid; gap: 26px; margin: 20px 0 0; padding: 0; list-style: none; counter-reset: step; }
+.steps > li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); column-gap: 12px; counter-increment: step; }
+.steps > li::before { content: counter(step, decimal-leading-zero); padding-top: 2px; font: 600 13px var(--mono); color: var(--ink-3); }
+.steps h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+.steps p { margin: 0; max-width: 74ch; color: var(--ink-2); }
+.code { position: relative; margin-top: 10px; max-width: 880px; }
+.code pre { margin: 0; padding: 13px 16px; overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--code); font-size: 12.5px; line-height: 1.65; color: var(--ink); }
+.code .copy { position: absolute; top: 8px; right: 8px; padding: 3px 9px; border: 1px solid var(--rule-2); border-radius: 5px; background: var(--surface); font: 500 11.5px var(--sans); color: var(--ink-2); cursor: pointer; }
+.code .copy:hover { color: var(--ink); border-color: var(--ink-2); }
+.cm { color: var(--ink-3); }
+
+/* footer */
+.foot { display: grid; gap: 6px; margin-top: 52px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-3); }
+.foot p { margin: 0; max-width: 100ch; }
+.foot a { color: var(--ink-2); }
+
+@media (max-width: 860px) {
+  .scoring { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .board .c-rank { width: 26px; min-width: 26px; padding-left: 10px; }
+  .board .c-model { left: 26px; min-width: 164px; max-width: 176px; }
+  .who { white-space: normal; }
+  .who .dot { align-self: flex-start; margin-top: 6px; }
+  .name { overflow-wrap: anywhere; }
+  .ext { display: none; }
+  .who-sub { font-size: 11.5px; }
+}
+@media (max-width: 520px) {
+  .lede { font-size: 15.5px; }
+  .bar-scale, .bar-row { grid-template-columns: minmax(0, 1fr) 2.9rem; }
+  .ticks { grid-column: 1; }
+  .bar-scale > span:first-child { display: none; }
+  .bar-who { grid-column: 1 / -1; margin-bottom: 3px; }
+  .bar-sum { grid-column: 1 / -1; }
+  .task { padding: 16px; }
+  .steps > li { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a class="mark" href="#top">JevServe-bench <span class="v" id="version"></span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#scoring">Scoring</a>
+    </nav>
+  </header>
+
+  <section class="intro" id="top">
+    <p class="eyebrow" style="color: var(--ink-2)">Archived board: v0.1 as published on 30 Sep 2026 · <a href="../">the current board</a></p>
+    <p class="eyebrow" id="stamp">Leaderboard</p>
+    <h1>Decision models, measured inside the serving stack</h1>
+    <p class="lede">A decision model reads a request and answers typed questions with probabilities; it writes no text.
+      JevServe-bench puts one in charge of eight decisions an LLM serving system makes, from routing and scheduling
+      to guardrails, and scores what each component then achieves. On every task, 0 is what the system does without
+      the model and 100 is an oracle that knows the outcome in advance.</p>
+    <ul class="facts" id="facts"></ul>
+  </section>
+
+  <section id="leaderboard" aria-labelledby="h-board">
+    <div class="sec-head">
+      <h2 id="h-board"><span class="sec-no">01</span>Leaderboard</h2>
+      <ul class="legend" id="legend" aria-label="Model kinds"></ul>
+    </div>
+    <p class="sec-note">The average is the plain mean of the eight task scores. Select a column to sort by it, or a
+      model's name for the raw numbers behind its scores.</p>
+    <div class="table-scroll"><table class="board" id="board-table"></table></div>
+    <p class="fine">p50 is the decision model's median single-request latency on the submitter's setup, so it is
+      reported, not compared. It enters one score: in the scheduling task every request waits that long for its
+      prediction.</p>
+  </section>
+
+  <section id="tasks" aria-labelledby="h-tasks">
+    <h2 id="h-tasks"><span class="sec-no">02</span>Eight decisions on the request path</h2>
+    <p class="sec-note">Each task is one decision a serving system makes, with fixed questions and a fixed downstream
+      rule, so the decision model is the only thing that changes between entries. In request order:</p>
+    <ol class="path" id="path"></ol>
+    <div class="task-grid" id="task-grid"></div>
+  </section>
+
+  <section id="scoring" aria-labelledby="h-scoring">
+    <h2 id="h-scoring"><span class="sec-no">03</span>How to read a score</h2>
+    <div class="scoring">
+      <div class="anchor-wrap"><table class="anchors-table" id="anchors-table"></table></div>
+      <div class="notes">
+        <div class="note"><h3>A share of the achievable gain</h3>
+          <p>A score is how much of the gap between the serving default and the oracle the component closes.
+            Below 0, it does worse than the default.</p></div>
+        <div class="note"><h3>No thresholds</h3>
+          <p>Classification tasks use AUROC, and the thinking and cascade tasks act on requests in the order the model
+            ranks them, so a model is judged on its ordering rather than on a tuned cutoff.</p></div>
+        <div class="note"><h3>The same score on any hardware</h3>
+          <p>Tier A replays logged outcomes and human labels, so the same answers score the same on any machine. Tier B runs a vLLM
+            scheduler simulator calibrated on an H200 serving Qwen3-8B, within 2–4% of the real server. The
+            measured decision latency is the only hardware-dependent input.</p></div>
+        <div class="note"><h3>Failures count</h3>
+          <p>A request that still fails after retries is scored as unanswered, with uninformative probabilities.
+            It is never dropped.</p></div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="foot">
+    <p>Data: <a href="https://github.com/ynulihao/LLMRouterBench" target="_blank" rel="noopener">LLMRouterBench</a> (MIT) ·
+      <a href="https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered" target="_blank" rel="noopener">ShareGPT</a> ·
+      <a href="https://huggingface.co/datasets/lmsys/toxic-chat" target="_blank" rel="noopener">ToxicChat</a> (CC BY-NC 4.0) ·
+      <a href="https://huggingface.co/datasets/allenai/wildguardmix" target="_blank" rel="noopener">WildGuardMix</a> (ODC-BY) ·
+      <a href="https://huggingface.co/datasets/lytang/LLM-AggreFact" target="_blank" rel="noopener">LLM-AggreFact</a> (CC BY-ND 4.0) ·
+      <a href="https://github.com/Lordog/R-Judge" target="_blank" rel="noopener">R-Judge</a>.
+      This page shows scores only; no benchmark data is redistributed.</p>
+    <p id="built"></p>
+  </footer>
+</div>
+
+<script type="application/json" id="board">{"version": "0.1.0", "generated": "2026-09-30", "tasks": [{"name": "routing_cost", "label": "Routing: cost", "title": "Model routing, performance and cost (13 flagship models)", "component": "model router", "decision": "Which task type and difficulty is the request? Avengers-Pro's lookup sends each bucket to the model with the best balance of accuracy and cost.", "data": "LLMRouterBench: 13 flagship models, 10 datasets, 12,446 requests", "anchors": ["Best Single model", "per-request oracle"], "tier": "A", "version": "0.1"}, {"name": "routing_perf", "label": "Routing: accuracy", "title": "Model routing, accuracy only (20 lightweight models)", "component": "model router", "decision": "Which task type and difficulty is the request? Avengers-Pro's lookup sends each bucket to its most accurate model.", "data": "LLMRouterBench: 20 lightweight models, 15 datasets, 11,467 requests", "anchors": ["Best Single model", "per-request oracle"], "tier": "A", "version": "0.1"}, {"name": "length_scheduling", "label": "Length", "title": "Output-length prediction for shortest-predicted-first scheduling", "component": "request scheduler", "decision": "How long will the answer be, and in what form? A ridge regression turns the answers into a predicted length, and the scheduler serves the shortest predicted request first.", "data": "ShareGPT: 20,000 requests answered by Qwen3-8B with thinking off and on", "anchors": ["first-come, first-served", "scheduling by the true length"], "tier": "A+B", "version": "0.1"}, {"name": "reasoning_budget", "label": "Thinking", "title": "Reasoning budget: turn thinking on only where it pays", "component": "reasoning-mode switch", "decision": "Does the request need thinking? Thinking is switched on first for the requests rated most likely to need it.", "data": "LLMRouterBench: Qwen3-235B-A22B with and without thinking, 7 datasets, 3,713 requests", "anchors": ["acting in random order", "acting in hindsight order"], "tier": "A", "version": "0.1"}, {"name": "cascade_verifier", "label": "Cascade", "title": "Cascade verifier: keep the cheap model's answer or escalate to GPT-5", "component": "model cascade", "decision": "Is the cheap model's answer correct? The answers it doubts most are escalated to GPT-5 first.", "data": "LLMRouterBench: Qwen3-235B-A22B-2507 answers, 10 datasets, 12,446 requests", "anchors": ["acting in random order", "acting in hindsight order"], "tier": "A", "version": "0.1"}, {"name": "safety", "label": "Safety", "title": "Guardrail: harmful requests and responses", "component": "input/output guardrail", "decision": "Is this request harmful, or an attempt to jailbreak the assistant? Is this response harmful?", "data": "ToxicChat test (5,083 requests), WildGuardTest (1,699 requests, 1,709 responses)", "anchors": ["chance (AUROC 0.5)", "perfect ranking (AUROC 1)"], "tier": "A", "version": "0.1"}, {"name": "grounding", "label": "Grounding", "title": "Grounding check: is the claim supported by the document?", "component": "RAG answer verifier", "decision": "Is every part of the claim supported by the document?", "data": "LLM-AggreFact test: 29,320 claims from 11 datasets", "anchors": ["chance (AUROC 0.5)", "perfect ranking (AUROC 1)"], "tier": "A", "version": "0.1"}, {"name": "agent_risk", "label": "Agent risk", "title": "Risky-action check: does the agent's behaviour create a safety risk?", "component": "agent action approval", "decision": "Do the agent's actions in this interaction create a safety risk or cause harm?", "data": "R-Judge: 571 agent interactions from 27 scenarios in 5 application areas", "anchors": ["chance (AUROC 0.5)", "perfect ranking (AUROC 1)"], "tier": "A", "version": "0.1"}], "entries": [{"name": "jev-1.13", "model": "typesafe/jev-1.13", "average": 54.17652388669695, "partial": false, "latency_p50_s": 0.09185336250811815, "routing_cost": 23.341282340023987, "routing_perf": 7.469403239159589, "length_scheduling": 78.90023560732276, "reasoning_budget": 43.65212663249279, "cascade_verifier": 32.45721985299178, "safety": 90.0438312775547, "grounding": 73.07903837265063, "agent_risk": 84.46905377137936, "backend": "openrouter", "card": {"display": "Jev 1.13", "org": "TypeSafe", "kind": "hosted", "url": "https://openrouter.ai/typesafe/jev-1.13", "serving": "OpenRouter API; the latency includes the network round trip"}, "run": {"gpu": "NVIDIA H200", "finished": "2026-09-30T05:53:05", "jevserve_bench": "0.1.0", "latency_p95_s": 0.12764857118017972, "latency_requests": 50}, "details": {"routing_cost": {"summary": "68.9% accuracy at \u03b1 = 1 (Best Single 66.0%); 26% cheaper at equal accuracy", "items": 12446, "failed": 0, "metrics": {"accuracy_alpha1": 68.92051951288292, "cost_save": 0.2584500482155144, "best_single_accuracy": 65.95658544864338, "oracle_accuracy": 85.66674003740381, "oracle_cost_save": 0.8167177462081825, "curve": {"0.0": [48.78113521587833, 4.043413372000001], "0.05": [57.827078966475405, 5.15728032], "0.1": [57.782155473428176, 5.250343268], "0.15": [57.78687712020932, 5.264724122], "0.2": [57.71793957916223, 5.270473604], "0.25": [58.164767898612844, 7.461132232], "0.3": [59.30379033709751, 11.20709129], "0.35": [59.91760913295525, 13.153474593999999], "0.4": [60.500152873493086, 19.542399258], "0.45": [62.85078630507047, 49.46508422600001], "0.5": [64.12679211164567, 63.233524077999995], "0.55": [64.95688743454858, 71.929296284], "0.6": [67.4241720404917, 93.152575744], "0.65": [68.3399996380007, 98.12332821], "0.7": [68.4130793951924, 101.343855828], "0.75": [68.59629067642729, 103.883225498], "0.8": [68.48095796663179, 108.16478207600001], "0.85": [68.54263546095758, 114.09366915400001], "0.9": [68.64125166651095, 121.64712947799998], "0.95": [68.86955242150687, 134.673856318], "1.0": [68.92051951288292, 145.80334092799998]}}}, "routing_perf": {"summary": "69.8% accuracy (Best Single 68.0%, oracle 91.6%)", "items": 11467, "failed": 0, "metrics": {"accuracy": 69.77709586345435, "best_single_accuracy": 68.01249052009271, "oracle_accuracy": 91.63693931287445, "best_single_model": "Qwen3-8B"}}, "length_scheduling": {"summary": "mean latency 30% / 34% below FCFS, Kendall \u03c4 0.61 / 0.56 (thinking off / on)", "items": 20000, "failed": 0, "metrics": {"nothink": {"kendall_tau": 0.6080870500909985, "mean_latency_s": 11.261505935780841, "fcfs_latency_s": 16.11215007132732, "oracle_latency_s": 9.661570562644261, "latency_change_vs_fcfs": -0.3010550493927272, "share_of_oracle_gain": 0.7519702887185682}, "think": {"kendall_tau": 0.5590880337143197, "mean_latency_s": 32.64251573515523, "fcfs_latency_s": 49.78438750531216, "oracle_latency_s": 29.032380949675655, "latency_change_vs_fcfs": -0.3443222389414319, "share_of_oracle_gain": 0.826034423427887}, "decision_latency_s": 0.09185336250811815}}, "reasoning_budget": {"summary": "thinking on the half it ranks first: 47.1% accuracy (random half 40.4%, all 49.8%)", "items": 3713, "failed": 0, "metrics": {"accuracy_thinking_off": 30.89070666037491, "accuracy_thinking_on": 49.83040732306136, "accuracy_hindsight_best": 53.18520205439638, "accuracy_half_thinking": 47.0931823310969, "accuracy_half_thinking_random": 40.360556991718134, "accuracy_half_thinking_hindsight": 53.18520205439604, "thinking_tokens_per_request": 6923.234850525182, "direct_tokens_per_request": 549.2749798007003, "items": 3713}}, "cascade_verifier": {"summary": "escalating the half it doubts most: 66.3% accuracy (random half 60.3%); failure AUROC 0.816", "items": 12446, "failed": 0, "metrics": {"failure_auroc": 0.8158873759704904, "items": 12446, "accuracy_cheap": 55.07667186581546, "accuracy_strong": 65.62271510934154, "accuracy_half_escalated": 66.34622487381273, "accuracy_half_escalated_random": 60.349693487578506, "accuracy_half_escalated_hindsight": 73.46520864566537}}, "safety": {"summary": "AUROC 0.978 ToxicChat, 0.925 WildGuard requests, 0.947 WildGuard responses", "items": 8491, "failed": 0, "metrics": {"toxicchat": 0.9784134249111471, "wildguard_prompt": 0.9253105132415478, "wildguard_response": 0.9469335310106253, "subsets": ["toxicchat", "wildguard_prompt", "wildguard_response"]}}, "grounding": {"summary": "mean AUROC 0.865 over 11 datasets (lowest: ExpertQA, 0.640)", "items": 29320, "failed": 0, "metrics": {"AggreFact-CNN": 0.763963301467241, "AggreFact-XSum": 0.834033802454855, "ClaimVerify": 0.8650910724807238, "ExpertQA": 0.6403528684257903, "FactCheck-GPT": 0.889378464151618, "Lfqa": 0.9577479420499327, "RAGTruth": 0.9365721290653031, "Reveal": 0.9685085877862595, "TofuEval-MediaS": 0.8393449332549744, "TofuEval-MeetB": 0.9140246516613076, "Wice": 0.9103293576977788}}, "agent_risk": {"summary": "AUROC 0.922 on 571 interactions (53% unsafe)", "items": 571, "failed": 0, "metrics": {"auroc": 0.9223452688568968, "items": 571, "unsafe_share": 0.5271453590192644}}}}, {"name": "decider-4b", "model": "decider-4b", "average": 47.363396997044575, "partial": false, "latency_p50_s": 0.07314780843444169, "routing_cost": 21.35300551818083, "routing_perf": 7.193737552853053, "length_scheduling": 80.47836835497652, "reasoning_budget": 43.87429674100707, "cascade_verifier": 13.216185321185947, "safety": 86.56553163410729, "grounding": 67.81827430673444, "agent_risk": 58.40777654731144, "backend": "http", "card": {"display": "decider-4b", "org": "Mapika", "kind": "open", "url": "https://huggingface.co/Mapika/decider-4b", "revision": "eb5fbdf", "base": "Qwen3.5-4B-Base", "license": "Apache-2.0", "serving": "HTTP server on 1\u00d7 H200"}, "run": {"gpu": "NVIDIA H200", "finished": "2026-09-30T05:26:35", "jevserve_bench": "0.1.0", "latency_p95_s": 0.1646498143440111, "latency_requests": 50}, "details": {"routing_cost": {"summary": "68.7% accuracy at \u03b1 = 1 (Best Single 66.0%); 23% cheaper at equal accuracy", "items": 12446, "failed": 0, "metrics": {"accuracy_alpha1": 68.71193723324271, "cost_save": 0.23461572659796404, "best_single_accuracy": 65.95658544864338, "oracle_accuracy": 85.66674003740381, "oracle_cost_save": 0.8167177462081825, "curve": {"0.0": [46.97721570709931, 4.625971174], "0.05": [57.77456289979129, 5.264222427999999], "0.1": [58.160830839336086, 5.300189926], "0.15": [58.163603329948955, 5.490500591999999], "0.2": [58.07840263456502, 6.674617762], "0.25": [58.51128724793288, 9.017179258000002], "0.3": [59.65197678758839, 11.785223246], "0.35": [59.78816055247421, 12.700441900000001], "0.4": [59.832436902148785, 13.744986434000001], "0.45": [62.15344554247897, 45.003799118], "0.5": [64.19612672040196, 67.06439906199999], "0.55": [65.63823598336849, 81.956358502], "0.6": [67.60213468368765, 96.14661335999999], "0.65": [68.3536629882248, 103.57001838000001], "0.7": [68.35101194954056, 105.41209963600002], "0.75": [68.54444033367692, 107.325927138], "0.8": [68.551710788336, 109.754812898], "0.85": [68.6069520464751, 113.866808586], "0.9": [68.60043978117929, 122.32958370200001], "0.95": [68.73022943647766, 129.35037737], "1.0": [68.71193723324271, 143.292115212]}}}, "routing_perf": {"summary": "69.7% accuracy (Best Single 68.0%, oracle 91.6%)", "items": 11467, "failed": 0, "metrics": {"accuracy": 69.71197136455359, "best_single_accuracy": 68.01249052009271, "oracle_accuracy": 91.63693931287445, "best_single_model": "Qwen3-8B"}}, "length_scheduling": {"summary": "mean latency 31% / 35% below FCFS, Kendall \u03c4 0.57 / 0.55 (thinking off / on)", "items": 20000, "failed": 0, "metrics": {"nothink": {"kendall_tau": 0.5665466581964763, "mean_latency_s": 11.176944492081164, "fcfs_latency_s": 16.11215007132732, "oracle_latency_s": 9.661570562644261, "latency_change_vs_fcfs": -0.30630335227752714, "share_of_oracle_gain": 0.7650794122610111}, "think": {"kendall_tau": 0.5468207314868022, "mean_latency_s": 32.25956793034714, "fcfs_latency_s": 49.78438750531216, "oracle_latency_s": 29.032380949675655, "latency_change_vs_fcfs": -0.3520143654091369, "share_of_oracle_gain": 0.8444879548385196}, "decision_latency_s": 0.07314780843444169}}, "reasoning_budget": {"summary": "thinking on the half it ranks first: 46.3% accuracy (random half 40.4%, all 49.8%)", "items": 3713, "failed": 0, "metrics": {"accuracy_thinking_off": 30.89070666037491, "accuracy_thinking_on": 49.83040732306136, "accuracy_hindsight_best": 53.18520205439638, "accuracy_half_thinking": 46.32827872496108, "accuracy_half_thinking_random": 40.360556991718134, "accuracy_half_thinking_hindsight": 53.18520205439604, "thinking_tokens_per_request": 6923.234850525182, "direct_tokens_per_request": 549.2749798007003, "items": 3713}}, "cascade_verifier": {"summary": "escalating the half it doubts most: 62.3% accuracy (random half 60.3%); failure AUROC 0.673", "items": 12446, "failed": 0, "metrics": {"failure_auroc": 0.6728852618671921, "items": 12446, "accuracy_cheap": 55.07667186581546, "accuracy_strong": 65.62271510934154, "accuracy_half_escalated": 62.31168800274568, "accuracy_half_escalated_random": 60.349693487578506, "accuracy_half_escalated_hindsight": 73.46520864566537}}, "safety": {"summary": "AUROC 0.987 ToxicChat, 0.896 WildGuard requests, 0.915 WildGuard responses", "items": 8491, "failed": 0, "metrics": {"toxicchat": 0.986887668943629, "wildguard_prompt": 0.8962345445104066, "wildguard_response": 0.9153607610575736, "subsets": ["toxicchat", "wildguard_prompt", "wildguard_response"]}}, "grounding": {"summary": "mean AUROC 0.839 over 11 datasets (lowest: ExpertQA, 0.638)", "items": 29320, "failed": 0, "metrics": {"AggreFact-CNN": 0.7715271211962041, "AggreFact-XSum": 0.795681511470985, "ClaimVerify": 0.8458444074248339, "ExpertQA": 0.6376976988223138, "FactCheck-GPT": 0.867605712497765, "Lfqa": 0.9491181020562565, "RAGTruth": 0.8862198307093586, "Reveal": 0.9615429389312977, "TofuEval-MediaS": 0.7796732012425489, "TofuEval-MeetB": 0.8759378349410504, "Wice": 0.8591567275777802}}, "agent_risk": {"summary": "AUROC 0.792 on 571 interactions (53% unsafe)", "items": 571, "failed": 0, "metrics": {"auroc": 0.7920388827365572, "items": 571, "unsafe_share": 0.5271453590192644}}}}, {"name": "jevify-gemma4-e4b", "model": "jevify-gemma4-e4b", "average": 43.33786320601878, "partial": false, "latency_p50_s": 0.04396032262593508, "routing_cost": 22.502238873811848, "routing_perf": 6.670167530713206, "length_scheduling": 77.99377216439987, "reasoning_budget": 51.050460291238785, "cascade_verifier": 32.12378499808245, "safety": 87.81015976084124, "grounding": 67.91617092779548, "agent_risk": 0.6361511012673793, "backend": "http", "card": {"display": "jevify-gemma4-e4b", "org": "kushalpatil", "kind": "open", "url": "https://huggingface.co/kushalpatil/jevify-gemma4-e4b", "revision": "a6b5a71", "base": "Gemma 4 E4B-it", "license": "Gemma", "serving": "vLLM with a System One adapter on 1\u00d7 H200"}, "run": {"gpu": "NVIDIA H200", "finished": "2026-09-30T05:32:13", "jevserve_bench": "0.1.0", "latency_p95_s": 0.07769927396439012, "latency_requests": 50}, "details": {"routing_cost": {"summary": "68.8% accuracy at \u03b1 = 1 (Best Single 66.0%); 25% cheaper at equal accuracy", "items": 12446, "failed": 0, "metrics": {"accuracy_alpha1": 68.75367337370841, "cost_save": 0.25165831692767093, "best_single_accuracy": 65.95658544864338, "oracle_accuracy": 85.66674003740381, "oracle_cost_save": 0.8167177462081825, "curve": {"0.0": [47.62206760422294, 3.9387445960000003], "0.05": [57.8789788949213, 5.196429073999999], "0.1": [58.12148648421978, 5.249620432], "0.15": [57.9790731604165, 5.2467376], "0.2": [57.984274250669934, 5.208604124], "0.25": [58.52758938751018, 6.931268263999999], "0.3": [59.4037290087417, 10.659213684], "0.35": [59.819689481318775, 12.518221594], "0.4": [59.9348732618123, 14.361858649999999], "0.45": [62.55220085911041, 45.445224616], "0.5": [64.43382911798366, 63.81411147399999], "0.55": [65.74787930836048, 78.618400838], "0.6": [67.58649472253997, 94.00574451800001], "0.65": [68.04806438744295, 101.105820506], "0.7": [68.21540936410948, 103.70144503399999], "0.75": [68.57479832323295, 106.35099904799999], "0.8": [68.62071004616533, 109.630363584], "0.85": [68.69445546375253, 116.35907276], "0.9": [68.6351544999888, 123.16457058799999], "0.95": [68.71942905562128, 129.3862953], "1.0": [68.75367337370841, 143.540132872]}}}, "routing_perf": {"summary": "69.6% accuracy (Best Single 68.0%, oracle 91.6%)", "items": 11467, "failed": 0, "metrics": {"accuracy": 69.5882808327788, "best_single_accuracy": 68.01249052009271, "oracle_accuracy": 91.63693931287445, "best_single_model": "Qwen3-8B"}}, "length_scheduling": {"summary": "mean latency 29% / 35% below FCFS, Kendall \u03c4 0.51 / 0.52 (thinking off / on)", "items": 20000, "failed": 0, "metrics": {"nothink": {"kendall_tau": 0.5102454846132483, "mean_latency_s": 11.421400881826287, "fcfs_latency_s": 16.11215007132732, "oracle_latency_s": 9.661570562644261, "latency_change_vs_fcfs": -0.29113117546295353, "share_of_oracle_gain": 0.7271826016851454}, "think": {"kendall_tau": 0.51964747918531, "mean_latency_s": 32.504340197538184, "fcfs_latency_s": 49.78438750531216, "oracle_latency_s": 29.032380949675655, "latency_change_vs_fcfs": -0.34709771825414415, "share_of_oracle_gain": 0.8326928416028521}, "decision_latency_s": 0.04396032262593508}}, "reasoning_budget": {"summary": "thinking on the half it ranks first: 47.9% accuracy (random half 40.4%, all 49.8%)", "items": 3713, "failed": 0, "metrics": {"accuracy_thinking_off": 30.89070666037491, "accuracy_thinking_on": 49.83040732306136, "accuracy_hindsight_best": 53.18520205439638, "accuracy_half_thinking": 47.896768634209195, "accuracy_half_thinking_random": 40.360556991718134, "accuracy_half_thinking_hindsight": 53.18520205439604, "thinking_tokens_per_request": 6923.234850525182, "direct_tokens_per_request": 549.2749798007003, "items": 3713}}, "cascade_verifier": {"summary": "escalating the half it doubts most: 66.2% accuracy (random half 60.3%); failure AUROC 0.758", "items": 12446, "failed": 0, "metrics": {"failure_auroc": 0.7576859997739573, "items": 12446, "accuracy_cheap": 55.07667186581546, "accuracy_strong": 65.62271510934154, "accuracy_half_escalated": 66.19790409412118, "accuracy_half_escalated_random": 60.349693487578506, "accuracy_half_escalated_hindsight": 73.46520864566537}}, "safety": {"summary": "AUROC 0.987 ToxicChat, 0.915 WildGuard requests, 0.915 WildGuard responses", "items": 8491, "failed": 0, "metrics": {"toxicchat": 0.987211834743318, "wildguard_prompt": 0.91494673908467, "wildguard_response": 0.9149938225846306, "subsets": ["toxicchat", "wildguard_prompt", "wildguard_response"]}}, "grounding": {"summary": "mean AUROC 0.840 over 11 datasets (lowest: ExpertQA, 0.634)", "items": 29320, "failed": 0, "metrics": {"AggreFact-CNN": 0.6429421858038309, "AggreFact-XSum": 0.8145363408521303, "ClaimVerify": 0.8378625837709983, "ExpertQA": 0.633723808028452, "FactCheck-GPT": 0.8847219738959413, "Lfqa": 0.9546912228006188, "RAGTruth": 0.911289467502256, "Reveal": 0.9638807251908398, "TofuEval-MediaS": 0.83467488036269, "TofuEval-MeetB": 0.8777759914255091, "Wice": 0.8792902213954845}}, "agent_risk": {"summary": "AUROC 0.503 on 571 interactions (53% unsafe)", "items": 571, "failed": 0, "metrics": {"auroc": 0.5031807555063369, "items": 571, "unsafe_share": 0.5271453590192644}}}}, {"name": "neohorse-jev-4b", "model": "neohorse-jev-4b", "average": 43.19997969000302, "partial": false, "latency_p50_s": 0.06380513636395335, "routing_cost": 26.373100277092398, "routing_perf": 6.111712111681045, "length_scheduling": 78.33275108601997, "reasoning_budget": 48.54113582304273, "cascade_verifier": 28.449049870791125, "safety": 88.60906235409148, "grounding": 66.18807090932708, "agent_risk": 2.994955087978335, "backend": "http", "card": {"display": "NeoHorse-Jev-4B", "org": "TokenRhythm", "kind": "open", "url": "https://huggingface.co/TokenRhythm/NeoHorse-Jev-4B", "revision": "434cb21", "base": "NeoHorse-1-4B", "license": "Apache-2.0", "serving": "NeoHorse's own server on 1\u00d7 H200"}, "run": {"gpu": "NVIDIA H200", "finished": "2026-09-30T05:48:53", "jevserve_bench": "0.1.0", "latency_p95_s": 0.2715352358063681, "latency_requests": 50}, "details": {"routing_cost": {"summary": "68.8% accuracy at \u03b1 = 1 (Best Single 66.0%); 31% cheaper at equal accuracy", "items": 12446, "failed": 0, "metrics": {"accuracy_alpha1": 68.81120363019222, "cost_save": 0.31250249453312196, "best_single_accuracy": 65.95658544864338, "oracle_accuracy": 85.66674003740381, "oracle_cost_save": 0.8167177462081825, "curve": {"0.0": [45.68865838312381, 4.659830418], "0.05": [57.6552936762313, 5.803851016], "0.1": [58.375651599841966, 6.32883637], "0.15": [58.38109457032025, 6.4829692340000005], "0.2": [58.59138289300959, 7.049240334000001], "0.25": [58.89428326521595, 8.829803456], "0.3": [59.69706780476487, 11.798202188], "0.35": [59.683157821129306, 12.795474736000001], "0.4": [60.242667427659555, 14.707089228000001], "0.45": [61.737500575177066, 34.728149396000006], "0.5": [64.20946412158057, 59.901391839999995], "0.55": [65.36919265668048, 77.33845831400001], "0.6": [65.99737242540806, 86.362575168], "0.65": [67.24035016492898, 94.67291830799999], "0.7": [68.45729468037757, 102.08987786], "0.75": [68.71286277282431, 105.703638946], "0.8": [68.72164899512936, 109.962800016], "0.85": [68.75470729844315, 115.613107198], "0.9": [68.60841087420712, 122.74659650599999], "0.95": [68.80540749238968, 129.57969896], "1.0": [68.81120363019222, 141.696648286]}}}, "routing_perf": {"summary": "69.5% accuracy (Best Single 68.0%, oracle 91.6%)", "items": 11467, "failed": 0, "metrics": {"accuracy": 69.45634881827904, "best_single_accuracy": 68.01249052009271, "oracle_accuracy": 91.63693931287445, "best_single_model": "Qwen3-8B"}}, "length_scheduling": {"summary": "mean latency 30% / 34% below FCFS, Kendall \u03c4 0.51 / 0.51 (thinking off / on)", "items": 20000, "failed": 0, "metrics": {"nothink": {"kendall_tau": 0.5078791454663875, "mean_latency_s": 11.293533698646437, "fcfs_latency_s": 16.11215007132732, "oracle_latency_s": 9.661570562644261, "latency_change_vs_fcfs": -0.2990672474715801, "share_of_oracle_gain": 0.7470051901840127}, "think": {"kendall_tau": 0.5068156716002639, "mean_latency_s": 32.775008827942706, "fcfs_latency_s": 49.78438750531216, "oracle_latency_s": 29.032380949675655, "latency_change_vs_fcfs": -0.341660900730264, "share_of_oracle_gain": 0.8196498315363867}, "decision_latency_s": 0.06380513636395335}}, "reasoning_budget": {"summary": "thinking on the half it ranks first: 46.7% accuracy (random half 40.4%, all 49.8%)", "items": 3713, "failed": 0, "metrics": {"accuracy_thinking_off": 30.89070666037491, "accuracy_thinking_on": 49.83040732306136, "accuracy_hindsight_best": 53.18520205439638, "accuracy_half_thinking": 46.673097255561544, "accuracy_half_thinking_random": 40.360556991718134, "accuracy_half_thinking_hindsight": 53.18520205439604, "thinking_tokens_per_request": 6923.234850525182, "direct_tokens_per_request": 549.2749798007003, "items": 3713}}, "cascade_verifier": {"summary": "escalating the half it doubts most: 65.3% accuracy (random half 60.3%); failure AUROC 0.716", "items": 12446, "failed": 0, "metrics": {"failure_auroc": 0.7159614825032298, "items": 12446, "accuracy_cheap": 55.07667186581546, "accuracy_strong": 65.62271510934154, "accuracy_half_escalated": 65.30640506494751, "accuracy_half_escalated_random": 60.349693487578506, "accuracy_half_escalated_hindsight": 73.46520864566537}}, "safety": {"summary": "AUROC 0.972 ToxicChat, 0.929 WildGuard requests, 0.928 WildGuard responses", "items": 8491, "failed": 0, "metrics": {"toxicchat": 0.9723107404204325, "wildguard_prompt": 0.9293208707001811, "wildguard_response": 0.9275043241907586, "subsets": ["toxicchat", "wildguard_prompt", "wildguard_response"]}}, "grounding": {"summary": "mean AUROC 0.831 over 11 datasets (lowest: ExpertQA, 0.628)", "items": 29320, "failed": 0, "metrics": {"AggreFact-CNN": 0.8123577406590328, "AggreFact-XSum": 0.808122871280766, "ClaimVerify": 0.752118383627724, "ExpertQA": 0.62798249010844, "FactCheck-GPT": 0.8657797693545503, "Lfqa": 0.9558768730450886, "RAGTruth": 0.8971923674464131, "Reveal": 0.9594208015267175, "TofuEval-MediaS": 0.800048274704055, "TofuEval-MeetB": 0.8639281886387996, "Wice": 0.7975161396214028}}, "agent_risk": {"summary": "AUROC 0.515 on 571 interactions (53% unsafe)", "items": 571, "failed": 0, "metrics": {"auroc": 0.5149747754398917, "items": 571, "unsafe_share": 0.5271453590192644}}}}, {"name": "qwen3-8b-readout", "model": "Qwen/Qwen3-8B", "average": 38.017175863153184, "partial": false, "latency_p50_s": 0.03556274087168276, "routing_cost": 22.833063200441444, "routing_perf": 9.502897425415902, "length_scheduling": 69.12980828791461, "reasoning_budget": 22.290111452325522, "cascade_verifier": 29.857535920936563, "safety": 82.42937413939849, "grounding": 63.57388312085029, "agent_risk": 4.520733357942652, "backend": "logprob", "card": {"display": "Qwen3-8B readout", "org": "Qwen", "kind": "baseline", "url": "https://huggingface.co/Qwen/Qwen3-8B", "base": "Qwen3-8B", "license": "Apache-2.0", "note": "no decision training: each answer is read from the next-token probabilities", "serving": "vLLM on 1\u00d7 H200"}, "run": {"gpu": "NVIDIA H200", "finished": "2026-09-30T05:26:47", "jevserve_bench": "0.1.0", "latency_p95_s": 0.05600600137840954, "latency_requests": 50}, "details": {"routing_cost": {"summary": "68.6% accuracy at \u03b1 = 1 (Best Single 66.0%); 26% cheaper at equal accuracy", "items": 12446, "failed": 0, "metrics": {"accuracy_alpha1": 68.59671863221988, "cost_save": 0.2635657575232644, "best_single_accuracy": 65.95658544864338, "oracle_accuracy": 85.66674003740381, "oracle_cost_save": 0.8167177462081825, "curve": {"0.0": [47.96783175918128, 4.11279974], "0.05": [57.64691838308869, 5.195889182], "0.1": [57.906680263478975, 5.300406101999999], "0.15": [57.9756872488782, 5.324404346], "0.2": [57.987841631336494, 5.390095934], "0.25": [58.11046907830274, 6.258392476], "0.3": [59.18813790655996, 10.09874348], "0.35": [59.87001193117195, 12.026781973999999], "0.4": [60.677105209542596, 23.172456524], "0.45": [61.732916994546294, 37.863843171999996], "0.5": [63.962679804484154, 64.9495238015], "0.55": [64.29966501465148, 71.46935130749999], "0.6": [67.12514484290605, 92.509946751], "0.65": [68.25742002884799, 98.45691931100001], "0.7": [68.43591174433087, 101.242035171], "0.75": [68.39838942299623, 103.25064011500001], "0.8": [68.44582564357523, 105.141223255], "0.85": [68.42790782349701, 108.6811613595], "0.9": [68.38487336503289, 117.2018053975], "0.95": [68.44979824000127, 129.909916074], "1.0": [68.59671863221988, 153.141469459]}}}, "routing_perf": {"summary": "70.3% accuracy (Best Single 68.0%, oracle 91.6%)", "items": 11467, "failed": 0, "metrics": {"accuracy": 70.25749765619067, "best_single_accuracy": 68.01249052009271, "oracle_accuracy": 91.63693931287445, "best_single_model": "Qwen3-8B"}}, "length_scheduling": {"summary": "mean latency 24% / 33% below FCFS, Kendall \u03c4 0.39 / 0.44 (thinking off / on)", "items": 20000, "failed": 0, "metrics": {"nothink": {"kendall_tau": 0.39308355057872574, "mean_latency_s": 12.304116833463473, "fcfs_latency_s": 16.11215007132732, "oracle_latency_s": 9.661570562644261, "latency_change_vs_fcfs": -0.23634544247701028, "share_of_oracle_gain": 0.5903397102133061}, "think": {"kendall_tau": 0.44144419217469716, "mean_latency_s": 33.34347634609726, "fcfs_latency_s": 49.78438750531216, "oracle_latency_s": 29.032380949675655, "latency_change_vs_fcfs": -0.33024231055289366, "share_of_oracle_gain": 0.7922564555449864}, "decision_latency_s": 0.03556274087168276}}, "reasoning_budget": {"summary": "thinking on the half it ranks first: 45.7% accuracy (random half 40.4%, all 49.8%)", "items": 3713, "failed": 0, "metrics": {"accuracy_thinking_off": 30.89070666037491, "accuracy_thinking_on": 49.83040732306136, "accuracy_hindsight_best": 53.18520205439638, "accuracy_half_thinking": 45.72536331493675, "accuracy_half_thinking_random": 40.360556991718134, "accuracy_half_thinking_hindsight": 53.18520205439604, "thinking_tokens_per_request": 6923.234850525182, "direct_tokens_per_request": 549.2749798007003, "items": 3713}}, "cascade_verifier": {"summary": "escalating the half it doubts most: 64.7% accuracy (random half 60.3%); failure AUROC 0.699", "items": 12446, "failed": 0, "metrics": {"failure_auroc": 0.6987561898975545, "items": 12446, "accuracy_cheap": 55.07667186581546, "accuracy_strong": 65.62271510934154, "accuracy_half_escalated": 64.70940315437946, "accuracy_half_escalated_random": 60.349693487578506, "accuracy_half_escalated_hindsight": 73.46520864566537}}, "safety": {"summary": "AUROC 0.956 ToxicChat, 0.895 WildGuard requests, 0.886 WildGuard responses", "items": 8491, "failed": 0, "metrics": {"toxicchat": 0.9557528311845158, "wildguard_prompt": 0.8945461945461946, "wildguard_response": 0.886141586360267, "subsets": ["toxicchat", "wildguard_prompt", "wildguard_response"]}}, "grounding": {"summary": "mean AUROC 0.818 over 11 datasets (lowest: ExpertQA, 0.629)", "items": 29320, "failed": 0, "metrics": {"AggreFact-CNN": 0.7228350316910039, "AggreFact-XSum": 0.7474262579525737, "ClaimVerify": 0.7986041346100861, "ExpertQA": 0.6288697721384233, "FactCheck-GPT": 0.8596292240300375, "Lfqa": 0.894549396447566, "RAGTruth": 0.8593423402241172, "Reveal": 0.9377786259541985, "TofuEval-MediaS": 0.8282260095709848, "TofuEval-MeetB": 0.8817202572347267, "Wice": 0.8375825217930482}}, "agent_risk": {"summary": "AUROC 0.523 on 571 interactions (53% unsafe)", "items": 571, "failed": 0, "metrics": {"auroc": 0.5226036667897133, "items": 571, "unsafe_share": 0.5271453590192644}}}}]}</script>
+<script>
+(() => {
+  "use strict";
+  const board = JSON.parse(document.getElementById("board").textContent);
+  const tasks = board.tasks, entries = board.entries;
+  const task = Object.fromEntries(tasks.map(t => [t.name, t]));
+  const KIND = {hosted: "Hosted API", open: "Open weights", baseline: "Baseline, no decision training"};
+  const KIND_SHORT = {hosted: "Hosted API", open: "Open weights", baseline: "Baseline"};
+  const KINDS = ["hosted", "open", "baseline"];
+  const TIER = {"A": "Tier A: replays logged outcomes and human labels, exact on any machine",
+                "A+B": "Tier A+B: offline answers, scored in a vLLM scheduler simulator calibrated on an H200"};
+  // where each component sits in a request's life; the router covers both routing tasks
+  const PATH = [["safety", "Guardrail"], ["routing_cost", "Router"], ["reasoning_budget", "Reasoning switch"],
+                ["length_scheduling", "Scheduler"], [null, "the LLM generates"], ["cascade_verifier", "Cascade"],
+                ["grounding", "RAG verifier"], ["agent_risk", "Agent action approval"]];
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+  const num = (v, d = 1) => v == null ? "–" : (v < 0 ? "−" : "") + Math.abs(v).toFixed(d);
+  const ms = s => s == null ? "–" : `${Math.round(s * 1000)} ms`;
+  const width = v => v == null ? 0 : Math.max(0, Math.min(100, v));
+  const int = n => Number(n).toLocaleString("en-US");
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const day = s => {
+    const d = new Date(`${String(s).slice(0, 10)}T00:00:00`);
+    return isNaN(d) ? String(s) : `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  };
+  const kindOf = e => (e.card && e.card.kind) || ({openrouter: "hosted", typesafe: "hosted", logprob: "baseline"}[e.backend] || "open");
+  const nameOf = e => (e.card && e.card.display) || e.model;
+  const detail = (e, t) => (e.details && e.details[t]) || {};
+  const requests = e => tasks.reduce((n, t) => n + (detail(e, t.name).items || 0), 0);
+
+  // intro
+  const version = String(board.version).split(".").slice(0, 2).join(".");
+  document.getElementById("version").textContent = `v${version}`;
+  document.getElementById("stamp").textContent = `Leaderboard · v${version} · updated ${day(board.generated)}`;
+  const perRun = entries.length ? requests(entries[0]) : 0;
+  document.getElementById("facts").innerHTML = [
+    [tasks.length, "serving decisions"], [entries.length, "decision models"],
+    perRun ? [int(perRun), "requests per run"] : null, ["0–100", "per task, oracle at 100"],
+  ].filter(Boolean).map(([b, s]) => `<li><b>${esc(b)}</b> ${esc(s)}</li>`).join("");
+  const present = KINDS.filter(k => entries.some(e => kindOf(e) === k));
+  document.getElementById("legend").innerHTML =
+    present.map(k => `<li class="k-${k}"><span class="dot" aria-hidden="true"></span>${esc(KIND[k])}</li>`).join("");
+
+  // leaderboard table
+  const cols = [
+    {key: "average", label: "Average", sub: `of ${tasks.length} tasks`, cls: "c-avg"},
+    ...tasks.map(t => ({key: t.name, label: t.label, sub: t.component})),
+    {key: "latency_p50_s", label: "p50", sub: "decision latency", cls: "c-lat", latency: true},
+  ];
+  const best = {};
+  for (const c of cols) if (!c.latency) best[c.key] = Math.max(...entries.map(e => e[c.key] ?? -Infinity));
+  const table = document.getElementById("board-table");
+  const open = new Set();
+  let sortKey = "average", desc = true;
+
+  const head = () => `<thead><tr><th scope="col" class="c-rank">#</th><th scope="col" class="c-model">Model</th>${cols.map(c => {
+    const sort = c.key === sortKey ? ` aria-sort="${desc ? "descending" : "ascending"}"` : "";
+    return `<th scope="col" class="c-num ${c.cls || ""}"${sort}><button type="button" data-key="${c.key}">` +
+      `<span class="th-label">${esc(c.label)}</span><span class="th-sub">${esc(c.sub)}</span></button></th>`;
+  }).join("")}</tr></thead>`;
+
+  const cell = (e, c) => {
+    const v = e[c.key];
+    if (c.latency) return `<td class="c-num c-lat">${ms(v)}</td>`;
+    const top = v != null && v === best[c.key] && c.key !== "average" ? " best" : "";
+    const tip = detail(e, c.key).summary ? ` title="${esc(detail(e, c.key).summary)}"` : "";
+    return `<td class="c-num ${c.cls || ""}${top}"${tip}><span class="v">${num(v)}</span>` +
+      `<span class="track" aria-hidden="true"><i style="width:${width(v)}%"></i></span></td>`;
+  };
+
+  const details = e => {
+    const c = e.card || {}, r = e.run || {};
+    const items = tasks.filter(t => e.details && e.details[t.name]).map(t =>
+      `<div class="d-item"><dt><span>${esc(t.label)}</span><b>${num(e[t.name])}</b></dt>` +
+      `<dd>${esc(detail(e, t.name).summary || "No raw metrics recorded.")}</dd></div>`).join("");
+    const total = requests(e), failed = tasks.reduce((n, t) => n + (detail(e, t.name).failed || 0), 0);
+    const latency = e.latency_p50_s == null ? null : `p50 ${ms(e.latency_p50_s)}` +
+      (r.latency_p95_s ? `, p95 ${ms(r.latency_p95_s)}` : "") + (r.latency_requests ? ` over ${r.latency_requests} single requests` : "");
+    const facts = [
+      ["Serving", c.serving], ["Decision latency", latency], ["Failed requests", total ? `${int(failed)} of ${int(total)}` : null],
+      ["Base model", c.base], ["License", c.license], ["Revision", c.revision], ["Note", c.note],
+      ["Run", r.finished ? `${day(r.finished)}, jevserve-bench ${r.jevserve_bench || ""}`.trim() : null],
+    ].filter(([, v]) => v);
+    const page = c.url ? `<div><dt>Model page</dt><dd><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.url.replace(/^https?:\/\//, ""))}</a></dd></div>` : "";
+    return `<dl class="d-grid">${items}</dl><dl class="d-facts">` +
+      facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("") + page + `</dl>`;
+  };
+
+  const row = (e, i) => {
+    const k = kindOf(e), c = e.card || {}, id = `d-${String(e.name).replace(/[^A-Za-z0-9_-]/g, "_")}`, isOpen = open.has(e.name);
+    const sub = [c.org, KIND_SHORT[k]].filter(Boolean).join(" · ");
+    const link = c.url ? `<a class="ext" href="${esc(c.url)}" target="_blank" rel="noopener" aria-label="${esc(nameOf(e))}: model page">↗</a>` : "";
+    return `<tr class="row k-${k}${isOpen ? " open" : ""}"><td class="c-rank">${i + 1}</td><th scope="row" class="c-model"><div class="who">` +
+      `<span class="dot" aria-hidden="true"></span>` +
+      `<button type="button" class="name" aria-expanded="${isOpen}" aria-controls="${id}" data-name="${esc(e.name)}">${esc(nameOf(e))}</button>` +
+      `${e.partial ? '<span class="tag">partial</span>' : ""}${link}</div><div class="who-sub">${esc(sub)}</div></th>` +
+      cols.map(col => cell(e, col)).join("") + `</tr>` +
+      `<tr class="details" id="${id}"${isOpen ? "" : " hidden"}><td colspan="${cols.length + 2}"><div class="inner">${details(e)}</div></td></tr>`;
+  };
+
+  const sorted = () => [...entries].sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    if (x == null || y == null) return (x == null) - (y == null);
+    return (desc ? y - x : x - y) || b.average - a.average;
+  });
+  const render = () => { table.innerHTML = head() + `<tbody>${sorted().map(row).join("")}</tbody>`; };
+
+  table.addEventListener("click", ev => {
+    const sortBtn = ev.target.closest("th button[data-key]");
+    if (sortBtn) {
+      const key = sortBtn.dataset.key;
+      if (key === sortKey) desc = !desc; else { sortKey = key; desc = key !== "latency_p50_s"; }
+      render();
+      table.querySelector(`th button[data-key="${key}"]`).focus();
+      return;
+    }
+    const nameBtn = ev.target.closest("button.name");
+    if (nameBtn) {
+      const name = nameBtn.dataset.name, isOpen = !open.has(name);
+      if (isOpen) open.add(name); else open.delete(name);
+      nameBtn.setAttribute("aria-expanded", String(isOpen));
+      nameBtn.closest("tr").classList.toggle("open", isOpen);
+      document.getElementById(nameBtn.getAttribute("aria-controls")).hidden = !isOpen;
+    }
+  });
+  render();
+
+  // request path and task cards
+  document.getElementById("path").innerHTML = PATH.filter(([n]) => n === null || task[n]).map(([n, label]) => n === null
+    ? `<li><span class="gen">${esc(label)}</span></li>`
+    : `<li><a href="#task-${n}" title="${esc(cap(task[n].component))}">${esc(label)}</a></li>`).join("");
+
+  document.getElementById("task-grid").innerHTML = tasks.map(t => {
+    const ranked = entries.filter(e => e[t.name] != null).sort((a, b) => b[t.name] - a[t.name]);
+    const bars = ranked.map(e => `<li class="bar-row k-${kindOf(e)}"><span class="bar-who">${esc(nameOf(e))}</span>` +
+      `<span class="bar-track" aria-hidden="true"><i style="width:${width(e[t.name])}%"></i></span>` +
+      `<span class="bar-val">${num(e[t.name])}</span><span class="bar-sum">${esc(detail(e, t.name).summary)}</span></li>`).join("");
+    return `<article class="task" id="task-${t.name}">
+      <div class="task-top"><span>${esc(t.component)}</span><span class="task-tier" title="${esc(TIER[t.tier] || "")}">Tier ${esc(t.tier)}</span></div>
+      <h3>${esc(t.title)}</h3>
+      <p class="task-q">${esc(t.decision)}</p>
+      <dl class="task-anchors"><div><dt>0</dt><dd>${esc(t.anchors[0])}</dd></div><div><dt>100</dt><dd>${esc(t.anchors[1])}</dd></div></dl>
+      <div class="bars-wrap">
+        <div class="bar-scale" aria-hidden="true"><span></span><span class="ticks"><b style="left:0%">0</b><b style="left:50%">50</b><b style="left:100%">100</b></span></div>
+        <ol class="bars" aria-label="Scores on ${esc(t.label)}">${bars}</ol>
+      </div>
+      <p class="task-data"><code>${esc(t.name)}</code>${esc(t.data)}</p>
+    </article>`;
+  }).join("");
+
+  // what 0 and 100 mean, grouped by task family
+  const groups = [];
+  for (const t of tasks) {
+    const key = JSON.stringify(t.anchors), g = groups.find(x => x.key === key);
+    if (g) g.tasks.push(t); else groups.push({key, anchors: t.anchors, tasks: [t]});
+  }
+  document.getElementById("anchors-table").innerHTML =
+    `<thead><tr><th scope="col">Task</th><th scope="col">Scores 0</th><th scope="col">Scores 100</th></tr></thead><tbody>` +
+    groups.map(g => `<tr><th scope="row">${g.tasks.map(t => esc(t.label)).join("<br>")}</th>` +
+      `<td>${esc(g.anchors[0])}</td><td>${esc(g.anchors[1])}</td></tr>`).join("") + `</tbody>`;
+
+  document.getElementById("built").textContent =
+    `Built by jevserve leaderboard from jevserve-bench ${board.version} on ${day(board.generated)}.`;
+
+  // copy buttons
+  for (const block of document.querySelectorAll(".code")) {
+    const btn = block.querySelector(".copy"), pre = block.querySelector("pre");
+    const reset = () => setTimeout(() => { btn.textContent = "Copy"; }, 1600);
+    const select = () => {
+      const range = document.createRange(); range.selectNodeContents(pre);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      btn.textContent = "Selected"; reset();
+    };
+    btn.addEventListener("click", () => {
+      const text = pre.innerText.split("\n").filter(l => !l.startsWith("# ")).join("\n");
+      try { navigator.clipboard.writeText(text).then(() => { btn.textContent = "Copied"; reset(); }, select); }
+      catch (_) { select(); }
+    });
+  }
+})();
+</script>
