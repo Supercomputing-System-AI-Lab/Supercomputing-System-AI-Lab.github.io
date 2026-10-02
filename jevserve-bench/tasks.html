@@ -589,7 +589,7 @@ uv venv .venv && uv pip install --python .venv/bin/python -e ".[prepare]"
 
   // every page: title, navigation, version, repository, footer
   const version = String(board.version).split(".").slice(0, 2).join(".");
-  document.title = {board: "JevServe-bench Leaderboard", tasks: "JevServe-bench Tasks", method: "JevServe-bench Methodology"}[PAGE];
+  document.title = {board: "JevServe-bench Leaderboard", tasks: "JevServe-bench Tasks", method: "JevServe-bench Methodology", play: "JevServe-bench Playground"}[PAGE];
   for (const a of document.querySelectorAll("[data-nav]")) if (a.dataset.nav === PAGE) a.setAttribute("aria-current", "page");
   document.getElementById("version").textContent = `v${version}`;
   if (board.blog) {
