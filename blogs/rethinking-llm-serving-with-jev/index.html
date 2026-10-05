@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Opportunities and open problems for fast decision models like Jev, measured with JevServe-Bench.">
+<meta name="author" content="Xinyu Lian, Banghao Chi, Jiahuan Yu, Minjia Zhang">
+<link rel="canonical" href="https://supercomputing-system-ai-lab.github.io/blogs/rethinking-llm-serving-with-jev/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SSAIL Blog">
+<meta property="og:title" content="Rethinking LLM Serving with System One Models">
+<meta property="og:description" content="Opportunities and open problems for fast decision models like Jev, measured with JevServe-Bench.">
+<meta property="og:url" content="https://supercomputing-system-ai-lab.github.io/blogs/rethinking-llm-serving-with-jev/">
+<meta property="og:image" content="https://supercomputing-system-ai-lab.github.io/blogs/rethinking-llm-serving-with-jev/og.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="Rethinking LLM Serving with System One Models: on a memory-tight H200, the share of requests meeting the SLO rises from 75% to 99% when Jev&#x27;s length predictions order vLLM&#x27;s queue.">
+<meta property="article:published_time" content="2026-10-02">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rethinking LLM Serving with System One Models">
+<meta name="twitter:description" content="Opportunities and open problems for fast decision models like Jev, measured with JevServe-Bench.">
+<meta name="twitter:image" content="https://supercomputing-system-ai-lab.github.io/blogs/rethinking-llm-serving-with-jev/og.png">
+<meta name="twitter:image:alt" content="Rethinking LLM Serving with System One Models: on a memory-tight H200, the share of requests meeting the SLO rises from 75% to 99% when Jev&#x27;s length predictions order vLLM&#x27;s queue.">
+<title>Rethinking LLM Serving with System One Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* layout: one reading column (~66ch) with figures allowed to run wider; the JevServe-bench site's own palette and type */
+:root {
+  --bg: #f5f3ee; --surface: #fffdf8; --sunk: #efece5;
+  --ink: #1b1916; --ink-2: #4d4841; --ink-3: #736c62;
+  --rule: #e4dfd6; --rule-2: #cbc4b8; --track: #ebe7df;
+  --jev: #ac473a; --open: #bc8741; --base: #2c6096; --neutral: #a39c91;
+  --todo-bg: #fbf0c9; --todo-ink: #6b4e00;
+  --serif: "Iowan Old Style", "Iowan Old Style BT", "Source Serif 4", Georgia, serif;
+  --sans: "Libre Franklin", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --label: "Chakra Petch", "Libre Franklin", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141311; --surface: #1c1a18; --sunk: #25221f;
+    --ink: #ede8df; --ink-2: #c0b9ae; --ink-3: #978f84;
+    --rule: #2f2c28; --rule-2: #48433d; --track: #2a2724;
+    --jev: #b04945; --open: #b68c3e; --base: #4d84bc; --neutral: #a59d94;
+    --todo-bg: #3a3014; --todo-ink: #f0d58a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141311; --surface: #1c1a18; --sunk: #25221f;
+  --ink: #ede8df; --ink-2: #c0b9ae; --ink-3: #978f84;
+  --rule: #2f2c28; --rule-2: #48433d; --track: #2a2724;
+  --jev: #b04945; --open: #b68c3e; --base: #4d84bc; --neutral: #a59d94;
+  --todo-bg: #3a3014; --todo-ink: #f0d58a;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 18px/1.65 var(--serif); -webkit-font-smoothing: antialiased; }
+.page { padding-inline: 20px; padding-block: 40px 80px; }
+.col { max-width: 884px; margin-inline: auto; }
+.wide { max-width: 884px; margin-inline: auto; }
+a { color: var(--ink); text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--base); outline-offset: 2px; border-radius: 3px; }
+
+.draft { display: inline-block; font: 600 11.5px var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--todo-ink);
+  background: var(--todo-bg); padding: 3px 9px; border-radius: 999px; }
+header.col { display: grid; gap: 14px; padding-bottom: 8px; }
+header.col .draft { justify-self: start; }
+h1 { margin: 0; font: 600 clamp(34px, 5.6vw, 52px)/1.08 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
+.deck { margin: 0; font-size: 21px; line-height: 1.45; color: var(--ink-2); text-wrap: balance; }
+.boxed { display: inline-block; padding: 0 8px; border: 1.5px solid var(--rule-2); border-radius: 7px; color: var(--ink);
+  text-decoration: none; white-space: nowrap; line-height: 1.3; background: var(--surface); }
+.boxed:hover { border-color: var(--ink); }
+.meta { font: 400 13.5px var(--sans); color: var(--ink-3); }
+.byline { display: grid; gap: 4px; }
+.byline p { margin: 0; }
+.authors { font: 500 19.2px/1.45 var(--sans); color: var(--ink); }
+.byline .meta { font-size: 16.2px; }
+.nowrap { white-space: nowrap; }
+.authors a { color: inherit; }
+
+.tldr { margin-block: 30px 10px; padding: 18px 22px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.tldr h2 { margin: 0 0 6px; font: 600 12px var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.tldr ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; font-size: 16.5px; line-height: 1.55; }
+
+h2.sec { margin: 52px 0 6px; font: 600 28px/1.2 var(--serif); letter-spacing: -0.01em; text-wrap: balance; }
+h3 { margin: 28px 0 4px; font: 600 18px/1.35 var(--sans); letter-spacing: 0.01em; }
+h3.lead { font-size: 20.7px; }
+p { margin: 14px 0; }
+ul.prose { margin: 14px 0; padding-left: 1.2em; display: grid; gap: 6px; }
+strong { font-weight: 600; }
+.num { font-variant-numeric: tabular-nums; }
+code, pre { font-family: var(--mono); }
+code { font-size: 0.85em; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+pre { margin: 18px 0; padding: 14px 16px; overflow-x: auto; background: var(--sunk); border-radius: 10px; font-size: 13px; line-height: 1.6; }
+pre .c { color: var(--ink-3); }
+.todo { background: var(--todo-bg); color: var(--todo-ink); font: 500 0.82em var(--sans); padding: 1px 6px; border-radius: 4px; }
+
+figure { margin: 30px auto; }
+figcaption { margin-top: 10px; font: 400 14px/1.5 var(--sans); color: var(--ink-2); max-width: 884px; margin-inline: auto; }
+figcaption b { font-weight: 600; color: var(--ink); }
+.chart { position: relative; padding: 18px 18px 12px; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.panel { min-width: 0; }
+.panel-title { margin: 0 0 6px; font: 600 13.5px var(--sans); color: var(--ink); }
+.panels .scroll > svg { min-width: 360px; }
+@media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
+.scroll { overflow-x: auto; }
+.scroll > svg { min-width: 600px; }
+.diagram .scroll > svg { min-width: 780px; }
+.chart text { font-family: var(--sans); fill: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 10px; padding: 0; list-style: none; font: 400 13px var(--sans); color: var(--ink-2); }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.sw.ring { background: transparent; border: 2px solid var(--ink); }
+.tip { position: absolute; pointer-events: none; z-index: 2; padding: 6px 9px; border-radius: 7px; background: var(--ink); color: var(--bg);
+  font: 500 12.5px/1.4 var(--sans); white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); }
+details.data { margin-top: 8px; font: 400 13px var(--sans); color: var(--ink-2); }
+details.data summary { cursor: pointer; color: var(--ink-3); }
+details.data table { margin-top: 8px; }
+.play { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; margin-block: 30px; padding: 26px 30px;
+  border: 1.5px solid var(--ink); border-radius: 18px; background: var(--surface); color: var(--ink); text-decoration: none;
+  box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.45); transition: transform 0.15s, box-shadow 0.15s; }
+.play:hover { transform: translateY(-2px); box-shadow: 0 20px 40px -22px rgba(0, 0, 0, 0.5); }
+.play-text { display: grid; gap: 8px; min-width: 0; }
+.play-eyebrow { font: 600 12px var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.play-title { font: 600 clamp(30px, 4.6vw, 44px)/1.05 var(--serif); letter-spacing: -0.02em; }
+.play-title em { font-style: normal; color: var(--jev); }
+.play-sub { font: 400 15.5px/1.5 var(--sans); color: var(--ink-2); max-width: 46ch; }
+.play-go { justify-self: start; margin-top: 6px; font: 600 15px var(--sans); padding: 11px 18px; border-radius: 10px; background: var(--ink); color: var(--bg); }
+.play-board { display: grid; grid-template-columns: auto auto auto; gap: 14px; align-items: center; padding: 18px 22px; border-radius: 14px;
+  background: var(--sunk); font-variant-numeric: tabular-nums; }
+.play-board .side { display: grid; gap: 2px; justify-items: start; }
+.play-board .side.jev { justify-items: end; }
+.play-board small { font: 600 11px var(--label); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.play-board b { font: 600 38px/1 var(--label); }
+.play-board .jev b { color: var(--jev); }
+.play-board .dots { display: flex; gap: 6px; }
+.play-board i { width: 10px; height: 10px; border-radius: 50%; background: var(--track); }
+.play-board i:first-child { box-shadow: 0 0 0 2px var(--ink); }
+.diagram svg { color: var(--ink); }
+.diagram text { fill: currentColor; font-family: var(--sans); }
+
+.tablewrap { overflow-x: auto; margin: 18px 0; }
+table.t { width: 100%; border-collapse: collapse; font: 400 14.5px/1.45 var(--sans); font-variant-numeric: tabular-nums; }
+table.t th, table.t td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+table.t thead th { font: 600 11.5px var(--label); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); border-bottom-color: var(--rule-2); }
+table.t td.r, table.t th.r { text-align: right; }
+table.t .hi { color: var(--jev); font-weight: 600; }
+
+.notes { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); font: 400 14px/1.55 var(--sans); color: var(--ink-2); }
+.notes h2 { margin: 0 0 8px; font: 600 12px var(--label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.notes ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+@media (max-width: 640px) { .play { grid-template-columns: 1fr; padding: 22px 20px; } .play-board { justify-self: stretch; justify-content: space-between; } }
+@media (max-width: 560px) {
+  body { font-size: 17px; }
+  .deck { font-size: 18.5px; }
+  h2.sec { font-size: 24px; }
+  .chart { padding: 14px 10px 10px; }
+}
+/* the lab blog's copy starts with a link back to the lab blog */
+.back-row { margin-bottom: 18px; }
+.back { font: 500 13.5px var(--sans); color: var(--ink-3); text-decoration: none; }
+.back:hover { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="page">
+<nav class="col back-row"><a class="back" href="/blogs/">&larr; SSAIL Blog</a></nav>
+  <header class="col">
+    <h1>Rethinking LLM Serving with System One Models</h1>
+    <p class="deck">Opportunities and open problems for fast decision models like Jev, measured with <a class="boxed" href="/jevserve-bench/" target="_blank" rel="noopener">JevServe-Bench</a>.</p>
+    <div class="byline">
+      <p class="authors"><a href="https://xinyulian.tech/" target="_blank" rel="noopener">Xinyu Lian</a>, Banghao Chi, Jiahuan Yu and <a href="https://minjiazhang.github.io/" target="_blank" rel="noopener">Minjia Zhang</a></p>
+      <p class="meta">SSAIL Lab, University of Illinois <span class="nowrap">Urbana-Champaign</span> · About 12 minutes to read</p>
+    </div>
+  </header>
+
+  <section class="col tldr" aria-labelledby="tldr-h">
+    <h2 id="tldr-h">In short</h2>
+    <ul>
+      <li>An LLM service makes many small decisions about every request, most of them with fixed rules today. JevServe-Bench measures what a decision model adds: 16 decisions and 10 models.</li>
+      <li>Jev is stronger at judging content (guardrails, verification, agent actions) and weaker at predicting what other systems will do (routing, caching).</li>
+      <li>Jev can also improve the serving engine itself. Its output-length predictions let vLLM serve short requests first: the share of requests meeting the SLO rises from 75% to <strong>99%</strong>, and the P90 TTFT falls from 8.3 s to <strong>0.17 s</strong>.</li>
+    </ul>
+  </section>
+
+  <article>
+    <div class="col">
+      <h2 class="sec" id="decisions">Every request is a stack of decisions</h2>
+      <p>Follow one request through an LLM service. Before a model executes, the service has to decide whether a cached answer can serve it, which model should answer and whether that model should think first, whether to call a tool or ask the user for missing details, and where the request goes in the queue.</p>
+      <p>Most of these decisions are made by rules today: a keyword list, an embedding-similarity threshold, one model per product, first come first served. Rules are fast and predictable, and they treat every request the same way. The alternative is to ask an LLM, which can be accurate but adds a full generation to the path of every request. For many of these decisions that costs more than the decision is worth.</p>
+      <p>A System One model sits between the two. It is meant to be cheap enough to ask about every request and good enough to act on.</p>
+
+      <h2 class="sec" id="system-one">What a System One model is</h2>
+      <p>The name borrows Kahneman's two systems of thought: System 2 is slow and deliberate, System 1 is fast and intuitive. An LLM that reasons step by step works like System 2. A System One model gives the fast judgment. You send it a piece of text and a few typed questions, and it answers each one with probabilities: a choice among options, a level on a scale, or a yes or no.</p>
+      <p>Several properties make this useful inside a serving system:</p>
+      <ul class="prose">
+        <li><strong>It is fast.</strong> Jev 1.13 answers in a median of 92 ms through OpenRouter, network included. Open-weight Jev-compatible models from 4B to 35B parameters answer in 51 to 284 ms on one H200.</li>
+        <li><strong>It writes nothing.</strong> An answer is one forward pass over the request, with no output tokens to generate or pay for, so its cost does not grow with the length of an answer.</li>
+        <li><strong>Several questions in one call.</strong> A request can carry many questions at once.</li>
+        <li><strong>Its answers are typed probabilities.</strong> Every answer is a probability over a fixed set of options, never free text to parse. A system can rank requests by it, set a threshold, or feed it into a small regression.</li>
+      </ul>
+
+      <h2 class="sec" id="where">Where decisions live in a serving stack</h2>
+      <p>A serving system is a stack of layers, and each makes its own decisions. At the global level, the system decides how much capacity to provision and where each model runs. The gateway sees a request before any model does: it guards, routes, caches and decides on actions. At the cluster level, the system decides which replica of an engine takes a request and when to add or remove GPUs. Inside an engine, it batches requests on the GPU and decides which runs next and which waits. It also manages memory: which conversations keep their KV cache, which are evicted or moved to CPU memory, and which request to pause when memory runs out.</p>
+      <p>The layers differ in how long a decision can take. Gateway decisions can use a decision model today, because a 90 ms check in front of a call that takes seconds is easy to afford. Engine decisions have tighter budgets: a prediction made when a request is admitted can wait 90 ms, but a choice made at every decoding step, every 10 to 50 ms, cannot. The table lists what a decision model would predict for each decision.</p>
+      <div class="tablewrap">
+        <table class="t">
+          <thead><tr><th>Where</th><th>Decision</th><th>What a decision model predicts</th><th>Budget</th></tr></thead>
+          <tbody>
+            <tr><td>Global</td><td>Capacity and placement</td><td>How much work each model will be asked for, from the requests' predicted lengths and the models they need</td><td>Minutes to hours</td></tr>
+            <tr><td>Gateway</td><td>Guard, route, cache, act</td><td>Is it an attack? Which model, and does it need thinking? Can a cached answer serve it? Does it need a tool?</td><td>Per request, before a call of seconds</td></tr>
+            <tr><td>Cluster</td><td>Replica routing</td><td>How much work the request brings (output length, reusable prefix), to balance replicas</td><td>Per request</td></tr>
+            <tr><td>Cluster</td><td>Autoscaling</td><td>The work arriving, so capacity is added before queues form</td><td>Seconds to minutes</td></tr>
+            <tr><td>Engine</td><td>Queue order</td><td>Output length</td><td>At admission</td></tr>
+            <tr><td>Engine</td><td>KV-cache management</td><td>Will the user come back to this conversation, and soon? How large will the request grow?</td><td>At admission, or between turns</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <figure class="wide diagram">
+      <div class="scroll">
+      <svg viewBox="0 0 1100 300" role="img" aria-label="A request passes through the gateway (guard, route, cache, act), the cluster (replica routing, autoscaling) and the engine (queue, KV cache); a decision model answers questions for each of them.">
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="arr-j" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--jev)"/></marker></defs>
+        <rect x="10" y="70" width="96" height="56" rx="10" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.45"/><text x="58" y="103" text-anchor="middle" font-size="14" font-weight="600">Request</text>
+        <line x1="106" y1="98" x2="140" y2="98" stroke="currentColor" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="142" y="24" width="388" height="148" rx="14" fill="var(--sunk)" stroke="currentColor" stroke-opacity="0.25"/><text x="158" y="48" font-size="12" font-weight="600" letter-spacing="1.2" fill-opacity="0.7">GATEWAY · TODAY</text>
+        <rect x="158" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.35"/><text x="199" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Guard</text><text x="199" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">attack?</text>
+        <rect x="250" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.35"/><text x="291" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Route</text><text x="291" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">which model?</text>
+        <rect x="342" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.35"/><text x="383" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Cache</text><text x="383" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">reuse answer?</text>
+        <rect x="434" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="currentColor" stroke-opacity="0.35"/><text x="475" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Act</text><text x="475" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">call a tool?</text>
+        <line x1="530" y1="98" x2="566" y2="98" stroke="currentColor" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="568" y="24" width="206" height="148" rx="14" fill="var(--sunk)" stroke="currentColor" stroke-opacity="0.25"/><text x="584" y="48" font-size="12" font-weight="600" letter-spacing="1.2" fill-opacity="0.7">CLUSTER · NEXT</text>
+        <rect x="584" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="var(--jev)" stroke-width="1.5"/><text x="625" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Replica</text><text x="625" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">which copy?</text>
+        <rect x="676" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="var(--jev)" stroke-width="1.5"/><text x="717" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Scale</text><text x="717" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">add GPUs?</text>
+        <line x1="774" y1="98" x2="788" y2="98" stroke="currentColor" stroke-width="1.5" marker-end="url(#arr)"/>
+        <rect x="790" y="24" width="206" height="148" rx="14" fill="var(--sunk)" stroke="currentColor" stroke-opacity="0.25"/><text x="806" y="48" font-size="12" font-weight="600" letter-spacing="1.2" fill-opacity="0.7">ENGINE · NEXT</text>
+        <rect x="806" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="var(--jev)" stroke-width="1.5"/><text x="847" y="94" text-anchor="middle" font-size="13.5" font-weight="600">Queue</text><text x="847" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">who runs next?</text>
+        <rect x="898" y="66" width="82" height="64" rx="9" fill="var(--surface)" stroke="var(--jev)" stroke-width="1.5"/><text x="939" y="94" text-anchor="middle" font-size="13.5" font-weight="600">KV cache</text><text x="939" y="113" text-anchor="middle" font-size="11" fill-opacity="0.75">keep or evict?</text>
+        <line x1="996" y1="98" x2="1030" y2="98" stroke="currentColor" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="1066" y="102" text-anchor="middle" font-size="13.5" font-weight="600">Reply</text>
+        <rect x="410" y="222" width="300" height="56" rx="12" fill="var(--surface)" stroke="var(--jev)" stroke-width="1.75"/><text x="560" y="246" text-anchor="middle" font-size="14" font-weight="600" fill="var(--jev)">System One model (Jev)</text><text x="560" y="265" text-anchor="middle" font-size="11.5" fill-opacity="0.8">questions in, probabilities out, ~90 ms</text>
+        <g stroke="var(--jev)" stroke-width="1.25" stroke-dasharray="4 4" fill="none">
+        <path d="M 430 222 L 199 132" marker-end="url(#arr-j)"/>
+        <path d="M 470 222 L 291 132" marker-end="url(#arr-j)"/>
+        <path d="M 510 222 L 383 132" marker-end="url(#arr-j)"/>
+        <path d="M 550 222 L 475 132" marker-end="url(#arr-j)"/>
+        <path d="M 600 222 L 625 132" marker-end="url(#arr-j)"/>
+        <path d="M 640 222 L 717 132" marker-end="url(#arr-j)"/>
+        <path d="M 710 240 C 817 240 847 200 847 132" marker-end="url(#arr-j)"/>
+        <path d="M 710 254 C 969 254 939 200 939 132" marker-end="url(#arr-j)"/>
+        </g>
+        <text x="900" y="226" font-size="11.5" fill="var(--jev)">at admission</text>
+        </svg></div>
+      <figcaption><b>Figure 1.</b> Where a decision model can answer questions about a request. The gateway decisions can use it today. Replica routing and autoscaling in the cluster, and queue order and the KV cache in the engine, can use predictions made when a request arrives, such as its output length; decisions made at every decoding step need something faster.</figcaption>
+    </figure>
+
+    <div class="col">
+      <h2 class="sec" id="bench">JevServe-Bench: one decision per task</h2>
+      <p>To measure the opportunity and understand the space, we built JevServe-Bench. Each task is one decision a serving system makes, built from public data. The questions the decision model answers and the rule that turns its answers into an action are fixed, so the model is the only thing that changes between entries.</p>
+      <p>Every task is scored from 0 to 100. Zero is what the system does without a decision model: its default rule, or chance. One hundred is an oracle that knows the outcome in advance. In the semantic-cache task, for example, 0 is the best embedding-similarity threshold and 100 is a cache that knows which requests are equivalent. A score is the share of that gap the decision model closes.</p>
+      <p>Version 0.2 has 16 tasks in six categories and 10 models: hosted Jev 1.13, eight open-weight Jev-style models, and Qwen3-8B with no decision training as a baseline. Each score comes with a 95% interval, and ranks compare models on the same resamples. A full run takes about ten minutes per model. The <a href="/jevserve-bench/" target="_blank" rel="noopener">leaderboard</a> lists every task and score.</p>
+
+      <h2 class="sec" id="results">What Jev is good at, and where it falls short</h2>
+      <p>Jev 1.13 ranks first, with an average of <span class="num">63.6</span> (95% interval 62.8 to 64.6). The best open model, Kev-27B, scores <span class="num">62.1</span>, and untrained Qwen3-8B scores <span class="num">46.5</span>. The averages hide a sharp split between categories.</p>
+    </div>
+
+    <figure class="wide">
+      <div class="chart" id="chart-cats">
+        <ul class="legend" aria-hidden="true">
+          <li><span class="sw" style="background:var(--jev)"></span>Jev 1.13</li>
+          <li><span class="sw" style="background:var(--open)"></span>Best of the other eight Jev-style models</li>
+          <li><span class="sw" style="background:var(--base)"></span>Qwen3-8B, no decision training</li>
+        </ul>
+        <div class="scroll"><svg id="svg-cats" role="img" aria-label="Category scores. Jev 1.13: Guard 90.9, Act 84.1, Schedule 78.9, Verify 77.4, Cache 42.8, Route 29.2. Untrained Qwen3-8B: 85.8, 28.1, 69.1, 63.2, 22.9, 19.7."></svg></div>
+        <details class="data"><summary>Show the numbers</summary>
+          <div class="tablewrap"><table class="t"><thead><tr><th>Category</th><th class="r">Jev 1.13</th><th class="r">Best other</th><th>Which</th><th class="r">Qwen3-8B</th></tr></thead><tbody id="tbl-cats"></tbody></table></div>
+        </details>
+      </div>
+      <figcaption><b>Figure 2.</b> Category scores on JevServe-Bench v0.1, where 0 is the serving default and 100 an oracle. Jev and the strongest open models are close; the untrained baseline shows how much decision training adds, most of all for agent decisions (Act).</figcaption>
+    </figure>
+
+    <div class="col">
+      <h3>Strong: judging the content in front of it</h3>
+      <p>Jev does best when the decision is a judgment about the text it is given. It scores 96 on prompt injection, 91 on checking the steps of a math solution, 90 on safety, 86 on telling borderline but harmless requests from harmful ones, 85 on spotting risky agent actions and 84 on deciding whether a tool call fits. Decision training matters most here: untrained Qwen3-8B scores 4.5 on agent risk and 52 on the tool gate.</p>
+      <h3>Weak: predicting what another system will do</h3>
+      <p>Jev does worst when the decision depends on how something else will behave. It scores 17 and 23 on the two routing tasks, which ask which model will answer a request correctly, and 27 on the semantic cache, where it must judge whether an earlier answer fully answers a new request. On the prefix cache, which keeps a conversation's KV in memory if the user is likely to return, Jev's signal is weaker than simply counting the turns so far (AUROC 0.60 against 0.68). We list that task as an open problem and leave it out of the average.</p>
+      <p>Our reading is that judging content is close to what these models are trained for, while predicting another system's behavior needs data from that system. That is where training on serving logs, simulators and environments could help most.</p>
+
+      <h2 class="sec" id="engine">Inside the engine: predicting output length as the first step</h2>
+      <p>The gateway is where a decision model can help today. Its low latency also makes it a candidate for decisions inside the engine, and output length is the clearest example. A request's output length decides how long it occupies a slot in the batch and how much KV memory it grows into. A scheduler that knows which requests are short can serve them first, so they stop waiting behind long ones. vLLM serves defaultly requests first come, first served.</p>
+      <h3 class="lead">How well Jev predicts length</h3>
+      <p>We fit a small regression from Jev's answers about a request to the length of Qwen3-8B's reply, on 14,000 ShareGPT requests, and test it on 6,000 others. Ranking quality, measured by Kendall's τ, is 0.61 with thinking off and 0.56 with thinking on. The median prediction is off by a factor of 1.3, and 81% to 85% of predictions are within a factor of two.</p>
+      <p>Reply length is partly random: the same model asked the same question twice gives replies of different lengths. Using one reply's length to predict another's gives τ = 0.79 and 0.73, which is about as well as any prediction from the prompt can do. Jev reaches about three quarters of that. Prompt length alone reaches almost nothing.</p>
+    </div>
+
+    <figure class="wide">
+      <div class="chart" id="chart-len">
+        <ul class="legend" aria-hidden="true">
+          <li><span class="sw" style="background:var(--neutral)"></span>Prompt length alone</li>
+          <li><span class="sw" style="background:var(--base)"></span>Qwen3-8B, no decision training</li>
+          <li><span class="sw" style="background:var(--jev)"></span>Jev 1.13</li>
+          <li><span class="sw ring"></span>Ceiling: a second reply's length</li>
+        </ul>
+        <div class="scroll"><svg id="svg-len" role="img" aria-label="Kendall tau of output-length predictions. Thinking off: prompt length 0.09, untrained Qwen3-8B 0.39, Jev 0.61, ceiling 0.79. Thinking on: 0.11, 0.44, 0.56, 0.73."></svg></div>
+      </div>
+      <figcaption><b>Figure 3.</b> How well each predictor ranks requests by the length of Qwen3-8B's reply (Kendall's τ, 6,086 test requests). The ceiling is the agreement between two replies to the same prompt.</figcaption>
+    </figure>
+
+    <div class="col">
+      <h3 class="lead">A performance benefit check on real hardware</h3>
+      <p>We ran the eval on a real server: Qwen3-8B with vLLM 0.30 on H200. Each run replays 2,000 ShareGPT requests, at Poisson arrivals between 1.05 and 1.54 requests per second. Every policy sees the same arrival times.</p>
+      <p>We compared four ways to order the queue: vLLM's default (first come, first served), shortest prompt first, which uses no prediction at all, Jev, and the true length. The last three use vLLM's priority scheduler, smallest predicted length first. Each request waits Jev's 92 ms for its prediction before it is sent.</p>
+    </div>
+
+    <figure class="wide">
+      <div class="chart" id="chart-real">
+        <ul class="legend" aria-hidden="true">
+          <li><span class="sw" style="background:var(--neutral)"></span>vLLM default</li>
+          <li><span class="sw" style="background:var(--base)"></span>Shortest prompt first</li>
+          <li><span class="sw" style="background:var(--jev)"></span>Jev 1.13</li>
+          <li><span class="sw ring"></span>True length</li>
+        </ul>
+        <div class="panels">
+          <div class="panel"><p class="panel-title">Requests meeting the SLO</p>
+            <div class="scroll"><svg id="svg-real" role="img" aria-label="SLO attainment against arrival rate on a real H200. At 1.42 requests per second: vLLM default 41.5%, shortest prompt first 92.5%, Jev 97.2%, true length 99.2%."></svg></div></div>
+          <div class="panel"><p class="panel-title">P90 TTFT</p>
+            <div class="scroll"><svg id="svg-p90" role="img" aria-label="P90 time to first token against arrival rate. At 1.54 requests per second: vLLM default 101 s, shortest prompt first 6.1 s, Jev 0.23 s, true length 0.09 s."></svg></div></div>
+        </div>
+        <details class="data"><summary>Show the numbers</summary>
+          <div class="tablewrap"><table class="t"><thead><tr><th>Policy</th><th>Measure</th><th class="r">1.10</th><th class="r">1.20</th><th class="r">1.30</th><th class="r">1.42</th><th class="r">1.54 req/s</th></tr></thead><tbody id="tbl-real"></tbody></table></div>
+        </details>
+      </div>
+      <figcaption><b>Figure 4.</b> SLO attainment (first token within 1 s, then at most 50 ms per token) and the 90th-percentile time to first token on a real H200 with its KV cache capped at 84,000 tokens, by arrival rate; one arrival draw, 2,000 requests per run. The left axis is stretched above 90%; on the right, each step between 0, 1, 2, 5, 20 and 100 s has the same height. Hollow markers: the backlog of work grew during the run.</figcaption>
+    </figure>
+
+    <div class="col">
+      <p>vLLM's default drops below the target just above 1.10 requests per second, to 75% at 1.30 and 42% at 1.42. Serving short prompts first, with no prediction at all, still meets it at 1.42 (92.5%). The reason is how vLLM admits requests: it takes the head of the queue only if its whole prompt fits in free KV memory, and it stops at the first one that does not. Under first come, first served, one long request at the head blocks every request behind it.</p>
+      <p>Predicting the output length adds to this, most of all in the tail. At 1.42 requests per second Jev keeps 97.2% of requests within the target and the true length 99.2%. Under shortest prompt first the 90th-percentile time to first token stays low up to 1.42 requests per second, then jumps to 6.1 s at 1.54, while Jev keeps it at 0.23 s and the true length at 0.09 s. Further out in the tail, at 1.30 requests per second the 99th percentile is 52.9 s for shortest prompt first, 2.7 s for Jev and 0.4 s with the true length. Jev pays for its 92 ms decision at light load, where its 90th percentile (0.14 s) is the highest of the three reorderings.</p>
+      <p>In goodput, the highest rate that meets the target while the server keeps up, vLLM's default reaches 1.13 requests per second and Jev 1.30 to 1.36: a real gain of 15% to 21%, and 16% to 26% on a second arrival draw. For every shortest-first policy the limit comes from starvation before the target is missed: from about 1.36 requests per second, the long requests they defer pile up. Length-aware scheduling that avoids both head-of-line blocking and starvation would push goodput further, and would show more clearly how much a better predictor is worth.</p>
+
+      <h2 class="sec" id="playground">Can you beat Jev?</h2>
+      <p>To get a feel for the benchmark's decisions, try the <a href="/jevserve-bench/playground.html" target="_blank" rel="noopener">playground</a>. It draws on four of them: spotting prompt injections, telling harmful requests from ones that only sound harmful, deciding whether a cached answer can be reused, and guessing how long a reply will be. Each round is five questions against Jev. After each answer you see the right answer, what Jev and two other models said, and how long you took next to Jev's 92 ms.</p>
+    </div>
+
+    <a class="play wide" href="/jevserve-bench/playground.html" target="_blank" rel="noopener">
+      <span class="play-text">
+        <span class="play-eyebrow">Playground · five questions</span>
+        <span class="play-title">Can you beat <em>Jev</em>?</span>
+        <span class="play-sub">Is it an attack? Can the cache answer it? How long will the reply be? Jev answers each in 92 ms.</span>
+        <span class="play-go">Play against Jev <span aria-hidden="true">→</span></span>
+      </span>
+      <span class="play-board" aria-hidden="true">
+        <span class="side"><small>You</small><b>?</b></span>
+        <span class="dots"><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="side jev"><small>Jev 1.13</small><b>?</b></span>
+      </span>
+    </a>
+
+    <div class="col">
+      <p>On the playground's items, Jev gets 80% of the injection questions right, 87% of the harmful-or-harmless ones, 70% of the cache decisions and 55% of the four-way length guesses. We tried hard to beat it. Matching its score took us roughly a hundred times longer per question.</p>
+      <!-- <p>Each submitted round is stored, and together they will give the first human baseline for these decisions.</p> -->
+
+      <h2 class="sec" id="open">Opportunities and open problems</h2>
+      <ul class="prose">
+        <li><strong>Measure engine decisions per deployment.</strong> The same length prediction is worth nothing on one server and 45% more goodput on another, so a single score would mislead. The next version of JevServe-Bench will report serving metrics (SLO attainment, goodput, latency percentiles) for each model, GPU and workload.</li>
+        <li><strong>Fit the latency budget.</strong> Predictions made at admission fit in 100 ms. Decisions made at every decoding step need a model that runs next to the engine, far smaller or batched with the step.</li>
+        <li><strong>One decision model, or one per backend?</strong> Today the questions are shared and only a light regression is fitted for each served model. Whether one general model can serve every backend is open.</li>
+        <li><strong>Train on the system's own data.</strong> The weakest categories are the ones that predict system behavior. Serving logs, simulators and environments can label such decisions at scale, and fine-tuning open models on them is our next experiment.</li>
+        <li><strong>Bring people in.</strong> Playground submissions will give a human baseline for every decision in it.</li>
+      </ul>
+
+      <h2 class="sec" id="try">Try it</h2>
+      <p>Play against Jev in the <a href="/jevserve-bench/playground.html" target="_blank" rel="noopener">playground</a>, browse the <a href="/jevserve-bench/" target="_blank" rel="noopener">leaderboard</a>, or read how the scores work on the <a href="/jevserve-bench/methodology.html" target="_blank" rel="noopener">methodology page</a>. Any decision model that speaks the System One API can take part once the benchmark code is public.</p>
+    </div>
+  </article>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const two = v => (Math.round(v * 100) / 100).toFixed(2);
+  const text = (parent, x, y, s, attrs = {}) => { const t = el("text", {x, y, ...attrs}, parent); t.textContent = s; return t; };
+
+  // a shared tooltip per chart, shown on hover or focus of any mark with data-tip
+  function tips(box) {
+    const tip = document.createElement("div");
+    tip.className = "tip"; tip.hidden = true; box.appendChild(tip);
+    const show = ev => {
+      const m = ev.target.closest("[data-tip]"); if (!m) return;
+      const r = m.getBoundingClientRect(), b = box.getBoundingClientRect();
+      tip.textContent = m.dataset.tip; tip.hidden = false;
+      tip.style.left = `${Math.min(Math.max(r.left + r.width / 2 - b.left, 90), b.width - 90)}px`;
+      tip.style.top = `${r.top - b.top}px`;
+    };
+    box.addEventListener("pointerover", show);
+    box.addEventListener("focusin", show);
+    box.addEventListener("pointerout", () => { tip.hidden = true; });
+    box.addEventListener("focusout", () => { tip.hidden = true; });
+  }
+
+  // Figure 2: category scores, grouped horizontal bars
+  const cats = [
+    ["Guard", 90.9, 91.7, "JEV-27B", 85.8], ["Act", 84.1, 86.0, "JEV-27B", 28.1], ["Schedule", 78.9, 80.5, "decider-4b", 69.1],
+    ["Verify", 77.4, 77.7, "Kev-27B", 63.2], ["Cache", 42.8, 41.5, "Xor 1.1", 22.9], ["Route", 29.2, 29.1, "NeoHorse-Jev-4B", 19.7]];
+  {
+    const svg = document.getElementById("svg-cats");
+    const W = 820, L = 92, R = 40, bar = 11, gap = 3, group = 3 * bar + 2 * gap, pad = 18, top = 6;
+    const H = top + cats.length * (group + pad) + 26;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const x = v => L + (W - L - R) * v / 100;
+    for (const g of [0, 25, 50, 75, 100]) {
+      el("line", {x1: x(g), x2: x(g), y1: top, y2: H - 22, stroke: "var(--rule)", "stroke-width": 1}, svg);
+      text(svg, x(g), H - 6, String(g), {"text-anchor": "middle", "font-size": 12, fill: "var(--ink-3)"});
+    }
+    cats.forEach(([name, jev, best, who, qwen], i) => {
+      const y0 = top + i * (group + pad);
+      text(svg, L - 12, y0 + group / 2 + 5, name, {"text-anchor": "end", "font-size": 14, "font-weight": 600, fill: "var(--ink)"});
+      [[jev, "var(--jev)", `Jev 1.13: ${jev.toFixed(1)}`], [best, "var(--open)", `Best other (${who}): ${best.toFixed(1)}`],
+       [qwen, "var(--base)", `Qwen3-8B, untrained: ${qwen.toFixed(1)}`]].forEach(([v, c, tip], k) => {
+        const y = y0 + k * (bar + gap);
+        el("rect", {x: L, y, width: Math.max(2, x(v) - L), height: bar, rx: 3, fill: c, "data-tip": tip, tabindex: 0}, svg);
+        if (k === 0) text(svg, x(v) + 6, y + bar - 1.5, jev.toFixed(0), {"font-size": 12.5, "font-weight": 600, fill: "var(--ink)"});
+      });
+    });
+    document.getElementById("tbl-cats").innerHTML = cats.map(([n, j, b, w, q]) =>
+      `<tr><td>${n}</td><td class="r">${j.toFixed(1)}</td><td class="r">${b.toFixed(1)}</td><td>${w}</td><td class="r">${q.toFixed(1)}</td></tr>`).join("");
+    tips(document.getElementById("chart-cats"));
+  }
+
+  // Figure 4: Kendall tau of length predictions, a dot plot with the ceiling as a ring
+  {
+    const rows = [["Thinking off", [0.089, 0.393, 0.608], 0.794], ["Thinking on", [0.114, 0.441, 0.559], 0.725]];
+    const names = ["Prompt length alone", "Qwen3-8B, untrained", "Jev 1.13"], colors = ["var(--neutral)", "var(--base)", "var(--jev)"];
+    const svg = document.getElementById("svg-len");
+    const W = 820, L = 112, R = 30, rowH = 62, top = 10, H = top + rows.length * rowH + 34;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const x = v => L + (W - L - R) * v / 0.9;
+    for (const g of [0, 0.2, 0.4, 0.6, 0.8]) {
+      el("line", {x1: x(g), x2: x(g), y1: top, y2: H - 28, stroke: "var(--rule)", "stroke-width": 1}, svg);
+      text(svg, x(g), H - 12, g.toFixed(1), {"text-anchor": "middle", "font-size": 12, fill: "var(--ink-3)"});
+    }
+    text(svg, W - R, H - 12, "Kendall's τ", {"text-anchor": "end", "font-size": 12, fill: "var(--ink-3)"});
+    rows.forEach(([label, pts, ceil], i) => {
+      const y = top + i * rowH + 24;
+      text(svg, L - 14, y + 5, label, {"text-anchor": "end", "font-size": 14, "font-weight": 600, fill: "var(--ink)"});
+      el("line", {x1: x(pts[0]), x2: x(ceil), y1: y, y2: y, stroke: "var(--rule-2)", "stroke-width": 2}, svg);
+      el("circle", {cx: x(ceil), cy: y, r: 8, fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 2.5,
+                    "data-tip": `Ceiling, a second reply: τ ${two(ceil)}`, tabindex: 0}, svg);
+      text(svg, x(ceil), y - 15, two(ceil), {"text-anchor": "middle", "font-size": 12, fill: "var(--ink-2)"});
+      pts.forEach((v, k) => {
+        el("circle", {cx: x(v), cy: y, r: 7, fill: colors[k], stroke: "var(--surface)", "stroke-width": 2,
+                      "data-tip": `${names[k]}: τ ${two(v)}`, tabindex: 0}, svg);
+        text(svg, x(v), y - 15, two(v), {"text-anchor": "middle", "font-size": 12, fill: k === 2 ? "var(--ink)" : "var(--ink-2)",
+                                               "font-weight": k === 2 ? 600 : 400});
+      });
+    });
+    tips(document.getElementById("chart-len"));
+  }
+
+  // Figure 4: on the real H200 (arrival draw 0), attainment on an axis stretched above 90% and P90 TTFT on a log
+  // axis; hollow markers where the backlog grows
+  {
+    const rates = [1.10, 1.20, 1.30, 1.42, 1.54], grows = [0, 0, 0, 1, 1];
+    const series = [
+      ["vLLM default", "var(--neutral)", [92.0, 87.8, 75.4, 41.5, 36.1], [0.10, 2.80, 8.27, 43.02, 101.27]],
+      ["Shortest prompt first", "var(--base)", [99.3, 98.9, 96.5, 92.5, 88.4], [0.05, 0.05, 0.07, 0.13, 6.14]],
+      ["Jev 1.13", "var(--jev)", [99.4, 99.2, 98.6, 97.2, 96.0], [0.14, 0.15, 0.17, 0.18, 0.23]],
+      ["True length", "var(--ink)", [99.9, 99.9, 99.5, 99.2, 98.7], [0.05, 0.05, 0.06, 0.06, 0.09]]];
+    const W = 420, H = 320, L = 50, R = 62, top = 12, bottom = 40, plotH = H - top - bottom;
+    const x = r => L + (W - L - R) * (r - 1.06) / (1.58 - 1.06);
+    const secs = v => v < 1 ? `${+v.toFixed(2)} s` : `${+v.toFixed(1)} s`;
+
+    function panel(id, yOf, ticks, tickLabel, target, targetLabel, values, fmt, unit) {
+      const svg = document.getElementById(id);
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      for (const g of ticks) {
+        el("line", {x1: L, x2: W - R, y1: yOf(g), y2: yOf(g), stroke: "var(--rule)", "stroke-width": 1}, svg);
+        text(svg, L - 8, yOf(g) + 4, tickLabel(g), {"text-anchor": "end", "font-size": 12, fill: "var(--ink-3)"});
+      }
+      for (const r of rates) text(svg, x(r), H - 20, r.toFixed(2), {"text-anchor": "middle", "font-size": 12, fill: "var(--ink-3)"});
+      text(svg, (L + W - R) / 2, H - 3, "arrival rate (requests per second)", {"text-anchor": "middle", "font-size": 12, fill: "var(--ink-3)"});
+      el("line", {x1: L, x2: W - R, y1: yOf(target), y2: yOf(target), stroke: "var(--ink-2)", "stroke-width": 1.25, "stroke-dasharray": "5 4"}, svg);
+      text(svg, L + 6, yOf(target) - 6, targetLabel, {"font-size": 12, fill: "var(--ink-2)", stroke: "var(--surface)", "stroke-width": 4,
+                                                       "paint-order": "stroke"});
+      const ends = [];
+      series.forEach(row => {
+        const [name, color] = row, vals = values(row);
+        el("polyline", {points: vals.map((v, i) => `${x(rates[i])},${yOf(v)}`).join(" "), fill: "none", stroke: color,
+                        "stroke-width": 2, "stroke-linejoin": "round"}, svg);
+        vals.forEach((v, i) => el("circle", {cx: x(rates[i]), cy: yOf(v), r: 4.5, fill: grows[i] ? "var(--surface)" : color, stroke: color,
+          "stroke-width": 2, "data-tip": `${name} at ${rates[i].toFixed(2)} req/s: ${fmt(v)}${grows[i] ? ", backlog grows" : ""}`, tabindex: 0}, svg));
+        ends.push({n: name, v: vals[vals.length - 1], y: yOf(vals[vals.length - 1])});
+      });
+      ends.sort((a, b) => a.y - b.y);  // labels at the right end, pushed apart so none overlap
+      for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 15);
+      // a halo in the surface colour keeps the labels readable where they cross a line
+      ends.forEach(e => text(svg, x(1.54) + 10, e.y + 4, fmt(e.v), {"font-size": 12, fill: "var(--ink-2)", stroke: "var(--surface)",
+                                                                   "stroke-width": 4, "paint-order": "stroke"}));
+    }
+
+    // attainment: 90-100% gets two thirds of the height, 30-90% the rest
+    const split = top + plotH * 2 / 3;
+    const yAtt = v => v >= 90 ? top + (100 - v) / 10 * (split - top) : split + (90 - v) / 60 * (top + plotH - split);
+    panel("svg-real", yAtt, [30, 50, 70, 90, 92, 94, 96, 98, 100], g => `${g}%`, 90, "90% target", r => r[2], v => `${v.toFixed(1)}%`);
+    // P90 TTFT: each step between 0, 1, 2, 5, 20 and 100 s gets the same height, linear within a step
+    const steps = [0, 1, 2, 5, 20, 100], h = plotH / (steps.length - 1);
+    const yP90 = v => {
+      let k = steps.findIndex((b, i) => i > 0 && v <= b);
+      if (k < 0) k = steps.length - 1;  // past 100 s: extend the last step
+      return top + plotH - h * (k - 1 + (v - steps[k - 1]) / (steps[k] - steps[k - 1]));
+    };
+    panel("svg-p90", yP90, steps, g => `${g} s`, 1, "1 s target", r => r[3], secs);
+
+    document.getElementById("tbl-real").innerHTML = series.map(([n, , att, p90]) =>
+      `<tr><td>${n}</td><td>attainment</td>${att.map((v, i) => `<td class="r">${v.toFixed(1)}%${grows[i] ? "*" : ""}</td>`).join("")}</tr>` +
+      `<tr><td></td><td>P90 TTFT</td>${p90.map((v, i) => `<td class="r">${secs(v)}${grows[i] ? "*" : ""}</td>`).join("")}</tr>`).join("") +
+      `<tr><td colspan="7">* the backlog of work grew during the run</td></tr>`;
+    tips(document.getElementById("chart-real"));
+  }
+})();
+</script>
+
+</body>
+</html>
