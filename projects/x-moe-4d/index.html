@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="X-MoE-4D: Breaking the Scaling Barrier for Trillion Parameter MoEs on Hierarchical HPC Systems.">
+  <meta name="keywords" content="X-MoE-4D, X-MoE, Mixture of Experts, Pipeline Parallelism, HPC, Frontier, Deep Learning Training, Scalability">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X-MoE-4D: Breaking the Scaling Barrier for Trillion Parameter MoEs on Hierarchical HPC Systems</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <style>
+    /* Custom style to increase the max width of is-max-desktop */
+    .is-max-desktop {
+      max-width: 1020px; /* Adjust this value as needed */
+    }
+
+    /* Gentle news highlight */
+    .news-gentle {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+      border: 1px solid #d1e7ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+      box-shadow: 0 2px 15px rgba(102, 126, 234, 0.1);
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .news-gentle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+    }
+
+    .news-gentle .news-icon {
+      color: #667eea;
+      margin-right: 10px;
+    }
+
+    .news-gentle .award-text {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    /* Title enhancement */
+    .publication-title {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+    }
+
+    /* Section headers with gradient */
+    .gradient-header {
+      background: linear-gradient(45deg, #333, #666);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    .gradient-header::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+
+    /* Design components */
+    .feature-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 25px;
+      margin: 15px 0;
+      border-left: 4px solid #667eea;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    /* Abstract styling */
+    .abstract-box {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    /* Results section enhancement */
+    .results-item {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #28a745;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+
+    .results-item:hover {
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      transform: translateX(5px);
+    }
+
+    /* Figures and their captions (taken from the paper) */
+    .paper-figure {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .paper-figure img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .figure-caption {
+      font-size: 0.9em;
+      color: #555;
+      text-align: left;
+      max-width: 860px;
+      margin: 8px auto 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://minjiazhang.github.io">
+        <span class="icon">
+            <i class="fas fa-home"></i>
+        </span>
+        </a>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://minjiazhang.github.io/">
+              Publications
+            </a>
+            <a class="navbar-item" href="https://supercomputing-system-ai-lab.github.io/projects/x-moe/">
+              X-MoE (SC 2025)
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title" style="font-size: 45px;">X-MoE-4D: Breaking the Scaling Barrier for Trillion Parameter MoEs on Hierarchical HPC Systems</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://zixianwang2022.github.io/">Zixian Wang</a><sup>1</sup>,</span>
+            <span class="author-block">
+              Liheng Jing<sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.ornl.gov/staff-profile/emily-j-herron">Emily Herron</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.ornl.gov/staff-profile/sajal-dash">Sajal Dash</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.ornl.gov/staff-profile/feiyi-wang">Feiyi Wang</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://minjiazhang.github.io/">Minjia Zhang</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="margin-right: 10px;"><sup>1</sup>University of Illinois Urbana-Champaign</span>
+            <span class="author-block" style="margin-right: 10px;"><sup>2</sup>Oak Ridge National Laboratory</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="./2026_SC_XMoE_4D.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://github.com/Supercomputing-System-AI-Lab/X-MoE"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://supercomputing-system-ai-lab.github.io/blogs/blog/x-moe-4d-breaking-the-scaling-barrier-for-trillion-parameter-moes-on-hierarchical-hpc-systems/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-blog"></i>
+                  </span>
+                  <span>Blog</span>
+                </a>
+              </span>
+              <span class="link-block" style="margin-right: 20px;">
+                <a href="https://sc26.conference-program.com/presentation/?id=pap564&amp;sess=sess211"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-chalkboard-teacher"></i>
+                  </span>
+                  <span>SC26 Talk</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -50px;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3" style="font-weight: bold; font-family: Arial;">News</h2>
+          <div class="news-gentle">
+            <i class="fas fa-chalkboard-teacher news-icon" style="font-size: 1.2em;"></i>
+            <strong>2026-11-17:</strong> X-MoE-4D is presented at <span class="award-text">SC 2026</span> in Chicago (Tuesday, November 17, 2:15 PM CST, Room W178ab, session "Scaling Complex AI Training Workloads").
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Abstract</h2>
+        <div class="abstract-box">
+          <div class="content has-text-justified" style="margin-top: -10pt;">
+            <p>
+              We present <strong>X-MoE-4D</strong>, a distributed training system for scaling <strong>expert-specialized Mixture-of-Experts</strong> models on <strong>hierarchical HPC platforms</strong>. We observe that existing expert-parallel approaches suffer from severe scalability limits due to cross-node all-to-all communication. To address this, X-MoE-4D adopts a <strong>pipeline-global, expert-local</strong> execution model that confines expert computation within nodes while scaling across nodes via pipeline parallelism. X-MoE-4D further introduces a <strong>Minimax Pipeline Planner</strong> that jointly optimizes pipeline partitioning and activation checkpointing to minimize bottleneck stage execution time under memory constraints. Together, these techniques eliminate cross-node expert routing and mitigate <strong>MoE Pipeline Skew</strong>.
+            </p>
+            <p>
+              We evaluate X-MoE-4D on the Frontier supercomputer, demonstrating the first efficient <strong style="color: #667eea;">1-trillion-parameter</strong> expert-specialized MoE training on an AMD-based HPC platform. X-MoE-4D achieves <strong style="color: #667eea;">2.24&times; higher aggregate throughput</strong> than X-MoE at 1-trillion-parameter scale (2.4&times; per GPU throughput) while using fewer GPUs (<strong>960 vs. 1,024</strong>), and sustains a <strong style="color: #667eea;">3.24&times; speedup</strong> when strong-scaling the 173B model to <strong>2,304 GPUs</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">Background</h2>
+          <div style="background: linear-gradient(135deg, #fff5f5 0%, #f0f8ff 100%); border-radius: 15px; padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <p class="has-text-justified" style="margin-bottom: 20px;">
+              <strong>Mixture-of-Experts (MoE)</strong> scales large language models by activating only a subset of experts per token, so the capacity of the model grows without a proportional increase in computation. Existing MoE training systems primarily rely on <strong>expert parallelism (EP)</strong>, which distributes experts across devices and dispatches tokens via all-to-all communication.
+            </p>
+
+            <p class="has-text-justified" style="margin-bottom: 20px;">
+              Modern MoE designs, such as Kimi K3, DeepSeek-V4, Qwen3-Next, and Llama 4, have shifted toward <strong style="color: #667eea;">fine-grained experts with large top-k routing</strong>, which increase the number of experts significantly while reducing per-expert size to improve expert specialization. On hierarchical HPC platforms, this shift creates three challenges for training systems:
+            </p>
+
+            <div style="background: white; border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea;">
+              <div style="margin-bottom: 20px;">
+                <h5><strong>Cross-Node All-to-All Communication</strong></h5>
+                <p>Under EP, tokens are dynamically routed to remote experts and gathered back across devices. As the number of experts and devices increases, cross-node traffic grows rapidly and becomes constrained by the hierarchical bandwidth of HPC interconnects such as Dragonfly. When EP grows from 16 to 512 GPUs, MFU falls from 26.4% to 4.3% (Figure 1).</p>
+                <div class="paper-figure">
+                  <img src="./static/images/ep_scaling.png" alt="Per-layer execution time and MFU as expert parallelism grows from 16 to 512 GPUs" style="width: 75%;"/>
+                  <p class="figure-caption"><strong>Figure 1.</strong> Impact of scaling expert parallelism (EP). As EP increases, dispatch and combine all-to-all communication becomes a dominant component of MoE execution time, reducing MFU and increasing runtime variability.</p>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h5><strong>Routing-Induced Activation Memory</strong></h5>
+                <p>Fine-grained experts with large top-k routing substantially increase routing-related activation memory, which scales with both the number of experts and the top-k routing degree. This memory can dominate the per-layer footprint and makes memory and computation costs highly uneven across layers.</p>
+              </div>
+
+              <div>
+                <h5><strong>MoE Pipeline Skew (MPS)</strong></h5>
+                <p>Keeping experts within a node and scaling across nodes with pipeline parallelism removes the cross-node all-to-all, but pipeline execution prolongs activation lifetimes in early stages. Combined with the amplified activation memory and imbalanced compute costs of fine-grained experts, this disproportionately inflates the cost of the early pipeline stages and makes them the bottleneck for end-to-end training.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 gradient-header" style="font-weight: bold; font-family: Arial;">X-MoE-4D Design</h2>
+
+          <div class="paper-figure">
+            <img src="./static/images/overview.png" alt="X-MoE-4D overview" style="width: 90%;"/>
+            <p class="figure-caption"><strong>Figure 2.</strong> Overview of X-MoE-4D. EP-based scaling (top-left) suffers from cross-node all-to-all bottlenecks. X-MoE-4D adopts pipeline-global, expert-local execution (top-right) to eliminate cross-node routing, but introduces MoE Pipeline Skew (MPS) due to stage imbalance. ELM-PP (left) mitigates MPS by balancing pipeline stages via joint partitioning and checkpointing. Efficient expert-local execution (right) improves utilization by reducing kernel fragmentation.</p>
+          </div>
+
+          <div class="feature-box">
+            <h4><strong>Pipeline-Global, Expert-Local Execution</strong></h4>
+            <p>Expert parallelism is kept within each node, so all expert routing runs over the high-bandwidth intra-node interconnect, while cross-node scaling uses pipeline parallelism. This aligns MoE execution with the hardware topology and eliminates cross-node expert routing. The aggregate memory of a node is sufficient to host a full MoE layer even at trillion scale (512 GB across 8 GCDs on Frontier).</p>
+          </div>
+
+          <div class="feature-box">
+            <h4><strong>Expert-Localized Minimax Pipeline Parallelism (ELM-PP)</strong></h4>
+            <p>A skew-aware pipeline planner that jointly optimizes stage partitioning and activation checkpoint placement to minimize the execution time of the slowest stage under per-GPU memory constraints. It combines selective checkpointing with uneven layer partitioning, guided by a memory model and a runtime model, and solves the partitioning by dynamic programming on top of the 1F1B schedule.</p>
+          </div>
+
+          <div class="feature-box">
+            <h4><strong>Efficient Expert-Local Execution</strong></h4>
+            <p>Confining experts within each node co-locates tens of fine-grained experts (e.g., 64) on each GPU, which fragments expert computation into many small kernels. X-MoE-4D uses GroupGEMM with two backends, Primus-Turbo's Composable Kernel (CK) for AMD GPUs and a Triton implementation for cross-platform support; both aggregate per-expert work into larger persistent kernels.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="margin-top: -40px;">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3 gradient-header">Evaluation Results</h2>
+        </div>
+
+        <p>
+          We evaluate X-MoE-4D on the Frontier supercomputer (AMD MI250X GPUs connected by a Dragonfly network) with up to <strong>2,304 GPUs</strong>, on expert-specialized MoE models from <strong>10B to 1T parameters</strong>, against DeepSpeed-MoE, DeepSpeed-TED, Tutel, TorchTitan, and X-MoE.
+        </p>
+
+        <div class="paper-figure">
+          <img src="./static/images/main_results.png" alt="MFU and aggregate throughput from 63B to 1T parameters" style="width: 70%;"/>
+          <p class="figure-caption"><strong>Figure 3.</strong> Training performance across model scales (63B&ndash;1T) on Frontier. (a) Model FLOPs Utilization (MFU). (b) Aggregate throughput (PFLOPS). X-MoE-4D achieves the highest MFU and throughput across all scales.</p>
+        </div>
+
+        <div class="results-item">
+          <strong>Scale:</strong> The first efficient <strong style="color: #28a745;">1-trillion-parameter</strong> expert-specialized MoE training on an AMD-based HPC platform, at <strong style="color: #28a745;">24.8% MFU</strong> on 960 GPUs.
+        </div>
+        <div class="results-item">
+          <strong>Throughput:</strong> <strong style="color: #28a745;">2.24&times; higher aggregate throughput</strong> than X-MoE at 1T (2.4&times; per GPU) with fewer GPUs (960 vs. 1,024); <strong style="color: #28a745;">35.4% MFU</strong> at 537B, a 3.03&times; improvement over X-MoE.
+        </div>
+        <div class="results-item">
+          <strong>Scalability:</strong> On the 173B model, a stable <strong style="color: #28a745;">36% MFU</strong> under weak scaling to 1,152 GPUs, and up to <strong style="color: #28a745;">3.24&times; speedup</strong> over X-MoE under strong scaling to 2,304 GPUs (Figure 4).
+        </div>
+        <div class="paper-figure">
+          <img src="./static/images/scalability.png" alt="Weak and strong scaling of X-MoE-4D and X-MoE on the 173B model" style="width: 80%;"/>
+          <p class="figure-caption"><strong>Figure 4.</strong> Scalability of X-MoE-4D vs. X-MoE on the 173B model. (a) Weak scaling. (b) Strong scaling. X-MoE-4D maintains high efficiency and achieves faster iteration time. The performance gap widens with scale.</p>
+        </div>
+
+        <div class="results-item">
+          <strong>Memory:</strong> At 1T, per-GPU model-state memory falls from 41.1 GB with X-MoE (1,024 GPUs, EP256-TP4) to <strong style="color: #28a745;">22.8 GB</strong> with X-MoE-4D (960 GPUs, PP60-EP8), a 1.8&times; reduction. Pipeline stages shard the non-MoE layers instead of replicating them, so attention-state memory falls from 11.4 GB to 0.9 GB per device. The headroom lets X-MoE-4D train the 1T model on as few as 480 GPUs (Figure 5).
+        </div>
+
+        <div class="paper-figure">
+          <img src="./static/images/memory.png" alt="Per-GPU model-state memory of X-MoE and X-MoE-4D at 1T scale" style="width: 80%;"/>
+          <p class="figure-caption"><strong>Figure 5.</strong> Per-GPU model state memory at 1T scale. Comparison of the highest throughput X-MoE and X-MoE-4D configurations. X-MoE-4D reduces per-device model-state memory from 41.1 GB to 22.8 GB.</p>
+        </div>
+
+        <div class="results-item">
+          <strong>Stability and convergence:</strong> Across five independent 1T training runs, the coefficient of variation of MFU is <strong style="color: #28a745;">0.4%</strong>, against 11.8% for X-MoE, because all-to-all communication stays within a node (Figure 6). Trained for 2,000 iterations on the 10B model, both systems give nearly identical loss curves (3.583 for X-MoE and 3.543 for X-MoE-4D at iteration 2,000), so the partitioning and recomputation decisions of ELM-PP do not alter convergence.
+        </div>
+
+        <div class="paper-figure">
+          <img src="./static/images/stability.png" alt="MFU of X-MoE and X-MoE-4D over five 1T training runs" style="width: 45%;"/>
+          <p class="figure-caption"><strong>Figure 6.</strong> Coefficient of variation (std/mean) in runs. X-MoE has high variability (CV 11.8%). X-MoE-4D remains stable (CV = 0.4%).</p>
+        </div>
+
+        <p style="margin-top: 25px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #28a745;">
+          <strong>Integration:</strong> X-MoE-4D is implemented on top of PyTorch and DeepSpeed, extending X-MoE with 1F1B pipeline parallelism and the skew-aware planner. The code is in the <a href="https://github.com/Supercomputing-System-AI-Lab/X-MoE">X-MoE repository</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX" style="margin-top: -40px;">
+<div class="container is-max-desktop content">
+<h2 class="title gradient-header">BibTeX</h2>
+<pre style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;"><code>@inproceedings{wang2026xmoe4d,
+title={X-MoE-4D: Breaking the Scaling Barrier for Trillion Parameter MoEs on Hierarchical HPC Systems},
+author={Zixian Wang and Liheng Jing and Emily Herron and Sajal Dash and Feiyi Wang and Minjia Zhang},
+booktitle={Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis (SC '26)},
+year={2026},
+address={Chicago, IL, USA},
+publisher={IEEE},
+}</code></pre>
+</div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. It is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
